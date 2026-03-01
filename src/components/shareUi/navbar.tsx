@@ -3,8 +3,8 @@
 
 "use client";
 
-import { useState, useRef, useEffect } from "react";
-import { Search, Heart, Handbag } from "lucide-react";
+import { useState, useEffect } from "react";
+import { Search, Heart, Handbag, ChevronDown } from "lucide-react";
 import Logo from "../icon/logo";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -29,10 +29,8 @@ import { toast } from "sonner";
 
 export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [items, setItems] = useState<Array<any>>([]);
   const [wishlistCount, setWishlistCount] = useState(0);
-  const dropdownRef = useRef<HTMLDivElement>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const pathname = usePathname();
@@ -44,6 +42,16 @@ export default function Navbar() {
 
   const { data: profile } = useGetUsersQuery(undefined);
   console.log(profile?.data)
+
+  const cartTotal = items.reduce((total, item) => {
+    const quantityValue = Number(item?.quantity ?? item?.qty ?? 1);
+    const quantity = Number.isFinite(quantityValue) && quantityValue > 0 ? quantityValue : 1;
+    const rawPrice = item?.discountPrice ?? item?.salePrice ?? item?.price ?? item?.amount ?? 0;
+    const price = Number.parseFloat(String(rawPrice).replace(/[^\d.]/g, "")) || 0;
+    return total + price * quantity;
+  }, 0);
+
+  const formattedCartTotal = `$${cartTotal.toFixed(2)}`;
 
 
   if (pathname === "/upgrade") {
@@ -109,7 +117,7 @@ export default function Navbar() {
       await logout();
       toast.success('Logged out successfully');
       window.location.href = ('/');
-    } catch (error) {
+    } catch {
       toast.error('Error logging out');
     }
   }
@@ -125,19 +133,6 @@ export default function Navbar() {
     if (selectedCategory && selectedCategory.trim().length > 0) params.set('category', selectedCategory.trim());
     router.push(`/category${params.toString() ? `?${params.toString()}` : ''}`);
   };
-
-
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowCategoryDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
-
   return (
     <div className="w-full bg-white  relative z-50">
       {/* Main Header */}
@@ -180,7 +175,7 @@ export default function Navbar() {
                   </Select>
                   <button
                     type="submit"
-                    className="px-3 bg-primary hover:bg-primary/90 text-white flex items-center justify-center"
+                    className="px-3 bg-yellow-500 hover:bg-yellow-600 text-black flex items-center justify-center"
                     aria-label="Search"
                     title="Search"
                   >
@@ -205,7 +200,7 @@ export default function Navbar() {
               {/* Become Seller */}
               {profile?.data?.role !== "SELLER" && (
                 <Link href="/auth/getting_start_screen">
-                  <button className="hidden md:block text-sm text-[#171717] hover:text-primary transition-colors font-medium">
+                  <button className="hidden xl:block text-sm text-[#171717] hover:text-primary transition-colors font-medium">
                     Become a Seller
                   </button>
                 </Link>
@@ -214,7 +209,7 @@ export default function Navbar() {
               {/* Wishlist */}
               <Link href={'/wise-list'}>
                 <button
-                  className="relative p-2 hover:bg-gray-100 rounded-md transition-colors"
+                  className="relative p-2 hover:bg-gray-100 rounded-md transition-colors lg:hidden"
                   aria-label="Wishlist"
                 >
                   <Heart size={20} className="text-gray-700" />
@@ -226,57 +221,38 @@ export default function Navbar() {
                 </button>
               </Link>
 
-              {/* Cart */}
-              {
-                profile?.data && (
-                  <Link href="/my-cart"
-                    className="relative p-2 hover:bg-gray-100 rounded-md transition-colors"
-                    aria-label="Shopping Cart"
-                  >
-                    <Handbag size={20} className="text-gray-700" />
-                    {items.length > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                        {items.length}
-                      </span>
-                    )}
+              {/* Desktop End Section (Image-wise style) */}
+              <div className="hidden lg:flex items-center gap-5 text-[#171717]">
+                {!profile?.data?.firstName ? (
+                  <Link href="/auth" className="leading-tight hover:text-primary transition-colors">
+                    <p className="text-xs">Hello, sign in</p>
+                    <p className="text-sm font-semibold flex items-center gap-1">
+                      Account &amp; Lists
+                      <ChevronDown size={14} />
+                    </p>
                   </Link>
-                )
-              }
-
-              {/* Sign In */}
-              {
-                !profile?.data?.firstName ? (
-                  <>
-                    <Link href="/auth">
-                      <button className="hidden sm:block text-sm text-gray-700 hover:text-primary transition-colors font-medium">
-                        Sign In
-                      </button>
-                    </Link>
-
-                    {/* Register */}
-                    <Link href="/auth/register">
-                      <button className="px-3 sm:px-4 py-1.5 sm:py-2 bg-primary hover:bg-primary/90 text-white rounded-md transition-colors font-medium text-sm">
-                        Register
-                      </button>
-                    </Link>
-
-
-                  </>
                 ) : (
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
-                      <Button variant="ghost" className="relative h-10 w-10 rounded-full cursor-pointer">
-                        <Avatar>
-                          <AvatarImage src={profile?.data?.image} />
-                          <AvatarFallback>{profile?.data?.firstName?.charAt(0)}</AvatarFallback>
-                        </Avatar>
-                      </Button>
+                      <button className="leading-tight hover:text-primary transition-colors text-left">
+                        <p className="text-xs">Hello, {profile?.data?.firstName}</p>
+                        <p className="text-sm font-semibold flex items-center gap-1">
+                          Account &amp; Lists
+                          <ChevronDown size={14} />
+                        </p>
+                      </button>
                     </DropdownMenuTrigger>
                     <DropdownMenuContent className="w-56" align="end" forceMount>
                       <DropdownMenuLabel className="font-normal">
-                        <div className="flex flex-col space-y-1">
-                          <p className="text-sm font-medium leading-none">{profile?.data?.firstName} {profile?.data?.lastName}</p>
-                          <p className="text-xs leading-none text-muted-foreground">{profile?.data?.email}</p>
+                        <div className="flex items-center gap-2">
+                          <Avatar>
+                            <AvatarImage src={profile?.data?.image} />
+                            <AvatarFallback>{profile?.data?.firstName?.charAt(0)}</AvatarFallback>
+                          </Avatar>
+                          <div className="flex flex-col space-y-1">
+                            <p className="text-sm font-medium leading-none">{profile?.data?.firstName} {profile?.data?.lastName}</p>
+                            <p className="text-xs leading-none text-muted-foreground">{profile?.data?.email}</p>
+                          </div>
                         </div>
                       </DropdownMenuLabel>
                       <DropdownMenuSeparator />
@@ -310,10 +286,105 @@ export default function Navbar() {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
+                )}
 
-                  // </Link>
-                )
-              }
+                <Link
+                  href={profile?.data ? "/dashboard" : "/auth"}
+                  className="leading-tight hover:text-primary transition-colors"
+                >
+                  <p className="text-xs">Returns</p>
+                  <p className="text-sm font-semibold">&amp; Orders</p>
+                </Link>
+
+                <Link
+                  href="/wise-list"
+                  className="relative flex items-center gap-2 hover:text-primary transition-colors"
+                  aria-label="Wise List"
+                >
+                  <div className="relative">
+                    <Heart size={20} className="text-gray-700" />
+                    {wishlistCount > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold rounded-full h-4 min-w-4 px-1 flex items-center justify-center">
+                        {wishlistCount}
+                      </span>
+                    )}
+                  </div>
+                  {/* <span className="text-sm font-semibold">Wise List</span> */}
+                </Link>
+
+                <Link
+                  href="/my-cart"
+                  className="relative flex items-center gap-2 hover:text-primary transition-colors"
+                  aria-label="Shopping Cart"
+                >
+                  <div className="relative">
+                    <Handbag size={22} className="text-gray-700" />
+                    {items.length > 0 && (
+                      <span className="absolute -top-2 -right-2 bg-primary text-white text-[10px] font-bold rounded-full h-4 min-w-4 px-1 flex items-center justify-center">
+                        {items.length}
+                      </span>
+                    )}
+                  </div>
+                  <span className="text-sm font-semibold">{formattedCartTotal}</span>
+                </Link>
+              </div>
+
+              {/* Mobile Auth */}
+              {!profile?.data?.firstName ? (
+                <Link href="/auth/register" className="lg:hidden">
+                  <button className="px-3 sm:px-4 py-1.5 sm:py-2 bg-primary hover:bg-primary/90 text-white rounded-md transition-colors font-medium text-sm">
+                    Register
+                  </button>
+                </Link>
+              ) : (
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button variant="ghost" className="relative h-10 w-10 rounded-full cursor-pointer lg:hidden">
+                      <Avatar>
+                        <AvatarImage src={profile?.data?.image} />
+                        <AvatarFallback>{profile?.data?.firstName?.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent className="w-56" align="end" forceMount>
+                    <DropdownMenuLabel className="font-normal">
+                      <div className="flex flex-col space-y-1">
+                        <p className="text-sm font-medium leading-none">{profile?.data?.firstName} {profile?.data?.lastName}</p>
+                        <p className="text-xs leading-none text-muted-foreground">{profile?.data?.email}</p>
+                      </div>
+                    </DropdownMenuLabel>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuGroup>
+                      <Link href="/dashboard">
+                        <DropdownMenuItem className="cursor-pointer">
+                          Dashboard
+                          <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                      </Link>
+                      <Link href="/dashboard/my-account">
+                        <DropdownMenuItem className="cursor-pointer">
+                          Profile
+                          <DropdownMenuShortcut>⇧⌘P</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                      </Link>
+                      <Link href="/dashboard/security">
+                        <DropdownMenuItem className="cursor-pointer">
+                          Settings
+                          <DropdownMenuShortcut>⌘S</DropdownMenuShortcut>
+                        </DropdownMenuItem>
+                      </Link>
+                    </DropdownMenuGroup>
+                    <DropdownMenuSeparator />
+                    <DropdownMenuItem
+                      className="cursor-pointer text-red-600 focus:text-red-600"
+                      onClick={handleLogout}
+                    >
+                      Log out
+                      <DropdownMenuShortcut>⇧⌘Q</DropdownMenuShortcut>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              )}
             </div>
           </div>
 
@@ -333,7 +404,7 @@ export default function Navbar() {
             </div>
             <button
               type="submit"
-              className="px-4 py-2 bg-primary hover:bg-primary/90 text-white rounded-md transition-colors"
+              className="px-4 py-2 bg-yellow-500 hover:bg-yellow-600 text-white rounded-md transition-colors"
               aria-label="Search"
             >
               <Search size={18} />
