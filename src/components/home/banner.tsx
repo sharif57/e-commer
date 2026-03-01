@@ -1,77 +1,19 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 import { useState, useEffect, useRef } from "react"
-import { ChevronLeft, ChevronRight, Play, Pause, Square } from "lucide-react"
-import { useGetCategoriesQuery } from "@/redux/feature/buyer/categorySlice"
-import Link from "next/link"
+import { ChevronLeft, ChevronRight, Play, Pause } from "lucide-react"
 import Image from "next/image"
 
 interface Slide {
-  id: number
-  title: string
-  description: string
-  buttonText: string
+  id: string
   image: string
-  bgColor: string
 }
 
 const slides: Slide[] = [
-  {
-    id: 1,
-    title: "Top tech for your game",
-    description: "Explore in-game controller, keyboard, and more.",
-    buttonText: "Shop now",
-    image: "/images/hero.png",
-    bgColor: "bg-gray-100",
-  },
-  {
-    id: 2,
-    title: "Premium Gaming Gear",
-    description: "Discover the latest gaming peripherals and accessories.",
-    buttonText: "Explore",
-    image: "/images/hero.png",
-    bgColor: "bg-blue-50",
-  },
-  {
-    id: 3,
-    title: "Wireless Excellence",
-    description: "Experience freedom with our wireless gaming collection.",
-    buttonText: "Browse",
-    image: "/images/hero.png",
-    bgColor: "bg-purple-50",
-  },
-  {
-    id: 4,
-    title: "RGB Lighting Setup",
-    description: "Customize your gaming space with stunning RGB peripherals.",
-    buttonText: "Shop Now",
-    image: "/images/hero.png",
-    bgColor: "bg-pink-50",
-  },
-  {
-    id: 5,
-    title: "Pro Gaming Chairs",
-    description: "Comfort meets performance in our gaming chair collection.",
-    buttonText: "Shop Now",
-    image: "/images/hero.png",
-    bgColor: "bg-green-50",
-  },
-  {
-    id: 6,
-    title: "Monitor Perfection",
-    description: "Ultra-fast refresh rates for competitive gaming.",
-    buttonText: "Discover",
-    image: "/images/hero.png",
-    bgColor: "bg-yellow-50",
-  },
-  {
-    id: 7,
-    title: "Audio Immersion",
-    description: "Crystal clear sound for immersive gaming experience.",
-    buttonText: "Listen",
-    image: "/images/hero.png",
-    bgColor: "bg-orange-50",
-  },
+  { id: "1", image: "/images/9742750.jpg" },
+  { id: "2", image: "/images/9650177.jpg" },
+  { id: "3", image: "/images/1_wire_29_09_2020_12.jpg" },
+  { id: "4", image: "/images/233.jpg" },
+  { id: "5", image: "/images/product.jpg" },
 ]
 
 export default function Banner() {
@@ -80,19 +22,7 @@ export default function Banner() {
   const [currentSlide, setCurrentSlide] = useState(0)
   const [isPlaying, setIsPlaying] = useState(true)
   const autoPlayRef = useRef<NodeJS.Timeout | null>(null)
-
-  const { data, isLoading } = useGetCategoriesQuery(undefined);
-  console.log(data?.data?.result, 'categories in banner')
-
-  // Transform API data to slides format or use fallback
-  const dynamicSlides = data?.data?.result?.map((category: any, index: number) => ({
-    id: category._id,
-    title: category.title,
-    description: `Explore ${category.title} products and discover amazing deals.`,
-    buttonText: "Shop now",
-    image: category.image,
-    bgColor: `bg-${['gray', 'blue', 'purple', 'pink', 'green', 'yellow', 'orange'][index % 7]}-50`,
-  })) || slides;
+  const dynamicSlides: Slide[] = slides
 
   // Auto-play functionality
   useEffect(() => {
@@ -128,51 +58,6 @@ export default function Banner() {
     setIsPlaying(!isPlaying)
   }
 
-  const stopSlideshow = () => {
-    setIsPlaying(false)
-    setCurrentSlide(0)
-  }
-
-  // Show loading state
-  if (isLoading) {
-    return (
-      <div className="overflow-hidden">
-        <main className="flex-1 flex flex-col">
-          <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8">
-            <div className="w-full container">
-              <div className="rounded-2xl bg-gray-100 overflow-hidden">
-                <div className="flex flex-col lg:flex-row items-center justify-between p-6 sm:p-8 lg:p-12 min-h-80 animate-pulse">
-                  <div className="flex-1 w-full flex flex-col justify-center mb-8 lg:mb-0 lg:pr-8">
-                    <div className="h-8 sm:h-10 w-3/4 bg-gray-200 rounded mb-4" />
-                    <div className="h-5 w-full bg-gray-200 rounded mb-3" />
-                    <div className="h-5 w-5/6 bg-gray-200 rounded mb-6" />
-                    <div className="h-11 w-32 bg-gray-200 rounded-lg" />
-                  </div>
-                  <div className="flex-1 w-full flex items-center justify-center">
-                    <div className="w-full max-w-sm h-64 bg-gray-200 rounded-xl" />
-                  </div>
-                </div>
-                <div className="flex items-center justify-between px-6 sm:px-8 lg:px-12 py-4 bg-white">
-                  <div className="h-4 w-24 bg-gray-200 rounded" />
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <div className="h-9 w-9 bg-gray-200 rounded-lg" />
-                    <div className="h-9 w-9 bg-gray-200 rounded-lg" />
-                    <div className="h-9 w-9 bg-gray-200 rounded-lg ml-2 sm:ml-4" />
-                  </div>
-                </div>
-                <div className="flex items-center justify-center gap-2 px-6 sm:px-8 lg:px-12 py-4 flex-wrap">
-                  {Array.from({ length: 6 }).map((_, index) => (
-                    <div key={index} className="h-2 w-6 bg-gray-200 rounded-full" />
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-        </main>
-      </div>
-    )
-  }
-
   // Return null if no slides available
   if (!dynamicSlides || dynamicSlides.length === 0) {
     return null
@@ -181,95 +66,55 @@ export default function Banner() {
   const slide = dynamicSlides[currentSlide]
 
   return (
-    <div className=" overflow-hidden">
+    <section className="w-full overflow-hidden">
+      <main className="w-full">
+        <div className="relative w-full h-[220px] sm:h-[320px] lg:h-[800px]">
+          <Image
+            src={slide.image}
+            alt="Banner image"
+            fill
+            priority
+            sizes="100vw"
+            className="h-full object-cover"
+          />
 
+          <button
+            onClick={prevSlide}
+            className="absolute left-3 sm:left-5 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full bg-white/85 hover:bg-white transition-colors"
+            aria-label="Previous slide"
+          >
+            <ChevronLeft size={20} className="text-gray-800" />
+          </button>
 
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col ">
-        <div className="flex-1 flex items-center justify-center p-4 sm:p-6 lg:p-8 ">
-          <div className="w-full container">
-            {/* Carousel Container */}
-            <div className={` rounded-2xl  overflow-hidden transition-all duration-500`}>
-              <div className="flex flex-col lg:flex-row items-center justify-between p-6 sm:p-8 lg:p-12 min-h-80">
-                {/* Left Content */}
-                <div className="flex-1 flex flex-col justify-center mb-8 lg:mb-0 lg:pr-8">
-                  <h1 className="text-3xl sm:text-4xl lg:text-4xl font-bold text-[#000000] mb-4 leading-tight">
-                    {slide.title}
-                  </h1>
-                  <p className="text-base sm:text-lg text-gray-600 mb-6 leading-relaxed">{slide.description}</p>
-                  <Link href={`/category?category=${slide.title}`} className="w-fit px-6 sm:px-8 py-2.5 sm:py-3 bg-primary hover:bg-green-700 text-white font-semibold rounded-lg transition-colors shadow-md hover:shadow-lg inline-block">
-                    {slide.buttonText}
-                  </Link>
-                </div>
+          <button
+            onClick={nextSlide}
+            className="absolute right-3 sm:right-5 top-1/2 -translate-y-1/2 p-2 sm:p-2.5 rounded-full bg-white/85 hover:bg-white transition-colors"
+            aria-label="Next slide"
+          >
+            <ChevronRight size={20} className="text-gray-800" />
+          </button>
 
-                {/* Right Image */}
-                <div className="flex-1 flex items-center justify-center">
-                  <Image
-                    src={slide?.image}
-                    alt={slide.title}
-                    width={500}
-                    height={300}
-                    className="w-full max-w-sm h-auto object-contain "
-                  />
-                </div>
-              </div>
+          <button
+            onClick={togglePlay}
+            className="absolute bottom-4 right-4 sm:bottom-6 sm:right-6 p-2 rounded-full bg-black/45 hover:bg-black/60 text-white transition-colors"
+            aria-label={isPlaying ? "Pause" : "Play"}
+          >
+            {isPlaying ? <Pause size={18} /> : <Play size={18} />}
+          </button>
 
-              <div className="flex items-center justify-between px-6 sm:px-8 lg:px-12 py-4 bg-white ">
-                {/* Slide Counter */}
-                <div className="text-sm font-medium text-gray-600">
-                  {currentSlide + 1} of {dynamicSlides.length}
-                </div>
-
-                {/* Navigation Buttons */}
-                <div className="flex items-center gap-2 sm:gap-3">
-                  <button
-                    onClick={prevSlide}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                    aria-label="Previous slide"
-                  >
-                    <ChevronLeft size={20} className="text-gray-700" />
-                  </button>
-
-                  <button
-                    onClick={nextSlide}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-                    aria-label="Next slide"
-                  >
-                    <ChevronRight size={20} className="text-gray-700" />
-                  </button>
-
-                  {/* Play/Pause Button */}
-                  <button
-                    onClick={togglePlay}
-                    className="p-2 hover:bg-gray-100 rounded-lg transition-colors ml-2 sm:ml-4"
-                    aria-label={isPlaying ? "Pause" : "Play"}
-                  >
-                    {isPlaying ? (
-                      <Pause size={20} className="text-gray-700" />
-                    ) : (
-                      <Play size={20} className="text-gray-700" />
-                    )}
-                  </button>
-
-
-                </div>
-              </div>
-
-              <div className="flex items-center justify-center gap-2 px-6 sm:px-8 lg:px-12 py-4  flex-wrap">
-                {dynamicSlides.map((_: Slide, index: number) => (
-                  <button
-                    key={index}
-                    onClick={() => goToSlide(index)}
-                    className={`h-2 rounded-full transition-all duration-300 ${index === currentSlide ? "w-8 bg-primary" : "w-2 bg-gray-300 hover:bg-gray-400"
-                      }`}
-                    aria-label={`Go to slide ${index + 1}`}
-                  />
-                ))}
-              </div>
-            </div>
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex items-center gap-2">
+            {dynamicSlides.map((_, index: number) => (
+              <button
+                key={index}
+                onClick={() => goToSlide(index)}
+                className={`h-2 rounded-full transition-all duration-300 ${index === currentSlide ? "w-8 bg-white" : "w-2 bg-white/60 hover:bg-white/80"
+                  }`}
+                aria-label={`Go to slide ${index + 1}`}
+              />
+            ))}
           </div>
         </div>
       </main>
-    </div>
+    </section>
   )
 }
