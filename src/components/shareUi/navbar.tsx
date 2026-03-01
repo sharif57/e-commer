@@ -343,7 +343,7 @@ export default function Navbar() {
       </header>
 
       {/* Category Navigation */}
-      <nav className="w-full bg-black text-white border-b border-gray-200">
+      <nav className="w-full bg-[#1F2937] text-white border-b border-gray-200">
         <div className=" px-4 sm:px-6 lg:px-8">
           <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto py-3 scrollbar-hide">
             <Link href="/category" className="text-sm font-medium  whitespace-nowrap">

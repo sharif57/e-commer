@@ -4,6 +4,7 @@ import { Linkedin, Twitter, Youtube } from "lucide-react"
 import Logo from "../icon/logo"
 import { usePathname } from "next/navigation";
 import Image from "next/image";
+import FooterLogo from "../icon/footerlogo";
 
 export default function Footer() {
 
@@ -15,15 +16,15 @@ export default function Footer() {
   }
 
   return (
-    <footer className="border-t bg-slate-50">
+    <footer className="border-t bg-[#1F2937] text-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8 sm:pt-14 sm:pb-10">
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
           <div className="flex flex-col">
             <div className="mb-4">
-              <Logo />
+              <FooterLogo />
             </div>
 
-            <p className="text-sm sm:text-base text-slate-700 leading-relaxed mb-5 font-medium">
+            <p className="text-sm sm:text-base text-slate-200 leading-relaxed mb-5 font-medium">
               Largest product search engine with smart categories, trusted sellers, and fast delivery to your doorstep.
             </p>
 
@@ -72,45 +73,45 @@ export default function Footer() {
           </div>
 
           <div className="flex flex-col">
-            <h3 className="text-sm font-semibold text-slate-900 mb-4 uppercase tracking-wide">Categories</h3>
+            <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wide">Categories</h3>
             <ul className="space-y-3">
-              <li><Link href="#" className="text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors">Electronics</Link></li>
-              <li><Link href="#" className="text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors">Fashion</Link></li>
-              <li><Link href="#" className="text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors">Home & Living</Link></li>
-              <li><Link href="#" className="text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors">Health & Beauty</Link></li>
-              <li><Link href="#" className="text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors">Sports & Outdoor</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Electronics</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Fashion</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Home & Living</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Health & Beauty</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Sports & Outdoor</Link></li>
             </ul>
           </div>
 
           <div className="flex flex-col">
-            <h3 className="text-sm font-semibold text-slate-900 mb-4 uppercase tracking-wide">Shop</h3>
+            <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wide">Shop</h3>
             <ul className="space-y-3">
-              <li><Link href="#" className="text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors">Toys, Kids & Baby</Link></li>
-              <li><Link href="#" className="text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors">Groceries & Essentials</Link></li>
-              <li><Link href="#" className="text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors">Books & Media</Link></li>
-              <li><Link href="#" className="text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors">Automotive</Link></li>
-              <li><Link href="#" className="text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors">Deals & Clearance</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Toys, Kids & Baby</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Groceries & Essentials</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Books & Media</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Automotive</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Deals & Clearance</Link></li>
             </ul>
           </div>
 
           <div className="flex flex-col">
-            <h3 className="text-sm font-semibold text-slate-900 mb-4 uppercase tracking-wide">Resources</h3>
+            <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wide">Resources</h3>
             <ul className="space-y-3">
-              <li><Link href="#" className="text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors">Privacy Policy</Link></li>
-              <li><Link href="#" className="text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors">Refund Policy</Link></li>
-              <li><Link href="#" className="text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors">Security</Link></li>
-              <li><Link href="#" className="text-sm font-medium text-slate-700 hover:text-slate-900 transition-colors">Contact Us</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Privacy Policy</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Refund Policy</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Security</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Contact Us</Link></li>
             </ul>
           </div>
         </div>
 
-        <div className="mt-10 border-t border-slate-200 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
-          <p className="text-sm text-slate-700 font-medium text-center sm:text-left">
+        <div className="mt-10 border-t border-slate-600 pt-6 flex flex-col sm:flex-row items-center justify-between gap-3">
+          <p className="text-sm text-slate-200 font-medium text-center sm:text-left">
             Copyright © ebakx Inc. {new Date().getFullYear()} All Rights Reserved
           </p>
-          <div className="flex items-center gap-4 text-sm text-slate-700 font-medium">
-            <Link href="#" className="hover:text-slate-900 transition-colors">Terms</Link>
-            <Link href="#" className="hover:text-slate-900 transition-colors">Privacy</Link>
+          <div className="flex items-center gap-4 text-sm text-slate-200 font-medium">
+            <Link href="#" className="hover:text-white transition-colors">Terms</Link>
+            <Link href="#" className="hover:text-white transition-colors">Privacy</Link>
           </div>
         </div>
       </div>
