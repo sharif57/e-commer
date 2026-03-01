@@ -1,0 +1,2662 @@
+{
+	"info": {
+		"_postman_id": "a0bb7a5a-4889-4ceb-9f80-876666298e1a",
+		"name": "ebax-backend",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "27403352"
+	},
+	"item": [
+		{
+			"name": "Authentication",
+			"item": [
+				{
+					"name": "user",
+					"item": [
+						{
+							"name": "create-buyer",
+							"request": {
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstName\": \"mahdee\",\r\n    \"lastName\": \"al hasan\",\r\n    \"email\": \"mah12@gmail.com\",\r\n    \"password\": \"12345678\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/user/create-buyer",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"user",
+										"create-buyer"
+									],
+									"query": [
+										{
+											"key": "sort",
+											"value": "1",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "image",
+											"type": "file",
+											"src": "/C:/Users/rifat/Downloads/94878341-f9ad-4386-b747-ad277960b5b9.jpg"
+										},
+										{
+											"key": "data",
+											"value": "{\n  \"name\": \"Babys\",\n  \"phone\": \"123456789000000\",\n  \"address\": \"123 Main St, New York, NY\"\n}",
+											"type": "text"
+										}
+									]
+								},
+								"url": {
+									"raw": "{{URL}}/user/update-profile",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"user",
+										"update-profile"
+									],
+									"query": [
+										{
+											"key": "sort",
+											"value": "1",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get all profile",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{BABY}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": "{{URL}}/user/profile"
+							},
+							"response": []
+						},
+						{
+							"name": "delete user",
+							"request": {
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"email\":\"sabewe8439@doishy.com\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/user/delete-users"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "verify-email",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"workd.shakib.ah@gmail.com\",\r\n    \"oneTimeCode\": 904452\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{URL}}/auth/verify-email"
+					},
+					"response": []
+				},
+				{
+					"name": "reset-password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MmZiZGY2MDhiZjgxYzRkMmFjY2U5NiIsImVtYWlsIjoid29ya2Quc2hha2liLmFoQGdtYWlsLmNvbSIsInJvbGUiOiJCVVlFUiIsImlhdCI6MTc2NDczNzAzOCwiZXhwIjoxNzY3MzI5MDM4fQ.tD0qIwBnxyQ4Gvq5UJZpKpgAeA9GFvCig3KgKicIquM"
+							}
+						},
+						"method": "POST",
+						"header": [
+							{
+								"key": "Authorization",
+								"value": "ee87035dd9c5295b8edb1863ab336ac6b0b336a212d2d8f33bf914cebd91e90a",
+								"type": "text"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"newPassword\": \"22222222\",\r\n    \"confirmPassword\": \"22222222\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{URL}}/auth/reset-password"
+					},
+					"response": []
+				},
+				{
+					"name": "forget-password",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"workd.shakib.ah@gmail.com\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{URL}}/auth/forgot-password"
+					},
+					"response": []
+				},
+				{
+					"name": "change-password",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{ADMIN}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"currentPassword\": \"1qazxsw2@A\",\r\n    \"newPassword\": \"12345678\",\r\n    \"confirmPassword\": \"12345678\"\r\n}",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{URL}}/auth/change-password"
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Save token to collection variable\", function () {\r",
+									"    const response = pm.response.json(); // Parse the response JSON\r",
+									"    const token = response.data?.accessToken; // Adjust this to match the token path in your response\r",
+									"    if (token) {\r",
+									"        pm.collectionVariables.set(\"USER\", token); // Save to collection scope\r",
+									"        console.log(\"Token saved in collection variable:\", token);\r",
+									"    } else {\r",
+									"        console.error(\"Token not found in the response\");\r",
+									"        pm.collectionVariables.unset(\"userToken\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {},
+								"requests": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": ""
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"work.shakib.ah@gmail.com\",\r\n    \"password\": \"12345678\"\r\n}\r\n\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{URL}}/auth/login"
+					},
+					"response": []
+				},
+				{
+					"name": "resent-otp",
+					"event": [
+						{
+							"listen": "test",
+							"script": {
+								"exec": [
+									"pm.test(\"Save token to collection variable\", function () {\r",
+									"    const response = pm.response.json(); // Parse the response JSON\r",
+									"    const token = response.data?.accessToken; // Adjust this to match the token path in your response\r",
+									"    if (token) {\r",
+									"        pm.collectionVariables.set(\"USER\", token); // Save to collection scope\r",
+									"        console.log(\"Token saved in collection variable:\", token);\r",
+									"    } else {\r",
+									"        console.error(\"Token not found in the response\");\r",
+									"        pm.collectionVariables.unset(\"userToken\");\r",
+									"    }\r",
+									"});"
+								],
+								"type": "text/javascript",
+								"packages": {}
+							}
+						}
+					],
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": ""
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\r\n    \"email\": \"baby2@example.com\"\r\n}\r\n\r\n\r\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": "{{URL}}/auth/resend-otp"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Admin",
+			"item": [
+				{
+					"name": "notification",
+					"item": [
+						{
+							"name": "get notification for baby-sitter and parent",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk1YTUxMjUwOWE3MjI1M2JjMTVkOSIsInJvbGUiOiJCQUJZX1NJVFRFUiIsImVtYWlsIjoiYmFieTk5QGV4YW1wbGUuY29tIiwiaWF0IjoxNzQyMzc5MTA5LCJleHAiOjE3NDU0MDMxMDl9.21LkIX-IqQbbFG8DY9WDxFC_7SjWHOiV7ComLkfLfMw"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"type\":\"ADMIN\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/notification/get-notification?page=15",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"notification",
+										"get-notification"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "15"
+										},
+										{
+											"key": "limit",
+											"value": "1",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update notification baby-sitter and parent",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDk1YTUxMjUwOWE3MjI1M2JjMTVkOSIsInJvbGUiOiJCQUJZX1NJVFRFUiIsImVtYWlsIjoiYmFieTk5QGV4YW1wbGUuY29tIiwiaWF0IjoxNzQyMzc5MTA5LCJleHAiOjE3NDU0MDMxMDl9.21LkIX-IqQbbFG8DY9WDxFC_7SjWHOiV7ComLkfLfMw"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/notification/read-notification"
+							},
+							"response": []
+						},
+						{
+							"name": "update admin notification",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDU1YjBiZTU1YmIwNjdhMmIyMjkwNSIsInJvbGUiOiJBRE1JTiIsImVtYWlsIjoic2hhcmlmbWFoYW11ZDU3Nzk1MUBnbWFpbC5jb20iLCJpYXQiOjE3NDIzNzkzMTIsImV4cCI6MTc0NTQwMzMxMn0.ppnV4XecNE3jDBTgQpHTAzzisTot9venzTXfN2e8Zro"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"type\":\"ADMIN\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/notification/admin-read-notification"
+							},
+							"response": []
+						},
+						{
+							"name": "get notification admin",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY3ZDU1YjBiZTU1YmIwNjdhMmIyMjkwNSIsInJvbGUiOiJBRE1JTiIsImVtYWlsIjoic2hhcmlmbWFoYW11ZDU3Nzk1MUBnbWFpbC5jb20iLCJpYXQiOjE3NDIzNzkzMTIsImV4cCI6MTc0NTQwMzMxMn0.ppnV4XecNE3jDBTgQpHTAzzisTot9venzTXfN2e8Zro"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/notification/admin-notification"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "category",
+					"item": [
+						{
+							"name": "create category",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "data",
+											"value": "{\n    \"title\":\"Easy\"\n}",
+											"type": "text"
+										},
+										{
+											"key": "image",
+											"type": "file",
+											"src": "/C:/Users/rifat/Downloads/easy.png",
+											"disabled": true
+										}
+									]
+								},
+								"url": "{{URL}}/category/create-category"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "sub-category",
+					"item": [
+						{
+							"name": "create-sub-category",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"title\": \"Sneakers3\",\r\n  \"categoryId\": \"6901993595586cedb391eaed\"\r\n}\r\n\r\n\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/sub-category/create-sub-category"
+							},
+							"response": []
+						},
+						{
+							"name": "get-SubCategory by category wise",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"title\": \"Sneakers3\",\r\n  \"categoryId\": \"6901993595586cedb391eaed\"\r\n}\r\n\r\n\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/sub-category/get-sub-category/6901993595586cedb391eaed",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"sub-category",
+										"get-sub-category",
+										"6901993595586cedb391eaed"
+									],
+									"query": [
+										{
+											"key": "searchTerm",
+											"value": "Sneakers4",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get-all-subcategory",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"title\": \"Sneakers3\",\r\n  \"categoryId\": \"6901993595586cedb391eaed\"\r\n}\r\n\r\n\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/sub-category/get-sub-category",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"sub-category",
+										"get-sub-category"
+									],
+									"query": [
+										{
+											"key": "searchTerm",
+											"value": "Sneakers4",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "package",
+					"item": [
+						{
+							"name": "create package",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"Ebax pro\",\r\n  \"description\": [\r\n   \"Easily switch plans as needs change.\",\r\n   \"Ideal for testing or temporary projects.\",\r\n   \"Spread costs across smaller, manageable payments.\"\r\n  ],\r\n  \"unitAmount\": 250,\r\n  \"interval\": \"month\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/package/create-package"
+							},
+							"response": []
+						},
+						{
+							"name": "update-package",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"Ebax pro\",\r\n  \"description\": [\r\n   \"Easily switch plans as needs change.2\",\r\n   \"Ideal for testing or temporary projects.\",\r\n   \"Spread costs across smaller, manageable payments.\"\r\n  ],\r\n  \"unitAmount\": 199,\r\n  \"interval\": \"year\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/package/update-package/692abb321cd3bc483f1d93af"
+							},
+							"response": []
+						},
+						{
+							"name": "delete-package",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"name\": \"Ebax basic---2\",\r\n  \"description\": [\r\n   \"Easily switch plans as needs change.2\",\r\n   \"Ideal for testing or temporary projects.\",\r\n   \"Spread costs across smaller, manageable payments.\"\r\n  ],\r\n  \"unitAmount\": 199,\r\n  \"interval\": \"month\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/package/delete-package/6929ade18b5679fbc15b09eb"
+							},
+							"response": []
+						},
+						{
+							"name": "get-all-package",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/package/get-all-package"
+							},
+							"response": []
+						},
+						{
+							"name": "get-single-package",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/package/get-single-package/6929a10536949a61cce1e14f"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "suspendedUser",
+					"item": [
+						{
+							"name": "suspended-user",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SUPER_ADMIN}}"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/user/suspended-user/69180f0ac42f1182f15bf467"
+							},
+							"response": []
+						},
+						{
+							"name": "actived-user",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SUPER_ADMIN}}"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/user/active-user/69180f0ac42f1182f15bf467"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "subscription",
+					"item": [
+						{
+							"name": "get-all-subscriptions",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/subscription/get-all-subscriptions"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "become-a-seller",
+					"item": [
+						{
+							"name": "get-all-data",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{URL}}/became-a-seller/get-all-data",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"became-a-seller",
+										"get-all-data"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "1",
+											"disabled": true
+										},
+										{
+											"key": "status",
+											"value": "approved",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "update-data",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"status\": \"approved\"\r\n}\r\n\r\n\r\n// approved\r\n// rejected",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/became-a-seller/update-data/6932a4807d740510efe6d782"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "review",
+					"item": [
+						{
+							"name": "get-all-review",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/review/get-all-review",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"review",
+										"get-all-review"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "2",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "message",
+			"item": [
+				{
+					"name": "send message",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{BUYER}}"
+							}
+						},
+						"method": "POST",
+						"header": [],
+						"url": "{{URL}}/inbox/send-message/69180f0ac42f1182f15bf467"
+					},
+					"response": []
+				},
+				{
+					"name": "delete inbox",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{BUYER}}"
+							}
+						},
+						"method": "DELETE",
+						"header": [],
+						"url": "{{URL}}/inbox/delete-inbox/693b9fd66eea61ebbb78599e"
+					},
+					"response": []
+				},
+				{
+					"name": "get my inbox",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{BUYER}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{URL}}/inbox/get-inbox"
+					},
+					"response": []
+				},
+				{
+					"name": "get my message",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": {
+								"token": "{{BUYER}}"
+							}
+						},
+						"method": "GET",
+						"header": [],
+						"url": "{{URL}}/message/get-message/693be7cb9a029df55488e347"
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "buyer",
+			"item": [
+				{
+					"name": "category",
+					"item": [
+						{
+							"name": "get-category",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": ""
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": {
+									"raw": "{{URL}}/category/get-category",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"category",
+										"get-category"
+									],
+									"query": [
+										{
+											"key": "searchTerm",
+											"value": "hi",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "sub-category",
+					"item": [
+						{
+							"name": "get-SubCategory by category",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"title\": \"Sneakers3\",\r\n  \"categoryId\": \"6901993595586cedb391eaed\"\r\n}\r\n\r\n\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/sub-category/get-sub-category/6901992a95586cedb391eaeb",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"sub-category",
+										"get-sub-category",
+										"6901992a95586cedb391eaeb"
+									],
+									"query": [
+										{
+											"key": "searchTerm",
+											"value": "Running Shoes",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get-all-subcategory",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"title\": \"Sneakers3\",\r\n  \"categoryId\": \"6901993595586cedb391eaed\"\r\n}\r\n\r\n\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/sub-category/get-sub-category",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"sub-category",
+										"get-sub-category"
+									],
+									"query": [
+										{
+											"key": "searchTerm",
+											"value": "Sneakers4",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "product",
+					"item": [
+						{
+							"name": "get all product",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": ""
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{URL}}/product/get-all-products",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"product",
+										"get-all-products"
+									],
+									"query": [
+										{
+											"key": "categoryName",
+											"value": "hi",
+											"disabled": true
+										},
+										{
+											"key": "subCategory",
+											"value": "Running Shoes 3",
+											"disabled": true
+										},
+										{
+											"key": "searchTerm",
+											"value": "1200",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "hot deals product",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": ""
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": "{{URL}}/product/disable-product"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "review",
+					"item": [
+						{
+							"name": "create-review",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{BUYER}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"productId\": \"6928179bffd11e8843772637\",\r\n  \"rating\": 5,\r\n  \"review\": \"Excellent quality product! Highly recommended.\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/review/create-review"
+							},
+							"response": []
+						},
+						{
+							"name": "get-all-data",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/review/get-all-data/69180f0ac42f1182f15bf467",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"review",
+										"get-all-data",
+										"69180f0ac42f1182f15bf467"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "2",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "review-count",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/review/review-count/69183979d61cd430dd18ee5e",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"review",
+										"review-count",
+										"69183979d61cd430dd18ee5e"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "2",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "order",
+					"item": [
+						{
+							"name": "create order",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{BUYER}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"items\": [\r\n        {\r\n            \"productId\": \"6928179bffd11e8843772637\",\r\n            \"quantity\": 2,\r\n            \"price\": 1000,\r\n            \"sellerId\": \"69180f0ac42f1182f15bf467\"\r\n        },\r\n        {\r\n            \"productId\": \"692ff6fca2781104124fae0c\",\r\n            \"quantity\": 2,\r\n            \"price\": 1000,\r\n            \"sellerId\": \"6932a3d77d740510efe6d778\"\r\n        }\r\n        \r\n    ],\r\n    \"firstName\": \"Shakib\",\r\n    \"lastName\": \"Al Hasan\",\r\n    \"streetName\": \"House 12, Road 5\",\r\n    \"area\": \"Badda\",\r\n    \"city\": \"Dhaka\",\r\n    \"zip\": 1216,\r\n    \"state\": \"Dhaka Division\",\r\n    \"country\": \"Bangladesh\",\r\n    \"billingAddress\": \"Road 15, House 32, Downtown, Dhaka, 1207\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/order/create-order"
+							},
+							"response": []
+						},
+						{
+							"name": "get-all-order",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{BUYER}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/order/get-all-order-for-buyer",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"order",
+										"get-all-order-for-buyer"
+									],
+									"query": [
+										{
+											"key": "period",
+											"value": "3m",
+											"description": "3m 6m 1y",
+											"disabled": true
+										},
+										{
+											"key": "startDate",
+											"value": "2026-01-01",
+											"disabled": true
+										},
+										{
+											"key": "endDate",
+											"value": "2027-12-31",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "about",
+					"item": [
+						{
+							"name": "get-seller-about",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/about/get-seller-about/69180f0ac42f1182f15bf467"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "payment",
+					"item": [
+						{
+							"name": "create payment",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{BUYER}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"orderId\": [\r\n    \"69429cd73f24216802b35d57\",\r\n    \"6952712ad4410b82114908eb\"\r\n  ]\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/payment/create-checkout-session"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "Super-Admin",
+			"item": [
+				{
+					"name": "admin create",
+					"item": [
+						{
+							"name": "create-admin",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SUPER_ADMIN}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"firstName\": \"imran5\",\r\n    \"lastName\": \"hasmi\",\r\n    \"email\": \"imrha5mi@gmail.com\",\r\n    \"password\": \"12345678\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/admin/create-admin"
+							},
+							"response": []
+						},
+						{
+							"name": "get-all-admins",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SUPER_ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/admin/get-all-admins",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"admin",
+										"get-all-admins"
+									],
+									"query": [
+										{
+											"key": "searchTerm",
+											"value": "imran5",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get admin details",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SUPER_ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/admin/get-details/69183a1cd61cd430dd18ee6c",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"admin",
+										"get-details",
+										"69183a1cd61cd430dd18ee6c"
+									],
+									"query": [
+										{
+											"key": "searchTerm",
+											"value": "imran5",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "suspendedUser",
+					"item": [
+						{
+							"name": "suspended-user",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SUPER_ADMIN}}"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/user/suspended-user/69180f0ac42f1182f15bf467"
+							},
+							"response": []
+						},
+						{
+							"name": "actived-user",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SUPER_ADMIN}}"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/user/active-user/69180f0ac42f1182f15bf467"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "money withdrow",
+					"item": [
+						{
+							"name": "admin-withdraw-requests",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SUPER_ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/withdraw/admin-withdraw-requests"
+							},
+							"response": []
+						},
+						{
+							"name": "my-all-history",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SUPER_ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/withdraw/my-all-history"
+							},
+							"response": []
+						},
+						{
+							"name": "paid withdraw",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SUPER_ADMIN}}"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "image",
+											"type": "file",
+											"src": "/C:/Users/rifat/Downloads/94878341-f9ad-4386-b747-ad277960b5b9.jpg"
+										},
+										{
+											"key": "data",
+											"value": "{\n  \"status\": \"paid\"\n}\n",
+											"type": "text"
+										}
+									]
+								},
+								"url": "{{URL}}/withdraw/paid-withdraw/6956095af0365b4f663cd333"
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		},
+		{
+			"name": "seller",
+			"item": [
+				{
+					"name": "Product",
+					"item": [
+						{
+							"name": "create product",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "image",
+											"type": "file",
+											"src": [
+												"/C:/Users/rifat/Downloads/a52b9384-41d1-4cd7-8e9b-df741ea6d876.jpg",
+												"/C:/Users/rifat/Downloads/eec5fea6-ebf5-46c0-b1d8-dc427f86b63e.jpg",
+												"/C:/Users/rifat/Downloads/3db04c28-66bd-43ff-a6d5-4f80c2457413.jpg"
+											]
+										},
+										{
+											"key": "data",
+											"value": "{\n  \"title\": \"watch\",\n  \"price\": 2500,\n  \"brand\": \"Colmi\",\n  \"size\": [\"S\", \"M\", \"L\", \"XL\"],\n  \"des\": \"A premium quality cotton t-shirt suitable for everyday wear.\",\n  \"return\": \"7 days return available\",\n  \"deliveryChargeInDc\": \"50\",\n  \"deliveryChargeOutOfDc\": \"100\",\n  \"carrier\": \"RedX\",\n  \"sku\": \"TSHIRT-2025-001\",\n  \"categoryId\": \"6901993595586cedb391eaed\",\n  \"subCategoryId\": \"69184f23525f74d34f8c2b83\"\n}",
+											"type": "text"
+										}
+									]
+								},
+								"url": "{{URL}}/product/create-product"
+							},
+							"response": []
+						},
+						{
+							"name": "get-my-products",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{URL}}/product/get-my-products?inStock=false",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"product",
+										"get-my-products"
+									],
+									"query": [
+										{
+											"key": "inStock",
+											"value": "false"
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get-single-product",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": "{{URL}}/product/get-single-product/694a36507dee0218bae46add"
+							},
+							"response": []
+						},
+						{
+							"name": "update product",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "image",
+											"type": "file",
+											"src": [
+												"/C:/Users/rifat/Downloads/282a201c-1648-4b5a-8a47-3e364bf9ddd6.jpg",
+												"/C:/Users/rifat/Downloads/0c34816d-cb85-4d08-a479-cd183ca1c76a.jpg",
+												"/C:/Users/rifat/Downloads/2f7bcd9b-3604-4347-b304-be1d44cb7e8d.jpg"
+											],
+											"disabled": true
+										},
+										{
+											"key": "data",
+											"value": "{\n  \"discount\": 50,\n  \"inStock\": true\n}",
+											"type": "text"
+										},
+										{
+											"key": "imagesToDelete[]",
+											"value": "https://babysitter10.s3.eu-north-1.amazonaws.com/upload/images/oct-7-1763474398039.jpg",
+											"type": "text",
+											"disabled": true
+										}
+									]
+								},
+								"url": "{{URL}}/product/update/6928179bffd11e8843772637"
+							},
+							"response": []
+						},
+						{
+							"name": "delete-product",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "DELETE",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": "{{URL}}/product/delete-product/6928179bffd11e8843772637"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "become-a-seller",
+					"item": [
+						{
+							"name": "became-a-seller",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MzJhM2Q3N2Q3NDA1MTBlZmU2ZDc3OCIsInJvbGUiOiJCVVlFUiIsImVtYWlsIjoibWFoMTJAZ21haWwuY29tIiwiaWF0IjoxNzY0OTI2NTQ1LCJleHAiOjE3Njc5NTA1NDV9.qq3suXTiLALOsCLh1OjqVEzAg5M5pAjX5sjoCAQiPo4"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "image",
+											"type": "file",
+											"src": [
+												"/C:/Users/rifat/Downloads/rifat.jpg",
+												"/C:/Users/rifat/Downloads/Aug 16.jpg",
+												"/C:/Users/rifat/Downloads/sdsdf.jpg"
+											]
+										},
+										{
+											"key": "data",
+											"value": "{\n  \"accountNumber\": \"123456789\",\n  \"accountType\": \"Savings\",\n  \"address\": \"123 Main Road, Dhaka\",\n  \"bankName\": \"City Bank\",\n  \"businessAccHolderName\": \"Rifat Khan\",\n  \"businessAddress\": \"Business Tower, 5th Floor, Dhaka\",\n  \"businessEmail\": \"business@example.com\",\n  \"businessName\": \"Rifat Fashion Hub\",\n  \"businessPhone\": \"+8801711223344\",\n  \"businessReg\": \"BR-2025-001\",\n  \"businessType\": \"Fashion\",\n  \"categories\": [\"Menswear\", \"Womenswear\"],\n  \"contactAdress\": \"Uttara, Dhaka\",\n  \"contactEmail\": \"contact@example.com\",\n  \"country\": \"Bangladesh\",\n  \"fullName\": \"Rifat Khan\",\n  \"other\": [\"Extra info 1\", \"Extra info 2\"],\n  \"role\": \"seller\",\n  \"shopDescription\": \"We sell top quality clothing products.\",\n  \"shopName\": \"Rifat Shop\",\n  \"stripeId\": \"acct_1A2B3C4D5E6F\",\n  \"tin\": 123456789,\n  \"zip\": 1205,\n  \"returnPolicy\": \"7-day return policy\",\n  \"fashion\": true,\n  \"homeLiving\": false,\n  \"city\": \"Dhaka\",\n  \"street\": \"Uttara Sector 7\",\n  \"swiftCode\": \"CITYBDDH\"\n}\n",
+											"type": "text"
+										}
+									]
+								},
+								"url": "{{URL}}/became-a-seller/create"
+							},
+							"response": []
+						},
+						{
+							"name": "update",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{BUYER}}"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": [
+										{
+											"key": "image",
+											"type": "file",
+											"src": "/C:/Users/rifat/Downloads/Icon-1.png"
+										},
+										{
+											"key": "data",
+											"value": "{\n  \"accountNumber\": \"fdf35463\",\n  \"accountType\": \"hry\",\n  \"address\": \"123 Main Road, Dhaka\",\n  \"bankName\": \"City Bank\",\n  \"businessAccHolderName\": \"Rifat Khan\",\n  \"businessAddress\": \"Business Tower, 5th Floor, Dhaka\",\n  \"businessEmail\": \"business@example.com\",\n  \"businessName\": \"Rifat Fashion Hub\",\n  \"businessPhone\": \"+8801711223344\",\n  \"businessReg\": \"BR-2025-001\",\n  \"businessType\": \"Fashion\",\n  \"categories\": [\"Menswear\", \"Womenswear\"],\n  \"contactAdress\": \"Uttara, Dhaka\",\n  \"contactEmail\": \"contact@example.com\",\n  \"country\": \"Bangladesh\",\n  \"fullName\": \"Rifat Khan\",\n  \"other\": [\"Extra info 1\", \"Extra info 2\"],\n  \"role\": \"seller\",\n  \"shopDescription\": \"We sell top quality clothing products.\",\n  \"shopName\": \"Rifat Shop\",\n  \"stripeId\": \"acct_1A2B3C4D5E6F\",\n  \"tin\": 123456789,\n  \"zip\": 1205,\n  \"returnPolicy\": \"7-day return policy\",\n  \"fashion\": true,\n  \"homeLiving\": false,\n  \"city\": \"Dhaka\",\n  \"street\": \"Uttara Sector 7\",\n  \"swiftCode\": \"CITYBDDH\"\n}\n",
+											"type": "text"
+										},
+										{
+											"key": "imagesToDelete[]",
+											"value": "https://babysitter10.s3.eu-north-1.amazonaws.com/upload/images/74381430_522096275027731_7996602598272532480_n-1764240926183.jpg",
+											"type": "text"
+										}
+									]
+								},
+								"url": "{{URL}}/became-a-seller/update/69282e1f5da20ef953b63e0a"
+							},
+							"response": []
+						},
+						{
+							"name": "get-all-data",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "formdata",
+									"formdata": []
+								},
+								"url": {
+									"raw": "{{URL}}/became-a-seller/get-all-data",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"became-a-seller",
+										"get-all-data"
+									],
+									"query": [
+										{
+											"key": "limit",
+											"value": "1",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "package",
+					"item": [
+						{
+							"name": "get-single-package",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/package/get-single-package/6929a10536949a61cce1e14f"
+							},
+							"response": []
+						},
+						{
+							"name": "get-all-package",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/package/get-all-package"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "subscription",
+					"item": [
+						{
+							"name": "create subscription",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5MzJhM2Q3N2Q3NDA1MTBlZmU2ZDc3OCIsInJvbGUiOiJCVVlFUiIsImVtYWlsIjoibWFoMTJAZ21haWwuY29tIiwiaWF0IjoxNzY0OTI2NTQ1LCJleHAiOjE3Njc5NTA1NDV9.qq3suXTiLALOsCLh1OjqVEzAg5M5pAjX5sjoCAQiPo4"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"packageId\": \"6929a60536949a61cce1e152\",\r\n    \"becomeASellerId\": \"6932a4807d740510efe6d782\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/subscription/check-out"
+							},
+							"response": []
+						},
+						{
+							"name": "update-subscription",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{BUYER}}"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"newPackageId\": \"692abb321cd3bc483f1d93af\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/subscription/update-subscription"
+							},
+							"response": []
+						},
+						{
+							"name": "my-subscriptions",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{BUYER}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/subscription/my-subscriptions"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "about",
+					"item": [
+						{
+							"name": "create about",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n  \"description\": \"Experienced seller of handmade crafts and unique items.2\",\r\n  \"location\": \"Dhaka, Bangladesh\",\r\n  \"seller\": \"MahHShop\"\r\n}\r\n",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/about/create-about"
+							},
+							"response": []
+						},
+						{
+							"name": "get-my-about",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/about/get-my-about"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "order",
+					"item": [
+						{
+							"name": "get-order-by-seller",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/order/get-order-by-seller",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"order",
+										"get-order-by-seller"
+									],
+									"query": [
+										{
+											"key": "orderId",
+											"value": "U18V13U3K56L",
+											"disabled": true
+										},
+										{
+											"key": "deliveryStatus",
+											"value": "placed",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						},
+						{
+							"name": "get-single-order",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/order/get-single-order/69429cd73f24216802b35d57",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"order",
+										"get-single-order",
+										"69429cd73f24216802b35d57"
+									],
+									"query": [
+										{
+											"key": "orderId",
+											"value": "U18V13U3K56L",
+											"disabled": true
+										},
+										{
+											"key": "deliveryStatus",
+											"value": "placed",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "order-confirmation",
+					"item": [
+						{
+							"name": "order status updated",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "PATCH",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"deliveryStatus\": \"delivered\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/order-confirmation/order/69429cd73f24216802b35d57"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "wallet",
+					"item": [
+						{
+							"name": "my-wallet",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": "{{URL}}/wallet/my-wallet"
+							},
+							"response": []
+						},
+						{
+							"name": "get-all-wallet",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SUPER_ADMIN}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": "{{URL}}/wallet/get-all-wallet"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "money withdrow",
+					"item": [
+						{
+							"name": "withdrow req",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "POST",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "{\r\n    \"amount\": 20,\r\n    \"cardNumber\": \"4242424242424242\",\r\n    \"country\": \"Bangladesh\",\r\n    \"cvc\": \"123\",\r\n    \"date\": \"2026-01-01T00:00:00.000Z\",\r\n    \"nameOfCard\": \"Rifat Khan\",\r\n    \"zipCode\": \"1207\"\r\n}",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": "{{URL}}/withdraw/request-withdraw"
+							},
+							"response": []
+						},
+						{
+							"name": "my-withdraw-history",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": "",
+									"options": {
+										"raw": {
+											"language": "json"
+										}
+									}
+								},
+								"url": {
+									"raw": "{{URL}}/withdraw/my-withdraw-history?searchTerm=paid",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"withdraw",
+										"my-withdraw-history"
+									],
+									"query": [
+										{
+											"key": "searchTerm",
+											"value": "paid"
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "account-health-response",
+					"item": [
+						{
+							"name": "account-msg-response",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": "{{URL}}/account-health-response/account-msg-response"
+							},
+							"response": []
+						},
+						{
+							"name": "on-time-delivery-ratio",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": "{{URL}}/account-health-response/on-time-delivery-ratio"
+							},
+							"response": []
+						},
+						{
+							"name": "all-review-and-rating-ratio",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": "{{URL}}/account-health-response/all-review-and-rating-ratio"
+							},
+							"response": []
+						},
+						{
+							"name": "account-health-ratio",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": "{{URL}}/account-health-response/account-health-ratio"
+							},
+							"response": []
+						},
+						{
+							"name": "all-sales-report",
+							"protocolProfileBehavior": {
+								"disableBodyPruning": true
+							},
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"body": {
+									"mode": "raw",
+									"raw": ""
+								},
+								"url": "{{URL}}/account-health-response/all-sales-report"
+							},
+							"response": []
+						}
+					]
+				},
+				{
+					"name": "message",
+					"item": [
+						{
+							"name": "get all recent message",
+							"request": {
+								"auth": {
+									"type": "bearer",
+									"bearer": {
+										"token": "{{SELLER}}"
+									}
+								},
+								"method": "GET",
+								"header": [],
+								"url": {
+									"raw": "{{URL}}/message/get-recent-message",
+									"host": [
+										"{{URL}}"
+									],
+									"path": [
+										"message",
+										"get-recent-message"
+									],
+									"query": [
+										{
+											"key": "page",
+											"value": "",
+											"disabled": true
+										}
+									]
+								}
+							},
+							"response": []
+						}
+					]
+				}
+			]
+		}
+	],
+	"event": [
+		{
+			"listen": "prerequest",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		},
+		{
+			"listen": "test",
+			"script": {
+				"type": "text/javascript",
+				"packages": {},
+				"requests": {},
+				"exec": [
+					""
+				]
+			}
+		}
+	],
+	"variable": [
+		{
+			"key": "URL",
+			"value": "http://72.62.167.73:5002/api/v1"
+		},
+		{
+			"key": "BUYER",
+			"value": ""
+		},
+		{
+			"key": "ADMIN",
+			"value": ""
+		},
+		{
+			"key": "SELLER",
+			"value": ""
+		},
+		{
+			"key": "SUPER_ADMIN",
+			"value": ""
+		},
+		{
+			"key": "USER",
+			"value": ""
+		}
+	]
+}
