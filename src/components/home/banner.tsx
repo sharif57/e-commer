@@ -66,9 +66,9 @@ export default function Banner() {
   const slide = dynamicSlides[currentSlide]
 
   return (
-    <section className="w-full overflow-hidden">
-      <main className="w-full">
-        <div className="relative w-full h-[220px] sm:h-[320px] lg:h-[800px]">
+    <section className="w-full overflow-hidden px-3 sm:px-4 lg:px-6">
+      <main className="mx-auto w-full max-w-screen-2xl">
+        <div className="relative w-full h-[220px] sm:h-[280px] md:h-[360px] lg:h-[460px] xl:h-[540px] rounded-b-xl overflow-hidden">
           <Image
             src={slide.image}
             alt="Banner image"
