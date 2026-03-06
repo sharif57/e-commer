@@ -4,8 +4,8 @@ import baseApi from "@/redux/api/baseApi";
 export const categoryApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         getCategories: builder.query({
-            query: ({limit}) => ({
-                url: `/category/get-category?limit=${limit}`,
+            query: () => ({
+                url: `/category/get-category`,
                 method: "GET",
             }),
             providesTags: ["Category"],
