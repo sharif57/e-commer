@@ -9,6 +9,7 @@ import { Input } from "@/components/ui/input";
 import Logo from "../icon/logo";
 import { useResetPasswordMutation } from "@/redux/feature/authSlice";
 import { toast } from "sonner";
+import Link from "next/link";
 
  function CreatePassword() {
   const router = useRouter();
@@ -83,10 +84,9 @@ import { toast } from "sonner";
   return (
     <div className="w-full  flex flex-col justify-center px-4">
       {/* Logo */}
-      <div className="mb-8 text-start">
-        <Logo />
-      </div>
-
+            <Link href="/" className="mb-8 text-start">
+                <Logo />
+            </Link>
       {/* Card Container */}
       <div className="bg-card max-w-md mx-auto rounded-lg shadow-lg p-8 border border-border">
         {/* Header */}

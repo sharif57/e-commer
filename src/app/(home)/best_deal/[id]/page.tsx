@@ -156,6 +156,21 @@ export default function ProductPage() {
         }
     }
 
+    // Helper function to calculate order amount with tax and shipping
+    const calculateOrderAmount = (productPrice: number, qty: number = 1, shippingCost: number = 0) => {
+        const taxRate = 0.07; // 7% tax
+        const subtotal = productPrice * qty;
+        const tax = subtotal * taxRate;
+        const total = subtotal + tax + shippingCost;
+
+        return {
+            subtotal: parseFloat(subtotal.toFixed(2)),
+            tax: parseFloat(tax.toFixed(2)),
+            shippingCost: parseFloat(shippingCost.toFixed(2)),
+            total: parseFloat(total.toFixed(2))
+        };
+    };
+
     // Helper function to process the actual order
     const processOrder = async (deliveryAddress: AddressData) => {
         try {
@@ -163,6 +178,9 @@ export default function ProductPage() {
                 toast.error("Product not loaded yet");
                 return;
             }
+
+            // Calculate amount with tax and shipping
+            const amountDetails = calculateOrderAmount(product.price, quantity, product.shippingCost || 0);
 
             // Prepare order payload in required format
             const orderPayload = {
@@ -172,6 +190,7 @@ export default function ProductPage() {
                         quantity: quantity,
                         price: product.price,
                         sellerId: product.userId,
+                        shippingCost: product.shippingCost || 0,
                         size: selectedSize,
                         color: selectedColor,
                     }
@@ -185,6 +204,14 @@ export default function ProductPage() {
                 state: deliveryAddress.state || "",
                 country: deliveryAddress.country || "",
                 billingAddress: deliveryAddress.billingAddress || "",
+                // Add pricing details
+                amountDetails: {
+                    subtotal: amountDetails.subtotal,
+                    tax: amountDetails.tax,
+                    taxRate: 7, // 7% tax
+                    shippingCost: amountDetails.shippingCost,
+                    total: amountDetails.total
+                }
             };
 
             // Create order
@@ -200,9 +227,13 @@ export default function ProductPage() {
                 throw new Error('Order ID missing from create-order response')
             }
 
-            // Create Stripe checkout session
+            // Create Stripe checkout session with amount details
             toast.info('Redirecting to payment...');
-            const checkoutPayload = { orderId: orderIdList };
+            const checkoutPayload = {
+                orderId: orderIdList,
+                amount: amountDetails.total, // Total amount with tax and shipping
+                amountDetails: amountDetails // Send detailed breakdown
+            };
             const checkoutResponse = await createCheckoutSession(checkoutPayload).unwrap();
 
             // Clear cart after successful payment session creation
@@ -500,6 +531,28 @@ export default function ProductPage() {
                                         <div className="text-3xl font-bold text-black mb-1">${product?.price || 0}</div>
                                         <div className="text-sm text-primary font-medium">
                                             {product?.inStock ? `In stock: ${product?.count || 0} items` : 'Out of stock'}
+                                        </div>
+
+                                        {/* Price Breakdown */}
+                                        <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200 space-y-2">
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-gray-700">Price × {quantity}:</span>
+                                                <span className="font-medium text-black">${((product?.price || 0) * quantity).toFixed(2)}</span>
+                                            </div>
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-gray-700">Tax (7%):</span>
+                                                <span className="font-medium text-black">${(((product?.price || 0) * quantity) * 0.07).toFixed(2)}</span>
+                                            </div>
+                                            <div className="flex justify-between text-sm">
+                                                <span className="text-gray-700">Shipping:</span>
+                                                <span className="font-medium text-black">${(product?.shippingCost || 0).toFixed(2)}</span>
+                                            </div>
+                                            <div className="border-t border-gray-300 pt-2 flex justify-between">
+                                                <span className="font-semibold text-black">Total:</span>
+                                                <span className="font-bold text-black text-lg">
+                                                    ${(((product?.price || 0) * quantity) + (((product?.price || 0) * quantity) * 0.07) + (product?.shippingCost || 0)).toFixed(2)}
+                                                </span>
+                                            </div>
                                         </div>
 
                                         <div className="space-y-3 mt-4">

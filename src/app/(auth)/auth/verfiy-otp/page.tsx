@@ -11,6 +11,7 @@ import { useVerifyEmailMutation } from "@/redux/feature/authSlice";
 import { toast } from "sonner";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/feature/authApi";
+import Link from "next/link";
 
  function VerifyOtp() {
     const dispatch = useDispatch();
@@ -55,9 +56,9 @@ import { setUser } from "@/redux/feature/authApi";
     return (
         <div className="w-full  flex flex-col justify-center p-4">
             {/* Logo */}
-            <div className="mb-8 text-start">
+            <Link href="/" className="mb-8 text-start">
                 <Logo />
-            </div>
+            </Link>
 
             {/* Card */}
             <div className="bg-card max-w-md mx-auto rounded-lg shadow-lg p-8 border border-border">

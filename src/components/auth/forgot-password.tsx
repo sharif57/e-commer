@@ -11,6 +11,7 @@ import Logo from "../icon/logo"
 import { useRouter } from "next/navigation"
 import { useForgotPasswordMutation } from "@/redux/feature/authSlice"
 import { toast } from "sonner"
+import Link from "next/link"
 
 export default function ForgotPassword() {
     const router = useRouter();
@@ -62,10 +63,10 @@ export default function ForgotPassword() {
 
     return (
         <div className="w-full ">
-            {/* Logo */}
-            <div className="mb-8 text-start">
+             {/* Logo */}
+            <Link href="/" className="mb-8 text-start">
                 <Logo />
-            </div>
+            </Link>
 
             {/* Card Container */}
             <div className="bg-card max-w-md mx-auto rounded-lg shadow-lg p-8 border border-border">

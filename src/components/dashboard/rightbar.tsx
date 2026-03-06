@@ -4,7 +4,7 @@
 "use client";
 
 import { useState } from "react";
-import { ChevronDown } from "lucide-react";
+import { Bell, ChevronDown } from "lucide-react";
 import { useGetNotificationsQuery } from "@/redux/feature/notificationSlice";
 
 export default function DashboardRightbar() {
@@ -43,7 +43,10 @@ export default function DashboardRightbar() {
 
       {/* Header */}
       <div className="p-6  flex justify-between items-center">
-        <h3 className="font-semibold text-lg">Notifications</h3>
+        <div className="flex items-center gap-2">
+          <Bell className="w-5 h-5 text-blue-600" />
+          <h3 className="font-semibold text-lg">Notifications</h3>
+        </div>
 
         <button onClick={() => setIsOpen(!isOpen)}>
           <ChevronDown
@@ -77,9 +80,11 @@ export default function DashboardRightbar() {
                       }`}
                   >
                     <div
-                      className={`w-9 h-9 rounded-full flex-shrink-0 ${!n.read ? "bg-blue-400" : "bg-gray-300"
+                      className={`w-9 h-9 rounded-full flex-shrink-0 flex items-center justify-center ${!n.read ? "bg-blue-100" : "bg-gray-300"
                         }`}
-                    ></div>
+                    >
+                      <Bell className="w-4 h-4 text-blue-600" />
+                    </div>
                     <div>
                       <p className="text-sm font-medium">{n.title}</p>
                       <p className="text-xs text-gray-500">{n.time}</p>

@@ -34,6 +34,8 @@ import { useGetWishListQuery } from "@/redux/feature/buyer/wishlistSlice"
 import { useGetUsersQuery } from "@/redux/feature/userSlice"
 import Image from "next/image"
 import { useMySubscriptionsQuery } from "@/redux/feature/seller/packageSlice"
+import { logout } from "@/service/authService"
+import { toast } from "sonner"
 
 interface DashboardSidebarProps {
   isOpen: boolean
@@ -150,8 +152,8 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
         <Button
           variant="ghost"
           className={cn(
-            "w-full justify-start text-[#171717] hover:bg-gray-100 h-auto py-3",
-            isActive(item.link) && "bg-[#1717170F] text-[#171717]  "
+            "w-full justify-start text-black hover:bg-gray-100 h-auto py-3",
+            isActive(item.link) && "bg-[#1717170F] text-black  "
           )}
         >
           <Icon className="w-4 h-4 mr-3 flex-shrink-0" />
@@ -160,6 +162,17 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
         </Button>
       </Link>
     )
+  }
+
+  const handleLogout = async () => {
+    try {
+      localStorage.removeItem("accessToken")
+      await logout()
+      toast.success("Logged out successfully")
+      window.location.href = "/"
+    } catch (error) {
+      toast.error("Failed to log out")
+    }
   }
 
   // Get current user type items
@@ -217,8 +230,8 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
                     <Button
                       variant="ghost"
                       className={cn(
-                        "w-full justify-start text-gray-700 hover:bg-gray-100 h-auto py-3",
-                        isActive(item.link) && "bg-gray-100 text-gray-900 border-r-2 border-blue-600"
+                        "w-full justify-start text-black hover:bg-gray-100 h-auto py-3",
+                        isActive(item.link) && "bg-gray-100 text-black border-r-2 border-blue-600"
                       )}
                     >
                       <item.icon className="w-4 h-4 mr-3 flex-shrink-0" />
@@ -336,6 +349,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
           {/* Logout Section */}
           <div className="p-4 border-t border-gray-200 ">
             <Button
+              onClick={handleLogout}
               variant="ghost"
               className="w-full justify-start text-red-600 hover:bg-red-100 hover:text-red-700 h-auto py-3 group"
             >

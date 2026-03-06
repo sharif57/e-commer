@@ -165,9 +165,9 @@ export default function SignInForm() {
     return (
         <div className="w-full ">
             {/* Logo */}
-            <div className="mb-8 text-start">
+            <Link href="/" className="mb-8 text-start">
                 <Logo />
-            </div>
+            </Link>
 
             {/* Card Container */}
             <div className="bg-card max-w-md mx-auto rounded-lg shadow-lg p-8 border border-border">

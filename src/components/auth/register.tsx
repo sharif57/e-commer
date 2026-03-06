@@ -14,10 +14,11 @@ import { GoogleLogin } from "@react-oauth/google";
 import { saveTokens } from "@/service/authService";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/feature/authApi";
+import Link from "next/link";
 
 export default function Register() {
   const router = useRouter();
-    const dispatch = useDispatch();
+  const dispatch = useDispatch();
   const [accountType, setAccountType] = useState<"buyer" | "seller">("buyer");
   const [showPassword, setShowPassword] = useState(false);
   const [formData, setFormData] = useState({
@@ -170,9 +171,9 @@ export default function Register() {
   return (
     <div className="">
       {/* Logo */}
-      <div className="mb-8 text-start">
+      <Link href="/" className="mb-8 text-start">
         <Logo />
-      </div>
+      </Link>
 
       <div className="flex max-w-6xl mx-auto">
         {/* Left Section (Image) */}

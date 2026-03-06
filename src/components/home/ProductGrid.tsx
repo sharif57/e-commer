@@ -7,6 +7,7 @@ import Link from "next/link"
 import { useGetProductsQuery } from "@/redux/feature/buyer/productSlice"
 import ProductCardSkeleton from "../Skeleton/ProductCardSkeleton"
 import { toast } from "sonner"
+import { ChevronRight } from "lucide-react"
 
 
 export default function ProductGrid() {
@@ -83,8 +84,12 @@ export default function ProductGrid() {
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="flex items-center justify-between mb-8">
-        <h1 className="text-[20px] font-semibold text-[#000000]">Best selling products</h1>
-        <Link href="/best_deal" className="text-sm text-[#1877F2] font-medium hover:underline">See all</Link>
+        <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-black">Best selling products</h1>
+        <Link href="/best_deal"  className="text-[#1877F2] hover:underline hover:text-primary/80 font-medium text-lg flex items-center gap-1 transition-colors"
+        >
+          See all
+          <ChevronRight className="w-4 h-4" />
+        </Link>
       </div>
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
         {isLoading

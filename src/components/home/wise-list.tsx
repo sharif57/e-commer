@@ -39,6 +39,22 @@ export default function ShoppingBag() {
     const { data: userData } = useGetUsersQuery(undefined);
     const [createCheckoutSession] = useCreateCheckoutSessionMutation();
     const [createOrder] = useCreateOrderMutation()
+
+    // Helper function to calculate order amount with tax and shipping
+    const calculateOrderAmount = (productPrice: number, qty: number = 1, shippingCost: number = 0) => {
+        const taxRate = 0.07; // 7% tax
+        const subtotal = productPrice * qty;
+        const tax = subtotal * taxRate;
+        const total = subtotal + tax + shippingCost;
+
+        return {
+            subtotal: parseFloat(subtotal.toFixed(2)),
+            tax: parseFloat(tax.toFixed(2)),
+            shippingCost: parseFloat(shippingCost.toFixed(2)),
+            total: parseFloat(total.toFixed(2))
+        };
+    };
+
     useEffect(() => {
         // Load items from localStorage
         try {
@@ -123,6 +139,12 @@ export default function ShoppingBag() {
                 return
             }
 
+            // Get shipping cost from product
+            const shippingCost = item.product?.shippingCost || 0;
+
+            // Calculate amount with tax and shipping
+            const amountDetails = calculateOrderAmount(item.price, item.quantity, shippingCost);
+
             const orderPayload = {
                 items: [
                     {
@@ -130,6 +152,7 @@ export default function ShoppingBag() {
                         quantity: item.quantity,
                         price: item.price,
                         sellerId,
+                        shippingCost: shippingCost,
                         size: item.selectedSize,
                         color: item.selectedColor,
                     }
@@ -143,6 +166,14 @@ export default function ShoppingBag() {
                 state: deliveryAddress.state || "",
                 country: deliveryAddress.country || "",
                 billingAddress: deliveryAddress.billingAddress || "",
+                // Add pricing details
+                amountDetails: {
+                    subtotal: amountDetails.subtotal,
+                    tax: amountDetails.tax,
+                    taxRate: 7, // 7% tax
+                    shippingCost: amountDetails.shippingCost,
+                    total: amountDetails.total
+                }
             }
 
             const response = await createOrder(orderPayload).unwrap()
@@ -157,7 +188,11 @@ export default function ShoppingBag() {
             }
 
             toast.info('Redirecting to payment...')
-            const checkoutPayload = { orderId: orderIdList }
+            const checkoutPayload = {
+                orderId: orderIdList,
+                amount: amountDetails.total, // Total amount with tax and shipping
+                amountDetails: amountDetails // Send detailed breakdown
+            }
             const checkoutResponse = await createCheckoutSession(checkoutPayload).unwrap()
 
             const checkoutUrl = checkoutResponse?.data?.url || checkoutResponse?.url || checkoutResponse?.data?.checkoutUrl
@@ -264,9 +299,30 @@ export default function ShoppingBag() {
                                 <div className="flex-1 flex flex-col justify-between">
                                     {/* Title and Price */}
                                     <div>
-                                        <h3 className="text-sm w-2/3 sm:text-base font-medium text-gray-900 line-clamp-2 mb-2">{item.title}</h3>
-                                        <p className="text-lg sm:text-xl font-semibold text-gray-900 mb-2">${item.price.toFixed(2)}</p>
+                                        <h3 className="text-xl lg:text-2xl  w-2/3  font-semibold text-black  mb-2">{item.title}</h3>
+                                        <p className="text-lg sm:text-xl font-semibold text-black mb-2">${item.price.toFixed(2)}</p>
 
+                                        {/* Price Breakdown */}
+                                        <div className="mt-3 p-3 bg-gray-50 rounded-lg border border-gray-200 space-y-2 max-w-xs">
+                                            <div className="flex justify-between text-lg">
+                                                <span className="text-black font-medium">Price × {item.quantity}:</span>
+                                                <span className="font-medium text-black">${(item.price * item.quantity).toFixed(2)}</span>
+                                            </div>
+                                            <div className="flex justify-between text-lg">
+                                                <span className="text-black font-medium">Tax (7%):</span>
+                                                <span className="font-medium text-black">${((item.price * item.quantity) * 0.07).toFixed(2)}</span>
+                                            </div>
+                                            <div className="flex justify-between text-lg">
+                                                <span className="text-black font-medium">Shipping:</span>
+                                                <span className="font-medium text-black">${(item.product?.shippingCost || 0).toFixed(2)}</span>
+                                            </div>
+                                            <div className="border-t border-gray-300 pt-2 flex justify-between">
+                                                <span className="font-semibold text-black text-xl">Total:</span>
+                                                <span className="font-bold text-black text-base">
+                                                    ${((item.price * item.quantity) + ((item.price * item.quantity) * 0.07) + (item.product?.shippingCost || 0)).toFixed(2)}
+                                                </span>
+                                            </div>
+                                        </div>
                                     </div>
 
                                     {/* Quantity and Delivery */}
@@ -302,12 +358,12 @@ export default function ShoppingBag() {
                                         <div className="flex items-center gap-4 pt-2">
                                             <button
                                                 onClick={() => removeItem(item.id)}
-                                                className="text-blue-600 hover:text-blue-700 text-xs sm:text-sm font-medium transition-colors flex items-center gap-1"
+                                                className="text-red-500 hover:text-red-700 text-xs sm:text-sm  font-medium transition-colors flex items-center gap-1"
                                             >
                                                 <Trash2 className="w-3 h-3" />
                                                 Remove
                                             </button>
-                                            <button onClick={() => handleCheckout(item)} className="text-[#000000] cursor-pointer hover:text-gray-700 text-xs sm:text-sm font-medium border-2 border-[#000000] bg-accent/90 rounded-lg px-3 py-1 transition-colors flex items-center gap-1">
+                                            <button onClick={() => handleCheckout(item)} className="text-[#000000] cursor-pointer hover:text-black text-xs sm:text-sm font-medium border-2 border-[#000000] bg-accent/90 rounded-lg px-3 py-1 transition-colors flex items-center gap-1">
                                                 Proceed to checkout
                                                 <ArrowRight className="w-3 h-3" />
                                             </button>

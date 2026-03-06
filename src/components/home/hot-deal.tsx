@@ -144,7 +144,7 @@ export default function HotDeals() {
       {/* Header */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 mb-8">
         <div className="flex items-center gap-2">
-          <h2 className="text-xl sm:text-2xl font-semibold text-foreground">
+          <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-black">
             Hot Deals
           </h2>
           <Badge variant="outline" className="text-xs sm:text-sm">
@@ -153,7 +153,7 @@ export default function HotDeals() {
         </div>
         <Link
           href="/deals"
-          className="text-[#1877F2] hover:underline hover:text-primary/80 font-medium text-sm flex items-center gap-1 transition-colors"
+          className="text-[#1877F2] hover:underline hover:text-primary/80 font-medium text-lg flex items-center gap-1 transition-colors"
         >
           See all
           <ChevronRight className="w-4 h-4" />

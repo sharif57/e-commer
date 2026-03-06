@@ -81,7 +81,7 @@ export default function ProductCard({ product, isWishlisted, onWishlistToggle }:
                 {/* Content Container */}
                 <div className="flex flex-col flex-1 pt-4">
                     {/* Title */}
-                    <h3 className="text-sm font-medium text-foreground line-clamp-2 mb-3 group-hover:text-primary transition-colors">
+                    <h3 className="text-xl font-medium text-black line-clamp-2 mb-3 group-hover:text-primary transition-colors">
                         {product?.title}
                     </h3>
 

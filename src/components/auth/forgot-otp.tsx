@@ -9,6 +9,7 @@ import { REGEXP_ONLY_DIGITS_AND_CHARS } from "input-otp";
 import Logo from "../icon/logo";
 import { useVerifyEmailMutation } from "@/redux/feature/authSlice";
 import { toast } from "sonner";
+import Link from "next/link";
 
 function ForgotOtp() {
   const searchParams = useSearchParams();
@@ -50,9 +51,9 @@ function ForgotOtp() {
   return (
     <div className="w-full  flex flex-col justify-center px-4">
       {/* Logo */}
-      <div className="mb-8 text-start">
-        <Logo />
-      </div>
+            <Link href="/" className="mb-8 text-start">
+                <Logo />
+            </Link>
 
       {/* Card */}
       <div className="bg-card max-w-md mx-auto rounded-lg shadow-lg p-8 border border-border">

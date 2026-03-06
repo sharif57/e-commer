@@ -243,15 +243,15 @@
 //           <div className="lg:col-span-2 space-y-8">
 //             {/* Review Order Section */}
 //             <div>
-//               <h2 className="text-2xl font-bold text-gray-900 mb-6">Review order</h2>
+//               <h2 className="text-2xl font-bold text-black mb-6">Review order</h2>
 //               <div className="bg-white rounded-lg p-6 space-y-6">
 //                 {isLoading ? (
 //                   <div className="flex items-center justify-center py-8">
-//                     <p className="text-gray-600">Loading cart...</p>
+//                     <p className="text-black">Loading cart...</p>
 //                   </div>
 //                 ) : orderItems.length === 0 ? (
 //                   <div className="flex items-center justify-center py-8">
-//                     <p className="text-gray-600">Your bag is empty.</p>
+//                     <p className="text-black">Your bag is empty.</p>
 //                   </div>
 //                 ) : (
 //                   orderItems.map((item) => (
@@ -264,23 +264,23 @@
 //                         />
 //                       </div>
 //                       <div className="flex-1">
-//                         <h3 className="text-sm font-medium text-gray-900 mb-2">
+//                         <h3 className="text-sm font-medium text-black mb-2">
 //                           {item.des || item.product?.des || item.title || item.product?.title}
 //                         </h3>
-//                         <p className="text-lg font-semibold text-gray-900 mb-2">
+//                         <p className="text-lg font-semibold text-black mb-2">
 //                           ${((item.price ?? item.product?.price) || 0).toFixed(2)}
 //                         </p>
 //                         {item.selectedColor && (
-//                           <p className="text-xs text-gray-600 mb-2">
+//                           <p className="text-lg text-black mb-2">
 //                             Color: <span className="font-medium">{item.selectedColor}</span>
 //                           </p>
 //                         )}
 //                         {item.selectedSize && (
-//                           <p className="text-xs text-gray-600 mb-2">
+//                           <p className="text-lg text-black mb-2">
 //                             Size: <span className="font-medium">{item.selectedSize}</span>
 //                           </p>
 //                         )}
-//                         <div className="space-y-1 text-sm text-gray-600">
+//                         <div className="space-y-1 text-sm text-black">
 //                           <p>
 //                             <span className="font-medium">Quantity:</span> {item.quantity}x
 //                           </p>
@@ -299,22 +299,22 @@
 
 //             {/* Deliver To Section */}
 //             <div>
-//               <h2 className="text-2xl font-bold text-gray-900 mb-6">Deliver to</h2>
+//               <h2 className="text-2xl font-bold text-black mb-6">Deliver to</h2>
 //               <div className="bg-white rounded-lg p-6">
 //                 {deliveryAddress?.firstName ? (
 //                   <div className="space-y-2 mb-4">
-//                     <p className="font-medium text-gray-900">
+//                     <p className="font-medium text-black">
 //                       {deliveryAddress?.firstName} {deliveryAddress?.lastName}
 //                     </p>
-//                     <p className="text-gray-600">{deliveryAddress.streetName}</p>
-//                     {deliveryAddress.area && <p className="text-gray-600">{deliveryAddress.area}</p>}
-//                     <p className="text-gray-600">
+//                     <p className="text-black">{deliveryAddress.streetName}</p>
+//                     {deliveryAddress.area && <p className="text-black">{deliveryAddress.area}</p>}
+//                     <p className="text-black">
 //                       {deliveryAddress.city}, {deliveryAddress.state} {deliveryAddress.zip}
 //                     </p>
-//                     <p className="text-gray-600">{deliveryAddress.country}</p>
+//                     <p className="text-black">{deliveryAddress.country}</p>
 //                   </div>
 //                 ) : (
-//                   <p className="text-gray-600 mb-4">No address added yet</p>
+//                   <p className="text-black mb-4">No address added yet</p>
 //                 )}
 //                 <button
 //                   onClick={() => setIsModalOpen(true)}
@@ -329,30 +329,30 @@
 //           {/* Right Column - Order Summary */}
 //           <div className="lg:col-span-1">
 //             <div className="bg-white rounded-lg p-6 sticky top-8">
-//               <h2 className="text-2xl font-bold text-gray-900 mb-6">Order summary</h2>
+//               <h2 className="text-2xl font-bold text-black mb-6">Order summary</h2>
 
 //               <div className="space-y-4 mb-6 pb-6 border-b border-gray-200">
 //                 <div className="flex justify-between text-sm">
-//                   <span className="text-gray-600">Items ({totalQuantity})</span>
-//                   <span className="font-medium text-gray-900">${itemTotal.toFixed(2)}</span>
+//                   <span className="text-black">Items ({totalQuantity})</span>
+//                   <span className="font-medium text-black">${itemTotal.toFixed(2)}</span>
 //                 </div>
 //                 <div className="flex justify-between text-sm">
-//                   <span className="text-gray-600">Shipping</span>
-//                   <span className="font-medium text-gray-900">${shippingCost.toFixed(2)}</span>
+//                   <span className="text-black">Shipping</span>
+//                   <span className="font-medium text-black">${shippingCost.toFixed(2)}</span>
 //                 </div>
 //                 <div className="flex justify-between text-sm">
-//                   <span className="text-gray-600">Tax</span>
-//                   <span className="font-medium text-gray-900">${tax.toFixed(2)}</span>
+//                   <span className="text-black">Tax</span>
+//                   <span className="font-medium text-black">${tax.toFixed(2)}</span>
 //                 </div>
 //               </div>
 
 //               <div className="flex justify-between mb-6">
-//                 <span className="font-semibold text-gray-900">Order total</span>
-//                 <span className="text-xl font-bold text-gray-900">${orderTotal.toFixed(2)}</span>
+//                 <span className="font-semibold text-black">Order total</span>
+//                 <span className="text-xl font-bold text-black">${orderTotal.toFixed(2)}</span>
 //               </div>
 
 //               <div className="mb-6 p-3 bg-blue-50 rounded-md">
-//                 <p className="text-xs text-gray-600">
+//                 <p className="text-lg text-black">
 //                   By clicking confirm, you agree to ebakx&#39;s{" "}
 //                   <a href="#" className="text-blue-600 hover:underline">
 //                     Terms of Purchase
@@ -370,7 +370,7 @@
 //                 className={`w-full font-semibold py-3 px-4 rounded-md transition-colors mb-3 flex items-center justify-center gap-2 ${isProcessing || isCreatingOrder
 //                   ? 'bg-gray-400 cursor-not-allowed text-white'
 //                   : orderItems.length === 0 || !deliveryAddress.firstName
-//                     ? 'bg-gray-300 cursor-not-allowed text-gray-600'
+//                     ? 'bg-gray-300 cursor-not-allowed text-black'
 //                     : 'bg-primary hover:bg-primary/90 text-white'
 //                   }`}
 //               >
@@ -387,7 +387,7 @@
 //                 )}
 //               </button>
 
-//               <p className="text-xs text-gray-500 text-center flex items-center justify-center gap-1">
+//               <p className="text-lg text-gray-500 text-center flex items-center justify-center gap-1">
 //                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
 //                   <path
 //                     fillRule="evenodd"
@@ -448,6 +448,7 @@ interface OrderItem {
     inStock?: boolean
     des?: string
     sellerId?: string
+    shippingCost?: number
   }
 }
 
@@ -475,6 +476,36 @@ export default function CheckoutPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [orderError2, setOrderError2] = useState<string | null>(null)
   const [isProcessing, setIsProcessing] = useState(false)
+
+  // Helper function to calculate order amount with tax and shipping
+  const calculateOrderAmount = () => {
+    const taxRate = 0.07; // 7% tax
+
+    // Calculate subtotal (price * quantity for all items)
+    const subtotal = orderItems.reduce((sum, item) => {
+      const price = item.price ?? item.product?.price ?? 0;
+      return sum + (price * item.quantity);
+    }, 0);
+
+    // Calculate total shipping cost (sum of all products' shipping costs)
+    const totalShipping = orderItems.reduce((sum, item) => {
+      const shipping = item.product?.shippingCost || 0;
+      return sum + shipping;
+    }, 0);
+
+    // Calculate tax on subtotal
+    const tax = subtotal * taxRate;
+
+    // Calculate total
+    const total = subtotal + tax + totalShipping;
+
+    return {
+      subtotal: parseFloat(subtotal.toFixed(2)),
+      tax: parseFloat(tax.toFixed(2)),
+      shippingCost: parseFloat(totalShipping.toFixed(2)),
+      total: parseFloat(total.toFixed(2))
+    };
+  };
 
   // Load cart from localStorage
   useEffect(() => {
@@ -514,9 +545,12 @@ export default function CheckoutPage() {
     return sum + price * item.quantity
   }, 0)
   const totalQuantity = orderItems.reduce((sum, item) => sum + item.quantity, 0)
-  const shippingCost = 0
-  const tax = 0
-  const orderTotal = itemTotal + shippingCost + tax
+
+  // Calculate amounts with tax and shipping
+  const amountDetails = calculateOrderAmount();
+  const shippingCost = amountDetails.shippingCost;
+  const tax = amountDetails.tax;
+  const orderTotal = amountDetails.total;
 
   // Handle address change from modal — also update user profile with new data
   const handleAddressChange = async (newAddress: AddressData) => {
@@ -550,10 +584,18 @@ export default function CheckoutPage() {
       productId: item.id || item.product?._id,
       quantity: item.quantity,
       price: item.price ?? item.product?.price ?? 0,
-      sellerId: userData?.data?._id || item.sellerId || item.product?.sellerId || "",
+      sellerId: userData.data?._id || item.product?.sellerId || "",
+      shippingCost: item.product?.shippingCost || 0,
       color: item.selectedColor || "",
       size: item.selectedSize || "",
+      image: item.image || item.product?.image?.[0] || "",
+      title: item.title || item.product?.title || "",
+      brand: item.product?.brand || "",
+      carrier: item.product?.carrier || "",
     }))
+
+    // Calculate amount details
+    const calculatedAmounts = calculateOrderAmount();
 
     return {
       items,
@@ -567,6 +609,14 @@ export default function CheckoutPage() {
       country: deliveryAddress?.country,
       phone: deliveryAddress?.phone,
       billingAddress: `${deliveryAddress.streetName}, ${deliveryAddress.area}, ${deliveryAddress.city}, ${deliveryAddress.zip}`,
+      // Add pricing details
+      amountDetails: {
+        subtotal: calculatedAmounts.subtotal,
+        tax: calculatedAmounts.tax,
+        taxRate: 7, // 7% tax
+        shippingCost: calculatedAmounts.shippingCost,
+        total: calculatedAmounts.total
+      }
     }
   }
 
@@ -630,7 +680,14 @@ export default function CheckoutPage() {
       toast.success(response?.data?.message || "Order placed successfully!")
       toast.info("Redirecting to payment...")
 
-      const checkoutPayload = { orderId: orderIdList }
+      // Get calculated amounts for checkout
+      const calculatedAmounts = calculateOrderAmount();
+
+      const checkoutPayload = {
+        orderId: orderIdList,
+        amount: calculatedAmounts.total, // Total amount with tax and shipping
+        amountDetails: calculatedAmounts // Send detailed breakdown
+      }
       const checkoutResponse = await createCheckoutSession(checkoutPayload).unwrap()
       console.log("Checkout session created:", checkoutResponse)
 
@@ -693,15 +750,15 @@ export default function CheckoutPage() {
           <div className="lg:col-span-2 space-y-8">
             {/* Review Order Section */}
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Review order</h2>
+              <h2 className="text-2xl font-bold text-black mb-6">Review order</h2>
               <div className="bg-white rounded-lg p-6 space-y-6">
                 {isLoading ? (
                   <div className="flex items-center justify-center py-8">
-                    <p className="text-gray-600">Loading cart...</p>
+                    <p className="text-black">Loading cart...</p>
                   </div>
                 ) : orderItems.length === 0 ? (
                   <div className="flex items-center justify-center py-8">
-                    <p className="text-gray-600">Your bag is empty.</p>
+                    <p className="text-black">Your bag is empty.</p>
                   </div>
                 ) : (
                   orderItems.map((item) => (
@@ -714,23 +771,56 @@ export default function CheckoutPage() {
                         />
                       </div>
                       <div className="flex-1">
-                        <h3 className="text-sm font-medium text-gray-900 mb-2">
+                        <h3 className="text-lg lg:text-2xl font-medium text-black mb-2">
                           {item.des || item.product?.des || item.title || item.product?.title}
                         </h3>
-                        <p className="text-lg font-semibold text-gray-900 mb-2">
+                        <p className="text-lg font-semibold text-black mb-2">
                           ${((item.price ?? item.product?.price) || 0).toFixed(2)}
                         </p>
-                        {item.selectedColor && (
-                          <p className="text-xs text-gray-600 mb-2">
+
+                        {/* Per-item Price Breakdown */}
+                        <div className="mt-3 p-2 bg-gray-50 rounded-md border border-gray-200 space-y-1">
+                          <div className="flex justify-between text-lg">
+                            <span className="text-black">Price × {item.quantity}:</span>
+                            <span className="font-medium text-black">
+                              ${(((item.price ?? item.product?.price) || 0) * item.quantity).toFixed(2)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between text-lg">
+                            <span className="text-black">Tax (7%):</span>
+                            <span className="font-medium text-black">
+                              ${((((item.price ?? item.product?.price) || 0) * item.quantity) * 0.07).toFixed(2)}
+                            </span>
+                          </div>
+                          <div className="flex justify-between text-lg">
+                            <span className="text-black">Shipping:</span>
+                            <span className="font-medium text-black">
+                              ${(item.product?.shippingCost || 0).toFixed(2)}
+                            </span>
+                          </div>
+                          <div className="border-t border-gray-300 pt-1 flex justify-between">
+                            <span className="font-bold text-primary text-xl">Item Total:</span>
+                            <span className="font-bold text-red-500 text-xl">
+                              ${(
+                                (((item.price ?? item.product?.price) || 0) * item.quantity) +
+                                ((((item.price ?? item.product?.price) || 0) * item.quantity) * 0.07) +
+                                (item.product?.shippingCost || 0)
+                              ).toFixed(2)}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* {item.selectedColor && (
+                          <p className="text-lg text-black mb-2">
                             Color: <span className="font-medium">{item.selectedColor}</span>
                           </p>
                         )}
                         {item.selectedSize && (
-                          <p className="text-xs text-gray-600 mb-2">
+                          <p className="text-lg text-black mb-2">
                             Size: <span className="font-medium">{item.selectedSize}</span>
                           </p>
                         )}
-                        <div className="space-y-1 text-sm text-gray-600">
+                        <div className="space-y-1 text-sm text-black">
                           <p>
                             <span className="font-medium">Quantity:</span> {item.quantity}x
                           </p>
@@ -739,7 +829,7 @@ export default function CheckoutPage() {
                               <span className="font-medium">Carrier:</span> {item.product.carrier}
                             </p>
                           )}
-                        </div>
+                        </div> */}
                       </div>
                     </div>
                   ))
@@ -749,29 +839,29 @@ export default function CheckoutPage() {
 
             {/* Deliver To Section */}
             <div>
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Deliver to</h2>
+              <h2 className="text-2xl font-bold text-black mb-6">Deliver to</h2>
               <div className="bg-white rounded-lg p-6">
                 {isUserLoading ? (
                   <p className="text-gray-500 text-sm">Loading address...</p>
                 ) : isAddressComplete() ? (
                   <div className="space-y-1 mb-4">
-                    <p className="font-medium text-gray-900">
+                    <p className="font-medium text-black">
                       {deliveryAddress.firstName} {deliveryAddress.lastName}
                     </p>
-                    <p className="text-gray-600">{deliveryAddress.streetName}</p>
+                    <p className="text-black">{deliveryAddress.streetName}</p>
                     {deliveryAddress.area && (
-                      <p className="text-gray-600">{deliveryAddress.area}</p>
+                      <p className="text-black">{deliveryAddress.area}</p>
                     )}
-                    <p className="text-gray-600">
+                    <p className="text-black">
                       {deliveryAddress.city}
                       {deliveryAddress.state && `, ${deliveryAddress.state}`}
                       {deliveryAddress.zip && ` ${deliveryAddress.zip}`}
                     </p>
                     {deliveryAddress.country && (
-                      <p className="text-gray-600">{deliveryAddress.country}</p>
+                      <p className="text-black">{deliveryAddress.country}</p>
                     )}
                     {deliveryAddress.phone && (
-                      <p className="text-gray-600">📞 {deliveryAddress.phone}</p>
+                      <p className="text-black">📞 {deliveryAddress.phone}</p>
                     )}
                   </div>
                 ) : (
@@ -790,30 +880,30 @@ export default function CheckoutPage() {
           {/* Right Column - Order Summary */}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg p-6 sticky top-8">
-              <h2 className="text-2xl font-bold text-gray-900 mb-6">Order summary</h2>
+              <h2 className="text-2xl font-bold text-black mb-6">Order Summary</h2>
 
               <div className="space-y-4 mb-6 pb-6 border-b border-gray-200">
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Items ({totalQuantity})</span>
-                  <span className="font-medium text-gray-900">${itemTotal.toFixed(2)}</span>
+                  <span className="text-black text-xl font-medium">Items ({totalQuantity})</span>
+                  <span className="font-medium text-black text-xl">${itemTotal.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Shipping</span>
-                  <span className="font-medium text-gray-900">${shippingCost.toFixed(2)}</span>
+                  <span className="text-black text-xl font-medium">Shipping</span>
+                  <span className="font-medium text-black text-xl">${shippingCost.toFixed(2)}</span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-gray-600">Tax</span>
-                  <span className="font-medium text-gray-900">${tax.toFixed(2)}</span>
+                  <span className="text-black text-xl font-medium">Tax</span>
+                  <span className="font-medium text-black text-xl">${tax.toFixed(2)}</span>
                 </div>
               </div>
 
               <div className="flex justify-between mb-6">
-                <span className="font-semibold text-gray-900">Order total</span>
-                <span className="text-xl font-bold text-gray-900">${orderTotal.toFixed(2)}</span>
+                <span className="font-semibold text-2xl text-primary">Order total</span>
+                <span className="text-xl font-bold text-red-500">${orderTotal.toFixed(2)}</span>
               </div>
 
               <div className="mb-6 p-3 bg-blue-50 rounded-md">
-                <p className="text-xs text-gray-600">
+                <p className="text-lg text-black">
                   By clicking confirm, you agree to ebakx&#39;s{" "}
                   <a href="#" className="text-blue-600 hover:underline">
                     Terms of Purchase
@@ -828,13 +918,12 @@ export default function CheckoutPage() {
               <button
                 onClick={handleSubmitOrder}
                 disabled={!canPlaceOrder}
-                className={`w-full font-semibold py-3 px-4 rounded-md transition-colors mb-3 flex items-center justify-center gap-2 ${
-                  isProcessing || isCreatingOrder
+                className={`w-full font-semibold py-3 px-4 rounded-md transition-colors mb-3 flex items-center justify-center gap-2 ${isProcessing || isCreatingOrder
                     ? "bg-gray-400 cursor-not-allowed text-white"
                     : !canPlaceOrder
-                    ? "bg-gray-300 cursor-not-allowed text-gray-600"
-                    : "bg-primary hover:bg-primary/90 text-white"
-                }`}
+                      ? "bg-gray-300 cursor-not-allowed text-black"
+                      : "bg-primary hover:bg-primary/90 text-white"
+                  }`}
               >
                 {isProcessing || isCreatingOrder ? (
                   <>
@@ -865,7 +954,7 @@ export default function CheckoutPage() {
                 )}
               </button>
 
-              <p className="text-xs text-gray-500 text-center flex items-center justify-center gap-1">
+              <p className="text-lg text-gray-500 text-center flex items-center justify-center gap-1">
                 <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                   <path
                     fillRule="evenodd"
