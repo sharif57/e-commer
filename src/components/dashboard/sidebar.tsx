@@ -109,7 +109,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
 
   const sellerInventoryItems = [
     { icon: FileBox, label: "Manage Inventory", link: "/dashboard/inventory" },
-    { icon: Inbox, label: "Messages", badge: "8+", link: "/dashboard/message" },
+    // { icon: Inbox, label: "Messages", badge: "8+", link: "/dashboard/message" },
   ]
 
   const sellerAccountItems = [
