@@ -460,7 +460,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Search, Heart, Handbag } from "lucide-react";
+import { Search, Heart, Handbag, ChevronLeft, ChevronRight } from "lucide-react";
 import Logo from "../icon/logo";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -485,22 +485,24 @@ import { toast } from "sonner";
 
 export default function Navbar() {
   const [searchQuery, setSearchQuery] = useState("");
-  const [showCategoryDropdown, setShowCategoryDropdown] = useState(false);
   const [items, setItems] = useState<Array<any>>([]);
   const [wishlistCount, setWishlistCount] = useState(0);
-  const dropdownRef = useRef<HTMLDivElement>(null);
+  const categoryScrollRef = useRef<HTMLDivElement>(null);
+  const isDraggingRef = useRef(false);
+  const dragStartXRef = useRef(0);
+  const dragStartScrollRef = useRef(0);
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('');
   const pathname = usePathname();
   const router = useRouter();
 
-  const { data } = useGetCategoriesQuery(undefined);
+  const { data } = useGetCategoriesQuery({
+    limit: 1000
+  });
   const categories = data?.data?.result || [];
 
 
   const { data: profile } = useGetUsersQuery(undefined);
-  console.log(profile?.data)
-
 
   if (pathname === "/upgrade") {
     return null;
@@ -565,7 +567,7 @@ export default function Navbar() {
       await logout();
       toast.success('Logged out successfully');
       window.location.href = ('/');
-    } catch (error) {
+    } catch {
       toast.error('Error logging out');
     }
   }
@@ -582,17 +584,26 @@ export default function Navbar() {
     router.push(`/category${params.toString() ? `?${params.toString()}` : ''}`);
   };
 
+  const scrollCategories = (distance: number) => {
+    categoryScrollRef.current?.scrollBy(distance, 0);
+  };
 
-  // Close dropdown on outside click
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
-        setShowCategoryDropdown(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, []);
+  const handleCategoryMouseDown = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!categoryScrollRef.current) return;
+    isDraggingRef.current = true;
+    dragStartXRef.current = event.pageX;
+    dragStartScrollRef.current = categoryScrollRef.current.scrollLeft;
+  };
+
+  const handleCategoryMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    if (!isDraggingRef.current || !categoryScrollRef.current) return;
+    const dragDistance = event.pageX - dragStartXRef.current;
+    categoryScrollRef.current.scrollLeft = dragStartScrollRef.current - dragDistance;
+  };
+
+  const stopCategoryDrag = () => {
+    isDraggingRef.current = false;
+  };
 
   return (
     <div className="w-full bg-white  relative z-50">
@@ -601,7 +612,7 @@ export default function Navbar() {
         <div className=" px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-3 sm:gap-4 py-3 sm:py-4">
             {/* Logo */}
-            <Link href={'/'}>
+            <Link href={'/'} className="cursor-crosshair">
               <Logo />
             </Link>
 
@@ -685,17 +696,17 @@ export default function Navbar() {
               {/* Cart */}
               {/* {
                 profile?.data && ( */}
-                  <Link href="/my-cart"
-                    className="relative p-2 hover:bg-gray-100 rounded-md transition-colors"
-                    aria-label="Shopping Cart"
-                  >
-                    <Handbag size={20} className="text-black" />
-                    {items.length > 0 && (
-                      <span className="absolute -top-1 -right-1 bg-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                        {items.length}
-                      </span>
-                    )}
-                  </Link>
+              <Link href="/my-cart"
+                className="relative p-2 hover:bg-gray-100 rounded-md transition-colors"
+                aria-label="Shopping Cart"
+              >
+                <Handbag size={20} className="text-black" />
+                {items.length > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-primary text-white text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {items.length}
+                  </span>
+                )}
+              </Link>
               {/* //   )
               // } */}
 
@@ -766,8 +777,6 @@ export default function Navbar() {
                       </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
-
-                  // </Link>
                 )
               }
             </div>
@@ -801,40 +810,60 @@ export default function Navbar() {
       {/* Category Navigation */}
       <nav className="w-full bg-[#1F2937] text-white ">
         <div className=" px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto py-3 scrollbar-hide">
-            <Link href="/category" className="text-sm font-medium  whitespace-nowrap">
+          <div className="flex items-center gap-2 sm:gap-3 py-3">
+            <Link href="/category" className="text-sm font-semibold whitespace-nowrap">
               Shop by Categories
             </Link>
             <div className="w-px h-5 bg-gray-300 flex-shrink-0" />
-            <Link
-              href={`/category`}
-              className="text-sm  hover:text-primary transition-colors whitespace-nowrap font-medium px-2 py-1 hover:bg-gray-100 rounded-md"
+
+            <button
+              type="button"
+              onClick={() => scrollCategories(-220)}
+              className="hidden sm:inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/20 hover:bg-white/10 transition-colors"
+              aria-label="Scroll categories left"
             >
-              All
-            </Link>
-            {categories?.map((category: any) => (
-              <Link
-                href={`/category?category=${encodeURIComponent(category.title)}`}
-                key={category._id}
-                className="text-sm  hover:text-primary transition-colors whitespace-nowrap font-medium px-2 py-1 hover:bg-gray-100 rounded-md"
-                onClick={() => setSelectedCategory(category.title)}
-              >
-                {category?.title}
-              </Link>
-            ))}
+              <ChevronLeft size={16} />
+            </button>
+
+            <div
+              ref={categoryScrollRef}
+              className="flex-1 overflow-x-auto scrollbar-hide cursor-grab active:cursor-grabbing select-none"
+              onMouseDown={handleCategoryMouseDown}
+              onMouseMove={handleCategoryMouseMove}
+              onMouseUp={stopCategoryDrag}
+              onMouseLeave={stopCategoryDrag}
+            >
+              <div className="flex items-center gap-2 min-w-max pr-2">
+                <Link
+                  href={`/category`}
+                  className="text-sm whitespace-nowrap font-medium px-3 py-1.5 rounded-full border border-white/20 hover:border-primary hover:text-primary hover:bg-white transition-colors"
+                >
+                  All
+                </Link>
+                {categories?.map((category: any) => (
+                  <Link
+                    href={`/category?category=${encodeURIComponent(category.title)}`}
+                    key={category._id}
+                    className="text-sm whitespace-nowrap font-medium px-3 py-1.5 rounded-full border border-white/20 hover:border-primary hover:text-primary hover:bg-white transition-colors"
+                    onClick={() => setSelectedCategory(category.title)}
+                  >
+                    {category?.title}
+                  </Link>
+                ))}
+              </div>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => scrollCategories(220)}
+              className="hidden sm:inline-flex h-8 w-8 items-center justify-center rounded-full border border-white/20 hover:bg-white/10 transition-colors"
+              aria-label="Scroll categories right"
+            >
+              <ChevronRight size={16} />
+            </button>
           </div>
         </div>
       </nav>
-      {/* Hide scrollbar */}
-      <style jsx>{`
-        .scrollbar-hide::-webkit-scrollbar {
-          display: none;
-        }
-        .scrollbar-hide {
-          -ms-overflow-style: none;
-          scrollbar-width: none;
-        }
-      `}</style>
     </div>
   );
 }
