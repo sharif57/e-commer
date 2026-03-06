@@ -212,7 +212,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
                 Pinned
               </h3>
               <div className="space-y-1">
-                {currentMenuItems.map((item) => (
+                {currentMenuItems?.map((item) => (
                   <Link key={item.label} href={item.link} onClick={handleClose}>
                     <Button
                       variant="ghost"
@@ -235,7 +235,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
               <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-3 px-2">
                 Dashboard
               </h3>
-              <div className="space-y-1 ">
+              <div className="space-y-1">
                 {currentDashboardItems.filter(item =>
                   userType !== "seller" || hasActiveSubscription || item.label === "Purchase History"
                 ).map(renderNavItem)}

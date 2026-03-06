@@ -4,10 +4,8 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Heart, Star, CreditCard, Minus, Plus, ChevronDown, ChevronUp } from "lucide-react"
+import { Heart, Star, CreditCard, Minus, Plus, ChevronDown, ChevronUp, Check } from "lucide-react"
 import Method from "@/components/icon/method"
-import Policy from "@/components/icon/police"
-import Car from "@/components/icon/car"
 import Image from "next/image"
 import Link from "next/link"
 import { useCreateCheckoutSessionMutation, useCreateOrderMutation, useGetSingleProductQuery } from "@/redux/feature/buyer/productSlice"
@@ -325,7 +323,7 @@ export default function ProductPage() {
                         <span className="mx-2">/</span>
                         <span>Category</span>
                         <span className="mx-2">/</span>
-                        <span className="text-gray-900 font-medium">Sub-category</span>
+                        <span className="text-black font-medium">Sub-category</span>
                     </div>
 
                     {/* Main Product Section */}
@@ -343,7 +341,7 @@ export default function ProductPage() {
                                     >
                                         <Heart size={24} className={isWishlisted ? "fill-red-500 text-red-500" : "text-gray-600"} />
                                     </button>
-                                    <div className="absolute bottom-4 left-4 bg-white px-3 py-1 rounded-full text-sm font-medium text-gray-900">
+                                    <div className="absolute bottom-4 left-4 bg-white px-3 py-1 rounded-full text-sm font-medium text-black">
                                         {mainImage + 1} of {images.length}
                                     </div>
                                 </div>
@@ -373,7 +371,7 @@ export default function ProductPage() {
                                 {/* Title and Rating */}
                                 <div>
                                     <Link href={`/seller_profile?id=${product?.userId}`} className="text-[#1877F2] font-medium hover:underline">Visit the {product?.brand} store</Link>
-                                    <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-3">
+                                    <h1 className="text-2xl md:text-3xl font-bold text-black mb-3">
                                         {product?.title || "Product Title"}
                                     </h1>
                                     <div className="flex items-center gap-2">
@@ -392,7 +390,7 @@ export default function ProductPage() {
 
                                 {/* Price */}
                                 <div className="">
-                                    <div className="text-3xl font-bold text-gray-900 mb-2">${product?.price || 0}</div>
+                                    <div className="text-3xl font-bold text-black mb-2">${product?.price || 0}</div>
                                     <p className="text-gray-700 font-medium">500+ sold in the last 30 days</p>
                                 </div>
 
@@ -400,7 +398,7 @@ export default function ProductPage() {
                                 <div className="space-y-4">
                                     {/* Size Selection */}
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-900 mb-3">Size</label>
+                                        <label className="block text-sm font-semibold text-black mb-3">Size</label>
                                         <div className="grid grid-cols-6 gap-2">
                                             {sizes?.map((size: any) => (
                                                 <button
@@ -419,7 +417,7 @@ export default function ProductPage() {
 
                                     {/* Color Selection */}
                                     <div>
-                                        <label className="block text-sm font-semibold text-gray-900 mb-3">Color</label>
+                                        <label className="block text-sm font-semibold text-black mb-3">Color</label>
                                         <div className="flex gap-3 flex-wrap">
                                             {product?.color?.map((color: string) => (
                                                 <button
@@ -439,7 +437,7 @@ export default function ProductPage() {
 
                                 {/* Specifications */}
                                 <div className="">
-                                    <h3 className="font-semibold text-lg text-gray-900 mb-3">Specifications</h3>
+                                    <h3 className="font-semibold text-lg text-black mb-3">Specifications</h3>
                                     <div className="grid grid-cols-1 gap-3 text-base">
                                         <div>
                                             <span className="text-sm font-semibold">Brand:</span>
@@ -483,7 +481,7 @@ export default function ProductPage() {
                                 </div>
 
                                 <div className=" border-t border-gray-200 pt-8">
-                                    <h2 className="text-2xl font-bold text-gray-900 mb-4">Description</h2>
+                                    <h2 className="text-2xl font-bold text-black mb-4">Description</h2>
                                     <div className="prose prose-sm max-w-none text-gray-800 leading-relaxed space-y-4">
                                         <p>
                                             {product?.des}
@@ -492,71 +490,118 @@ export default function ProductPage() {
                                 </div>
                             </div>
 
-                            <div className="border rounded-lg p-4">
-                                {/* Info Cards */}
-                                <div className="flex flex-col space-y-6 ">
-                                    <div className="flex flex-col gap-1">
-                                        <Car />
-                                        <div className="font-semibold text-gray-900">24hrs express delivery</div>
-                                        <div className="text-gray-700 font-medium">This buyer accepts faster delivery.</div>
+                            <div className="rounded-2xl border border-gray-200 p-4 sm:p-5 bg-white shadow-sm h-fit">
+                                <div className="rounded-xl border border-gray-200 overflow-hidden">
+                                    <div className="bg-gray-100 px-4 py-3 border-b border-gray-200">
+                                        <h1 className="text-2xl font-bold text-black">Ebakx-Fast Pass</h1>
                                     </div>
-                                    <div className="flex flex-col gap-1">
-                                        <Policy />
-                                        <div className="font-semibold text-gray-900">Return policy</div>
-                                        <div className="text-gray-700 font-medium">{product?.return}</div>
-                                    </div>
-                                    <div className="flex flex-col gap-1">
-                                        <CreditCard className="text-[#FF9F13] flex-shrink-0" size={24} />
-                                        <div className="font-semibold text-gray-900">Payment method</div>
-                                        <Method />
-                                    </div>
-                                    <div className=" py-4">
-                                        <div className="text-3xl font-bold text-gray-900 mb-2">${product?.price || 0}</div>
-                                        <div className="text-sm text-primary">
+
+                                    <div className="px-4 py-3 border-b border-gray-200 bg-white">
+                                        <div className="text-3xl font-bold text-black mb-1">${product?.price || 0}</div>
+                                        <div className="text-sm text-primary font-medium">
                                             {product?.inStock ? `In stock: ${product?.count || 0} items` : 'Out of stock'}
                                         </div>
-                                    </div>
-                                </div>
-                                {/* Quantity and Actions */}
-                                <div className="space-y-3 ">
-                                    <div className="flex flex-col gap-4">
-                                        <span className="text-sm font-semibold text-gray-900">Item Quantity:</span>
-                                        <div className="flex items-center justify-between border border-gray-300 rounded-lg">
-                                            <button
-                                                onClick={() => handleQuantityChange(quantity - 1)}
-                                                className="p-2 text-gray-600 hover:text-gray-900"
-                                            >
-                                                <Minus size={18} />
-                                            </button>
-                                            <input
-                                                type="number"
-                                                value={quantity}
-                                                onChange={(e) => handleQuantityChange(Number.parseInt(e.target.value) || 1)}
-                                                className="w-12 text-center border-0 outline-none font-semibold text-gray-900"
-                                                min="1"
-                                                max="10"
-                                            />
-                                            <button
-                                                onClick={() => handleQuantityChange(quantity + 1)}
-                                                className="p-2 text-gray-600 hover:text-gray-900"
-                                            >
-                                                <Plus size={18} />
-                                            </button>
+
+                                        <div className="space-y-3 mt-4">
+                                            <div className="rounded-lg border border-gray-200 p-3">
+                                                <div className="flex items-center justify-between gap-2 text-sm font-semibold text-black mb-2">
+                                                    <span>Item Quantity</span>
+                                                    <span>{quantity}</span>
+                                                </div>
+                                                <div className="flex items-center justify-between border border-gray-300 rounded-lg">
+                                                    <button
+                                                        onClick={() => handleQuantityChange(quantity - 1)}
+                                                        className="p-2 text-gray-600 hover:text-black"
+                                                    >
+                                                        <Minus size={18} />
+                                                    </button>
+                                                    <input
+                                                        type="number"
+                                                        value={quantity}
+                                                        onChange={(e) => handleQuantityChange(Number.parseInt(e.target.value) || 1)}
+                                                        className="w-12 text-center border-0 outline-none font-semibold text-black"
+                                                        min="1"
+                                                        max="10"
+                                                    />
+                                                    <button
+                                                        onClick={() => handleQuantityChange(quantity + 1)}
+                                                        className="p-2 text-gray-600 hover:text-black"
+                                                    >
+                                                        <Plus size={18} />
+                                                    </button>
+                                                </div>
+                                            </div>
+
+                                            <div className="grid grid-cols-1 gap-3">
+                                                <button
+                                                    onClick={handleAddToBag}
+                                                    className="bg-yellow-500 hover:bg-yellow/90 text-black font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2"
+                                                >
+                                                    Add to bag
+                                                </button>
+                                                <button
+                                                    onClick={handleSubmitOrder}
+                                                    className="border-2 border-gray-300 bg-yellow-500 hover:bg-yellow/90 hover:border-gray-400 text-black font-semibold py-3 px-4 rounded-lg transition-colors"
+                                                >
+                                                    Buy now
+                                                </button>
+                                            </div>
                                         </div>
                                     </div>
 
-                                    {/* Action Buttons */}
-                                    <div className="grid grid-cols-1 gap-3 pt-8">
-                                        <button
-                                            onClick={handleAddToBag}
-                                            className="bg-yellow-500 hover:bg-yellow/90 text-black font-semibold py-3 px-4 rounded-lg transition-colors flex items-center justify-center gap-2">
-                                            Add to bag
-                                        </button>
-                                        <button
-                                            onClick={handleSubmitOrder}
-                                            className="border-2 border-gray-300 bg-yellow-500 hover:bg-yellow/90 hover:border-gray-400 text-gray-900 font-semibold py-3 px-4 rounded-lg transition-colors">
-                                            Buy now
-                                        </button>
+                                    <div className="divide-y divide-gray-200">
+                                        <div className="flex items-start gap-3 px-4 py-3">
+                                            <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#29845A]/15 text-[#29845A]">
+                                                <Check size={14} />
+                                            </span>
+                                            <div>
+                                                <p className="text-lg font-bold text-black leading-tight">FREE 2-Day Shipping</p>
+                                                <span className="text-gray-600 text-sm">for members</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start gap-3 px-4 py-3">
+                                            <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#29845A]/15 text-[#29845A]">
+                                                <Check size={14} />
+                                            </span>
+                                            <div>
+                                                <p className="text-lg font-bold text-black leading-tight">Sold and Shipped by</p>
+                                                <span className="text-gray-600 text-sm">Ebakx Warehouse</span>
+                                            </div>
+                                        </div>
+
+                                        <div className="flex items-start gap-3 px-4 py-3">
+                                            <span className="mt-0.5 inline-flex h-6 w-6 items-center justify-center rounded-full bg-[#29845A]/15 text-[#29845A]">
+                                                <Check size={14} />
+                                            </span>
+                                            <div>
+                                                <p className="text-lg font-bold text-black leading-tight">30-Day Return Policy</p>
+                                                <span className="text-gray-600 text-sm">{product?.return}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <div className="px-4 py-3 border-t border-gray-200 bg-white">
+                                        <Link
+                                            href="/auth/register"
+                                            className="block w-full rounded-lg bg-[#29845A] text-white text-2xl font-bold py-2.5 hover:bg-[#236f4c] transition-colors text-center"
+                                        >
+                                            Join now
+                                        </Link>
+                                    </div>
+                                </div>
+
+                                <div className="space-y-4 pt-5">
+                                    <div className="rounded-lg border border-gray-200 p-3">
+                                        <div className="flex items-start gap-3">
+                                            <CreditCard className="text-[#FF9F13] w-6 h-6 flex-shrink-0 mt-0.5" />
+                                            <div>
+                                                <p className="font-semibold text-black">Payment Method</p>
+                                                <div className="text-gray-600 text-sm mt-1">
+                                                    <Method />
+                                                </div>
+                                            </div>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
@@ -568,7 +613,7 @@ export default function ProductPage() {
                         <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:p-6">
                             <div className="mb-6 flex items-center justify-between gap-4">
                                 <div>
-                                    <h2 className="text-2xl font-bold text-gray-900">Customer Reviews</h2>
+                                    <h2 className="text-2xl font-bold text-black">Customer Reviews</h2>
                                     <p className="text-sm text-gray-700 font-medium mt-1">Real feedback from verified buyers</p>
                                 </div>
                                 <button
@@ -590,7 +635,7 @@ export default function ProductPage() {
                                                 <div className="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
                                                     <p className="text-xs uppercase tracking-wide text-gray-600 font-semibold">Average Rating</p>
                                                     <div className="mt-1 flex items-center gap-2">
-                                                        <span className="text-2xl font-bold text-gray-900">{averageReviewRating.toFixed(1)}</span>
+                                                        <span className="text-2xl font-bold text-black">{averageReviewRating.toFixed(1)}</span>
                                                         <div className="flex gap-1">
                                                             {[...Array(5)].map((_, i) => (
                                                                 <Star
@@ -604,7 +649,7 @@ export default function ProductPage() {
                                                 </div>
                                                 <div className="rounded-xl border border-gray-200 bg-white px-4 py-3 shadow-sm">
                                                     <p className="text-xs uppercase tracking-wide text-gray-600 font-semibold">Total Reviews</p>
-                                                    <p className="mt-1 text-2xl font-bold text-gray-900">{totalReviews}</p>
+                                                    <p className="mt-1 text-2xl font-bold text-black">{totalReviews}</p>
                                                 </div>
                                             </div>
 
@@ -623,7 +668,7 @@ export default function ProductPage() {
                                                                 <div className="flex-1">
                                                                     <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2 mb-2">
                                                                         <div>
-                                                                            <p className="font-semibold text-gray-900 break-all">{review.userId?.email}</p>
+                                                                            <p className="font-semibold text-black break-all">{review.userId?.email}</p>
                                                                             <span className="inline-flex mt-1 rounded-full bg-gray-100 px-2.5 py-0.5 text-xs font-medium text-gray-700">Verified Buyer</span>
                                                                         </div>
                                                                         <span className="text-xs text-gray-600 font-medium">{new Date(review.createdAt).toLocaleDateString()}</span>
@@ -672,7 +717,7 @@ export default function ProductPage() {
                                         </div>
 
                                         <aside className="rounded-xl border border-gray-200 bg-white shadow-sm p-6 h-fit">
-                                            <h3 className="text-lg font-semibold text-gray-900 mb-1">Write a Review</h3>
+                                            <h3 className="text-lg font-semibold text-black mb-1">Write a Review</h3>
                                             <p className="text-sm text-gray-700 font-medium mb-4">Tell others what you liked or disliked about this product.</p>
                                             <form onSubmit={handleReviewSubmit}>
                                                 <div className="mb-4">
@@ -696,7 +741,7 @@ export default function ProductPage() {
                                                 <div className="mb-4">
                                                     <label className="block text-sm font-semibold text-gray-800 mb-2">Review</label>
                                                     <textarea
-                                                        className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-gray-900 placeholder:text-gray-500"
+                                                        className="w-full border border-gray-300 rounded-lg px-3 py-2.5 text-black placeholder:text-gray-500"
                                                         rows={5}
                                                         value={reviewText}
                                                         onChange={e => setReviewText(e.target.value)}

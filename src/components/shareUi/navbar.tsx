@@ -41,7 +41,6 @@ export default function Navbar() {
 
 
   const { data: profile } = useGetUsersQuery(undefined);
-  console.log(profile?.data)
 
   const cartTotal = items.reduce((total, item) => {
     const quantityValue = Number(item?.quantity ?? item?.qty ?? 1);
@@ -421,6 +420,12 @@ export default function Navbar() {
               Shop by Categories
             </Link>
             <div className="w-px h-5 bg-gray-300 flex-shrink-0" />
+            <Link
+              href={`/category`}
+              className="text-sm  hover:text-primary transition-colors whitespace-nowrap font-medium px-2 py-1 hover:bg-gray-100 rounded-md"
+            >
+              All
+            </Link>
             {categories?.map((category: any) => (
               <Link
                 href={`/category?category=${encodeURIComponent(category.title)}`}

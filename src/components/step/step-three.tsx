@@ -23,6 +23,10 @@ export default function StepThree({ data, onChange, onNext, onPrevious }: StepTh
   const validateStep = () => {
     const newErrors: Record<string, string> = {}
     if (!data.shopName) newErrors.shopName = "Shop name is required"
+    if (!data.shopLogo) newErrors.shopLogo = "Shop logo is required"
+    if (!data.shopDescription) newErrors.shopDescription = "Shop description is required"
+    if (!data.returnPolicy) newErrors.returnPolicy = "Return policy is required"
+    if (!data.categories || data.categories.length === 0) newErrors.categories = "Please select at least one category"
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -45,81 +49,73 @@ export default function StepThree({ data, onChange, onNext, onPrevious }: StepTh
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="flex justify-end items-center gap-6 mb-8">
-        <Button
-          variant="link"
-          onClick={onPrevious}
-          className="text-gray-600 flex items-center gap-2 hover:text-gray-900 font-medium text-sm"
-        >
-          <ArrowLeft /> Back
-        </Button>
-        <button
-          onClick={handleContinue}
-          className="group px-6 py-2.5 md:px-6 md:py-2 flex items-center justify-center gap-2 bg-primary text-white rounded-full font-semibold text-sm md:text-base shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
-        >
-          Continue
-          <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1" />
-        </button>
-      </div>
 
-      <h1 className="text-xl font-bold text-gray-900 mb-8">Let's create your Online shop</h1>
+
+      <h1 className="text-xl font-bold text-black mb-8">Let&apos;s create your Online shop</h1>
 
       <div className="bg-[#0000000F] rounded-lg p-8 space-y-6">
         {/* Shop Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-900 mb-2">Shop Name</label>
+          <label className="block text-sm font-medium text-black mb-2">Shop Name <span className="text-red-500">*</span></label>
           <input
             type="text"
             placeholder="Enter your shop name"
             value={data.shopName}
             onChange={(e) => onChange({ shopName: e.target.value })}
             className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
           />
           {errors.shopName && <p className="text-red-500 text-xs mt-1">{errors.shopName}</p>}
         </div>
 
         {/* Shop Logo */}
         <div className="mb-6">
-          <label className="block text-sm font-medium text-gray-900 mb-2">Shop Logo</label>
+          <label className="block text-sm font-medium text-black mb-2">Shop Logo <span className="text-red-500">*</span></label>
           <FileUpload
             onFileSelect={(file) => onChange({ shopLogo: file })}
             fileName={data.shopLogo?.name}
             label="Upload Shop Logo"
           />
+          {errors.shopLogo && <p className="text-red-500 text-xs mt-1">{errors.shopLogo}</p>}
         </div>
 
         {/* Shop Description */}
         <div>
-          <label className="block text-sm font-medium text-gray-900 mb-2">Shop Description</label>
+          <label className="block text-sm font-medium text-black mb-2">Shop Description <span className="text-red-500">*</span></label>
           <Textarea
             placeholder="Write a brief description about your shop..."
             value={data.shopDescription}
             onChange={(e) => onChange({ shopDescription: e.target.value })}
             className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
           />
+          {errors.shopDescription && <p className="text-red-500 text-xs mt-1">{errors.shopDescription}</p>}
         </div>
 
         {/* Return Policy */}
         <div>
-          <label className="block text-sm font-medium text-gray-900 mb-2">Return Policy (Optional)</label>
+          <label className="block text-sm font-medium text-black mb-2">Return Policy <span className="text-red-500">*</span></label>
           <input
             type="text"
             placeholder="e.g., 7-day return policy"
             value={data.returnPolicy}
             onChange={(e) => onChange({ returnPolicy: e.target.value })}
             className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
           />
+          {errors.returnPolicy && <p className="text-red-500 text-xs mt-1">{errors.returnPolicy}</p>}
         </div>
 
         {/* Categories to Sell In */}
         <div className="border-t border-[#171717] pt-6 mt-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-6">Categories to Sell In</h2>
+          <h2 className="text-lg font-semibold text-black mb-6">Categories to Sell In <span className="text-red-500">*</span></h2>
 
           {/* Electronics */}
           <div className="mb-6">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-sm font-medium text-gray-900">Electronics</h3>
+              <h3 className="text-sm font-medium text-black">Electronics</h3>
               <Switch
+                className="border border-primary"
                 checked={data.fashion || false}
                 onCheckedChange={(checked) => onChange({ fashion: checked })}
               />
@@ -163,8 +159,9 @@ export default function StepThree({ data, onChange, onNext, onPrevious }: StepTh
           {/* Fashion */}
           <div className="mb-6">
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-sm font-medium text-gray-900">Fashion</h3>
+              <h3 className="text-sm font-medium text-black">Fashion</h3>
               <Switch
+                className="border border-primary"
                 checked={data.fashion || false}
                 onCheckedChange={(checked) => onChange({ fashion: checked })}
               />
@@ -198,8 +195,9 @@ export default function StepThree({ data, onChange, onNext, onPrevious }: StepTh
           {/* Home & Living */}
           <div>
             <div className="flex justify-between items-center mb-4">
-              <h3 className="text-sm font-medium text-gray-900">Home & Living</h3>
+              <h3 className="text-sm font-medium text-black">Home & Living</h3>
               <Switch
+                className="border border-primary"
                 checked={data.homeLiving || false}
                 onCheckedChange={(checked) => onChange({ homeLiving: checked })}
               />
@@ -229,7 +227,24 @@ export default function StepThree({ data, onChange, onNext, onPrevious }: StepTh
               </div>
             )}
           </div>
+          {errors.categories && <p className="text-red-500 text-xs mt-3">{errors.categories}</p>}
         </div>
+      </div>
+      <div className="flex justify-end items-center gap-6 mt-8">
+        <Button
+          variant="link"
+          onClick={onPrevious}
+          className="text-gray-600 flex items-center gap-2 hover:text-black font-medium text-sm"
+        >
+          <ArrowLeft /> Back
+        </Button>
+        <button
+          onClick={handleContinue}
+          className="group px-6 py-2.5 md:px-6 md:py-2 flex items-center justify-center gap-2 bg-primary text-white rounded-full font-semibold text-sm md:text-base shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
+        >
+          Continue
+          <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1" />
+        </button>
       </div>
     </div>
   )

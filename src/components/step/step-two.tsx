@@ -23,7 +23,9 @@ export default function StepTwo({ data, onChange, onNext, onPrevious }: StepTwoP
     if (!data.contactEmail) newErrors.contactEmail = "Contact email is required"
     if (!data.contactNumber) newErrors.contactNumber = "Contact number is required"
     if (!data.address) newErrors.address = "Address is required"
+    if (!data.residency) newErrors.residency = "Residency is required"
     if (!data.nationalIdFront) newErrors.nationalIdFront = "National ID front is required"
+    if (!data.nationalIdBack) newErrors.nationalIdBack = "National ID back is required"
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -38,7 +40,7 @@ export default function StepTwo({ data, onChange, onNext, onPrevious }: StepTwoP
   return (
     <div className="max-w-3xl mx-auto">
       {/* <div className="flex justify-between items-center mb-8">
-        <button onClick={onPrevious} className="text-gray-600 hover:text-gray-900 font-medium text-sm">
+        <button onClick={onPrevious} className="text-gray-600 hover:text-black font-medium text-sm">
           ← Back
         </button>
         <button
@@ -48,44 +50,36 @@ export default function StepTwo({ data, onChange, onNext, onPrevious }: StepTwoP
           Continue →
         </button>
       </div> */}
-      <div className="flex justify-end items-center gap-6  mb-8">
-        <Button variant="link" onClick={onPrevious} className="text-gray-600 flex items-center gap-2 hover:text-gray-900 font-medium text-sm">
-          <ArrowLeft /> Back
-        </Button>
-        <button
-          onClick={handleContinue}
-          className="group px-6 py-2.5 md:px-6 md:py-2 flex items-center justify-center gap-2 bg-primary text-white rounded-full font-semibold text-sm md:text-base shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
-        >
-          Continue
-          <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1" />
-        </button>
-      </div>
 
-      <h1 className="text-xl font-bold text-gray-900 mb-8">Now tell us about yourself or the Business owner</h1>
+
+      <h1 className="text-xl font-bold text-black mb-8">Now tell us about yourself or the Business owner</h1>
 
       <div className="bg-[#0000000F] rounded-lg p-8 space-y-6">
         {/* Full Name */}
         <div>
-          <label className="block text-sm font-medium text-gray-900 mb-2">Full Name</label>
+          <label className="block text-sm font-medium text-black mb-2">Full Name <span className="text-red-500">*</span></label>
           <input
             type="text"
             placeholder="Alex Morgan"
             value={data.fullName}
             onChange={(e) => onChange({ fullName: e.target.value })}
             className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
           />
           {errors.fullName && <p className="text-red-500 text-xs mt-1">{errors.fullName}</p>}
         </div>
 
         {/* Your Role */}
         <div>
-          <label className="block text-sm font-medium text-gray-900 mb-2">Your Role</label>
+          <label className="block text-sm font-medium text-black mb-2">Your Role <span className="text-red-500">*</span></label>
           <select
             value={data.yourRole}
             onChange={(e) => onChange({ yourRole: e.target.value })}
             className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
           >
-            <option value="">Owner</option>
+            <option value="">Select Role</option>
+            <option value="owner">Owner</option>
             <option value="manager">Manager</option>
             <option value="authorized-representative">Authorized Representative</option>
           </select>
@@ -94,63 +88,68 @@ export default function StepTwo({ data, onChange, onNext, onPrevious }: StepTwoP
 
         {/* Contact Email */}
         <div>
-          <label className="block text-sm font-medium text-gray-900 mb-2">Contact Email</label>
+          <label className="block text-sm font-medium text-black mb-2">Contact Email <span className="text-red-500">*</span></label>
           <input
             type="email"
             placeholder="john@lightstart.com"
             value={data.contactEmail}
             onChange={(e) => onChange({ contactEmail: e.target.value })}
             className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
           />
           {errors.contactEmail && <p className="text-red-500 text-xs mt-1">{errors.contactEmail}</p>}
         </div>
 
         {/* Contact Number */}
         <div>
-          <label className="block text-sm font-medium text-gray-900 mb-2">Contact Number</label>
+          <label className="block text-sm font-medium text-black mb-2">Contact Number <span className="text-red-500">*</span></label>
           <input
             type="tel"
             placeholder="Enter your contact number"
             value={data.contactNumber}
             onChange={(e) => onChange({ contactNumber: e.target.value })}
             className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
           />
           {errors.contactNumber && <p className="text-red-500 text-xs mt-1">{errors.contactNumber}</p>}
         </div>
 
         {/* Address */}
         <div>
-          <label className="block text-sm font-medium text-gray-900 mb-2">Address</label>
+          <label className="block text-sm font-medium text-black mb-2">Address <span className="text-red-500">*</span></label>
           <input
             type="text"
             placeholder="Street Address, City, State, ZIP Code"
             value={data.address}
             onChange={(e) => onChange({ address: e.target.value })}
             className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
           />
           {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
         </div>
 
         {/* Residency */}
         <div>
-          <label className="block text-sm font-medium text-gray-900 mb-2">Residency (Optional)</label>
+          <label className="block text-sm font-medium text-black mb-2">Residency <span className="text-red-500">*</span></label>
           <input
             type="text"
             placeholder="e.g., London, New York, etc."
             value={data.residency}
             onChange={(e) => onChange({ residency: e.target.value })}
             className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
           />
+          {errors.residency && <p className="text-red-500 text-xs mt-1">{errors.residency}</p>}
         </div>
 
         {/* Identity Verification */}
         <div className="border-t border-[#171717] pt-6 mt-6">
-          <h2 className="text-lg font-semibold text-gray-900 mb-4">Identity verification</h2>
+          <h2 className="text-lg font-semibold text-black mb-4">Identity verification</h2>
           <p className="text-sm text-gray-600 mb-4">Upload your ID and photo so we could recognize it&rsquo;s really you.</p>
 
           {/* National ID Front */}
           <div className="mb-6">
-            <label className="block text-sm font-medium text-gray-900 mb-2">National ID or Passport</label>
+            <label className="block text-sm font-medium text-black mb-2">National ID or Passport <span className="text-red-500">*</span></label>
             <FileUpload
               onFileSelect={(file) => onChange({ nationalIdFront: file })}
               fileName={data.nationalIdFront?.name}
@@ -161,13 +160,27 @@ export default function StepTwo({ data, onChange, onNext, onPrevious }: StepTwoP
 
           {/* National ID Back */}
           <div className="mb-6">
+            <label className="block text-sm font-medium text-black mb-2">Back Side <span className="text-red-500">*</span></label>
             <FileUpload
               onFileSelect={(file) => onChange({ nationalIdBack: file })}
               fileName={data.nationalIdBack?.name}
               label="Upload Back"
             />
+            {errors.nationalIdBack && <p className="text-red-500 text-xs mt-1">{errors.nationalIdBack}</p>}
           </div>
         </div>
+      </div>
+      <div className="flex justify-end items-center gap-6  mt-8">
+        <Button variant="link" onClick={onPrevious} className="text-gray-600 flex items-center gap-2 hover:text-black font-medium text-sm">
+          <ArrowLeft /> Back
+        </Button>
+        <button
+          onClick={handleContinue}
+          className="group px-6 py-2.5 md:px-6 md:py-2 flex items-center justify-center gap-2 bg-primary text-white rounded-full font-semibold text-sm md:text-base shadow-md hover:shadow-lg transition-all duration-300 hover:scale-[1.02]"
+        >
+          Continue
+          <ArrowRight className="w-4 h-4 md:w-5 md:h-5 transition-transform duration-300 group-hover:translate-x-1" />
+        </button>
       </div>
     </div>
   )

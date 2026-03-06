@@ -11,6 +11,7 @@ import StepThree from "./step-three"
 import Logo from "../icon/logo"
 import StepFour from "./step-four"
 import StepFive from "./step-five"
+import Link from "next/link"
 
 const steps = [
   { number: 1, title: "Business Information" },
@@ -108,7 +109,9 @@ export default function SellerOnboarding() {
     <div className="min-h-screen ">
       {/* ✅ Fixed Header */}
       <header className="fixed top-0 left-0 w-full  z-50 p-4 flex items-center justify-start">
-        <Logo />
+        <Link href="/">
+          <Logo />
+        </Link>
       </header>
 
       <div className="flex">
@@ -117,7 +120,7 @@ export default function SellerOnboarding() {
           className="hidden lg:block fixed top-[50px] left-0 h-[calc(100vh-72px)] w-1/3  p-8 overflow-y-auto"
         >
           <div className="mb-6">
-            <h2 className="text-2xl font-bold font-[#000000] text-gray-900 mb-2">
+            <h2 className="text-2xl font-bold font-[#000000] text-black mb-2">
               Your journey to becoming a seller starts here.
             </h2>
             <p className="text-sm text-gray-600">
