@@ -25,7 +25,7 @@ export default function CategorySidebar({
 }: CategorySidebarProps) {
   const [isOpen, setIsOpen] = useState(true);
 
-  const {data} = useGetCategoriesQuery(undefined)
+  const {data} = useGetCategoriesQuery({limit: 100});
 
   return (
     <div className="bg-[#00000008] dark:bg-slate-800 rounded-sm p-6 sticky top-24">

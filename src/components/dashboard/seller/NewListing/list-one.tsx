@@ -118,7 +118,7 @@ export default function ListOne({ data, onChange, onNext }: StepOneProps) {
 
   // ✅ Categories
   const { data: categoryResponse, isLoading: categoryLoading } =
-    useGetCategoriesQuery(undefined)
+    useGetCategoriesQuery({ limit: 100 })
 
   const categories = categoryResponse?.data?.result || []
 

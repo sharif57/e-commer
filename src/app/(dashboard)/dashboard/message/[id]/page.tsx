@@ -441,13 +441,13 @@ export default function MessageDetailsPage() {
 
                         {/* Input Controls */}
                         <div className="flex gap-3 sm:gap-4 items-center">
-                            <button
+                            {/* <button
                                 onClick={handleAttachFile}
                                 className="flex-shrink-0 flex items-center gap-2 text-foreground/70 hover:text-foreground transition-colors font-medium text-sm"
                             >
                                 <Plus className="w-4 h-4 sm:w-5 sm:h-5" />
                                 <span className="hidden sm:inline">Attach</span>
-                            </button>
+                            </button> */}
 
                             <div className="flex-1 relative">
                                 <input

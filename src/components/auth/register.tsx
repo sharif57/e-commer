@@ -5,8 +5,6 @@ import React, { useState } from "react";
 import Image from "next/image";
 import { Eye, EyeOff, Check } from "lucide-react";
 import Logo from "../icon/logo";
-import { Button } from "../ui/button";
-import Google from "../icon/google";
 import { useRouter } from "next/navigation";
 import { useGoogleLoginMutation, useRegisterMutation } from "@/redux/feature/authSlice";
 import { toast } from "sonner";
@@ -15,6 +13,7 @@ import { saveTokens } from "@/service/authService";
 import { useDispatch } from "react-redux";
 import { setUser } from "@/redux/feature/authApi";
 import Link from "next/link";
+import { Tabs, TabsList, TabsTrigger } from "../ui/tabs";
 
 export default function Register() {
   const router = useRouter();
@@ -26,6 +25,8 @@ export default function Register() {
     lastName: "",
     email: "",
     password: "",
+    businessType: "",
+    businessDescription: "",
     // agreeToTerms: true,
   });
   const [errors, setErrors] = useState<Record<string, string>>({});
@@ -45,6 +46,14 @@ export default function Register() {
     if (!formData.password) newErrors.password = "Password is required";
     else if (formData.password.length < 8)
       newErrors.password = "Password must be at least 8 characters";
+    if (accountType === "seller") {
+      if (!formData.businessType.trim()) {
+        newErrors.businessType = "Business type is required";
+      }
+      if (!formData.businessDescription.trim()) {
+        newErrors.businessDescription = "Business description is required";
+      }
+    }
     // if (!formData.agreeToTerms) newErrors.agreeToTerms = "You must agree to the terms";
 
     setErrors(newErrors);
@@ -59,7 +68,21 @@ export default function Register() {
     setIsSubmitting(true);
 
     try {
-      const res = await register({ ...formData }).unwrap();
+      const payload = {
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+        email: formData.email,
+        password: formData.password,
+        role: accountType,
+        ...(accountType === "seller"
+          ? {
+            businessType: formData.businessType,
+            businessDescription: formData.businessDescription,
+          }
+          : {}),
+      };
+
+      const res = await register(payload).unwrap();
 
       toast.success(res?.data?.message || "Registration successful");
 
@@ -77,6 +100,8 @@ export default function Register() {
         lastName: "",
         email: "",
         password: "",
+        businessType: "",
+        businessDescription: "",
         // agreeToTerms: false,
       });
     } catch (error: any) {
@@ -193,20 +218,30 @@ export default function Register() {
         <div className="w-full md:w-1/2 lg:w-1/2 flex items-center justify-center p-6 sm:p-8 lg:p-12">
           <div className="w-full max-w-md">
             {/* Account Type Tabs */}
-            {/* <div className="flex items-center justify-center gap-4 mb-8 ">
+            <div className="flex items-center justify-center gap-4 mb-8 ">
               <Tabs
-                defaultValue="personal"
+                value={accountType}
                 className="bg-input px-2 py-1 rounded-lg"
-                onValueChange={(value) =>
-                  setAccountType(value as "buyer" | "seller")
-                }
+                onValueChange={(value) => {
+                  const selectedType = value as "buyer" | "seller";
+                  setAccountType(selectedType);
+
+                  if (selectedType === "buyer") {
+                    setErrors((prev) => {
+                      const next = { ...prev };
+                      delete next.businessType;
+                      delete next.businessDescription;
+                      return next;
+                    });
+                  }
+                }}
               >
                 <TabsList>
                   <TabsTrigger value="buyer">Personal</TabsTrigger>
                   <TabsTrigger value="seller">Business</TabsTrigger>
                 </TabsList>
               </Tabs>
-            </div> */}
+            </div>
 
             {/* Heading */}
             <div className="mb-6">
@@ -305,6 +340,56 @@ export default function Register() {
                   )}
                 </div>
               </div>
+
+              {accountType === "seller" && (
+                <>
+                  <div>
+                    <label
+                      htmlFor="businessType"
+                      className="block text-xs font-medium text-foreground mb-2"
+                    >
+                      Your business type
+                    </label>
+                    <input
+                      id="businessType"
+                      type="text"
+                      placeholder="e.g. Fashion, Electronics"
+                      value={formData.businessType}
+                      onChange={(e) =>
+                        setFormData({ ...formData, businessType: e.target.value })
+                      }
+                      className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent transition-all ${errors.businessType ? "border-destructive" : "border-border"
+                        }`}
+                    />
+                    {errors.businessType && (
+                      <p className="text-xs text-destructive mt-1">{errors.businessType}</p>
+                    )}
+                  </div>
+
+                  <div>
+                    <label
+                      htmlFor="businessDescription"
+                      className="block text-xs font-medium text-foreground mb-2"
+                    >
+                      Business description
+                    </label>
+                    <textarea
+                      id="businessDescription"
+                      placeholder="Tell us about your business"
+                      value={formData.businessDescription}
+                      onChange={(e) =>
+                        setFormData({ ...formData, businessDescription: e.target.value })
+                      }
+                      rows={3}
+                      className={`w-full px-3 py-2 border rounded-lg text-sm bg-white text-foreground placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-accent transition-all resize-none ${errors.businessDescription ? "border-destructive" : "border-border"
+                        }`}
+                    />
+                    {errors.businessDescription && (
+                      <p className="text-xs text-destructive mt-1">{errors.businessDescription}</p>
+                    )}
+                  </div>
+                </>
+              )}
 
               {/* Email */}
               <div>

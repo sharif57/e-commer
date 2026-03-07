@@ -27,7 +27,7 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
 
   const {data} = useGetUsersQuery(undefined);
 
-  const {data: categories} = useGetCategoriesQuery(undefined);  
+  const {data: categories} = useGetCategoriesQuery({limit: 100});  
 
   const categoriesList = categories?.data
   const onCategoryChange = (category: string) => {

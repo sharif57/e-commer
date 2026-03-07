@@ -469,7 +469,7 @@ function Home() {
 
     // Fetch products with filters
     const { data: productsData, isLoading, isFetching, error } = useGetProductsByFilterQuery(filterParams)
-    const { data: categoriesData, isLoading: categoriesLoading } = useGetCategoriesQuery(undefined)
+    const { data: categoriesData, isLoading: categoriesLoading } = useGetCategoriesQuery({limit: 100})
 
     // Extract products and pagination info
     const products: Product[] = productsData?.data?.result || []

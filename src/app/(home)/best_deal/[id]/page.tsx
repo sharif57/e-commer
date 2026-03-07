@@ -4,7 +4,7 @@
 "use client"
 
 import { useEffect, useState } from "react"
-import { Heart, Star, CreditCard, Minus, Plus, ChevronDown, ChevronUp, Check } from "lucide-react"
+import { Heart, Star, CreditCard, Minus, Plus, ChevronDown, ChevronUp, Check, Share2 } from "lucide-react"
 import Method from "@/components/icon/method"
 import Image from "next/image"
 import Link from "next/link"
@@ -32,6 +32,7 @@ export default function ProductPage() {
     const [isReviewSectionOpen, setIsReviewSectionOpen] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [missingFields, setMissingFields] = useState<string[]>([])
+    const [sharePending, setSharePending] = useState(false)
 
     const { data, isLoading } = useGetSingleProductQuery(id as string);
     const { data: userData } = useGetUsersQuery(undefined);
@@ -298,6 +299,51 @@ export default function ProductPage() {
         }
     }
 
+    const handleShareProduct = async () => {
+        if (!product) {
+            toast.error("Product not loaded yet")
+            return
+        }
+
+        setSharePending(true)
+
+        try {
+            const shareUrl = window.location.href
+            const shareData = {
+                title: product.title || "Product",
+                text: `Check out this product: ${product.title || "Item"}`,
+                url: shareUrl,
+            }
+
+            if (navigator.share) {
+                await navigator.share(shareData)
+                toast.success("Product link shared")
+                return
+            }
+
+            if (navigator.clipboard?.writeText) {
+                await navigator.clipboard.writeText(shareUrl)
+                toast.success("Product URL copied to clipboard")
+                return
+            }
+
+            const tempInput = document.createElement("textarea")
+            tempInput.value = shareUrl
+            document.body.appendChild(tempInput)
+            tempInput.select()
+            document.execCommand("copy")
+            document.body.removeChild(tempInput)
+            toast.success("Product URL copied to clipboard")
+        } catch (error: any) {
+            if (error?.name === "AbortError") {
+                return
+            }
+            toast.error("Unable to share product URL")
+        } finally {
+            setSharePending(false)
+        }
+    }
+
     // Review submit handler
     const handleReviewSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -365,6 +411,15 @@ export default function ProductPage() {
                                 {/* Main Image */}
                                 <div className="relative bg-gray-100 rounded-lg overflow-hidden aspect-[4/5]">
                                     <Image src={images[mainImage] || "/placeholder.svg"} alt="Product" className="w-full h-full object-cover" fill />
+                                    <button
+                                        onClick={handleShareProduct}
+                                        disabled={sharePending}
+                                        title="Share product"
+                                        aria-label="Share product"
+                                        className="absolute top-4 right-16 bg-white rounded-full p-2 shadow-md hover:shadow-lg transition-shadow disabled:opacity-50 disabled:cursor-not-allowed"
+                                    >
+                                        <Share2 size={22} className="text-gray-700" />
+                                    </button>
                                     <button
                                         onClick={handleWishlist}
                                         disabled={wishlistPending}
@@ -534,7 +589,7 @@ export default function ProductPage() {
                                         </div>
 
                                         {/* Price Breakdown */}
-                                        <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200 space-y-2">
+                                        {/* <div className="mt-4 p-3 bg-gray-50 rounded-lg border border-gray-200 space-y-2">
                                             <div className="flex justify-between text-sm">
                                                 <span className="text-gray-700">Price × {quantity}:</span>
                                                 <span className="font-medium text-black">${((product?.price || 0) * quantity).toFixed(2)}</span>
@@ -553,7 +608,7 @@ export default function ProductPage() {
                                                     ${(((product?.price || 0) * quantity) + (((product?.price || 0) * quantity) * 0.07) + (product?.shippingCost || 0)).toFixed(2)}
                                                 </span>
                                             </div>
-                                        </div>
+                                        </div> */}
 
                                         <div className="space-y-3 mt-4">
                                             <div className="rounded-lg border border-gray-200 p-3">

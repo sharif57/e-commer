@@ -496,7 +496,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const { data } = useGetCategoriesQuery(undefined);
+  const { data } = useGetCategoriesQuery({limit: 100});
   const categories = data?.data?.result || [];
 
 

@@ -5,9 +5,8 @@ import type React from "react"
 import { useState } from "react"
 import { Switch } from "@/components/ui/switch"
 import MailBox from "@/components/icon/mailbox"
-import Phone from "@/components/icon/phone"
-import Chart from "@/components/icon/chart"
 import Breadcrumb from "@/components/Breadcrumb"
+import { toast } from "sonner"
 
 interface Reminder {
     id: string
@@ -26,25 +25,36 @@ export default function SetRemindersPage() {
             icon: <MailBox />,
             enabled: true,
         },
-        {
-            id: "push-new-items",
-            title: "Push notifications for new items",
-            description: "Receive instant push notifications when new item added",
-            icon: <Phone />,
-            enabled: true,
-        },
-        {
-            id: "weekly-deals",
-            title: "Weekly deals",
-            description: "Get notified via email for weekly deals",
-            icon: <Chart />,
-            enabled: false,
-        },
+        // {
+        //     id: "push-new-items",
+        //     title: "Push notifications for new items",
+        //     description: "Receive instant push notifications when new item added",
+        //     icon: <Phone />,
+        //     enabled: true,
+        // },
+        // {
+        //     id: "weekly-deals",
+        //     title: "Weekly deals",
+        //     description: "Get notified via email for weekly deals",
+        //     icon: <Chart />,
+        //     enabled: false,
+        // },
     ])
 
     const toggleReminder = (id: string) => {
-        setReminders(
-            reminders.map((reminder) => (reminder.id === id ? { ...reminder, enabled: !reminder.enabled } : reminder)),
+        setReminders((prevReminders) =>
+            prevReminders.map((reminder) => {
+                if (reminder.id === id) {
+                    const newEnabled = !reminder.enabled
+                    toast.success(
+                        newEnabled
+                            ? `${reminder.title} has been enabled`
+                            : `${reminder.title} has been disabled`
+                    )
+                    return { ...reminder, enabled: newEnabled }
+                }
+                return reminder
+            })
         )
     }
 
@@ -77,7 +87,10 @@ export default function SetRemindersPage() {
                                 </div>
                             </div>
 
-                            <Switch />
+                            <Switch
+                                checked={reminder.enabled}
+                                onCheckedChange={() => toggleReminder(reminder.id)}
+                            />
 
 
                         </div>

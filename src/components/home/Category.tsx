@@ -84,7 +84,7 @@ interface Category {
 
 export default function Category() {
 
-  const { data, isLoading } = useGetCategoriesQuery(undefined)
+  const { data, isLoading } = useGetCategoriesQuery({ limit: 100 })
   const categories = data?.data?.result || []
 
   const scrollRef = useRef<HTMLDivElement>(null)

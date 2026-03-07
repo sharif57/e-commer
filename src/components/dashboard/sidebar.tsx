@@ -22,6 +22,7 @@ import {
   Store,
   WalletMinimal,
   MessagesSquare,
+  Bell,
 } from "lucide-react"
 import { usePathname } from "next/navigation"
 import { Button } from "@/components/ui/button"
@@ -83,14 +84,14 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
 
   const buyerDashboardItems = [
     { icon: LayoutDashboard, label: "Purchase History", link: "/dashboard" },
-    // { icon: Inbox, label: "Message", badge: "9+", link: "/dashboard/message" },
-    // { icon: CreditCard, label: "My Card", link: "/dashboard/my-card" },
+    { icon: Inbox, label: "Message", badge: "9+", link: "/dashboard/message" },
+    { icon: CreditCard, label: "My Card", link: "/dashboard/my-card" },
   ]
 
   const buyerAccountItems = [
     { icon: User, label: "My Account", link: "/dashboard/my-account" },
     { icon: Lock, label: "Security Settings", link: "/dashboard/security" },
-    // { icon: Bell, label: "Reminders", link: "/dashboard/reminder" },
+    { icon: Bell, label: "Reminders", link: "/dashboard/reminder" },
   ]
 
   // SELLER MENU ITEMS
@@ -109,7 +110,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
 
   const sellerInventoryItems = [
     { icon: FileBox, label: "Manage Inventory", link: "/dashboard/inventory" },
-    // { icon: Inbox, label: "Messages", badge: "8+", link: "/dashboard/message" },
+    { icon: Inbox, label: "Messages", badge: "8+", link: "/dashboard/message" },
   ]
 
   const sellerAccountItems = [

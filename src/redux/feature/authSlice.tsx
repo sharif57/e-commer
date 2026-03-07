@@ -7,11 +7,15 @@ import baseApi from "../api/baseApi";
 export const authApi = baseApi.injectEndpoints({
   endpoints: (builder) => ({
     register: builder.mutation({
-      query: (data) => ({
-        url: "/user/create-buyer",
-        method: "POST",
-        body: data,
-      }),
+      query: (data) => {
+        const isSeller = data?.role === "seller";
+
+        return {
+          url: isSeller ? "/user/create-seller" : "/user/create-buyer",
+          method: "POST",
+          body: data,
+        };
+      },
     }),
 
     login: builder.mutation({
