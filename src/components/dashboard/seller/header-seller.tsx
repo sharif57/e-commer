@@ -1,6 +1,6 @@
 "use client"
 
-import { Menu,  Search, X, Bell, User, ArrowLeft } from "lucide-react"
+import { Menu, Search, X, Bell, User, ArrowLeft } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { useState } from "react"
@@ -9,9 +9,16 @@ import { usePathname, useRouter } from "next/navigation"
 interface DashboardHeaderProps {
   onMenuClick: () => void
   isSidebarOpen?: boolean // Optional: to show different icon when sidebar is open
+  isNotificationPanelOpen?: boolean
+  onNotificationToggle?: () => void
 }
 
-export default function HeaderSeller({ onMenuClick, isSidebarOpen = false }: DashboardHeaderProps) {
+export default function HeaderSeller({
+  onMenuClick,
+  isSidebarOpen = false,
+  isNotificationPanelOpen = false,
+  onNotificationToggle,
+}: DashboardHeaderProps) {
   const [searchValue, setSearchValue] = useState("")
   const pathname = usePathname()
   const router = useRouter()
@@ -81,7 +88,7 @@ export default function HeaderSeller({ onMenuClick, isSidebarOpen = false }: Das
                     : "hover:text-foreground cursor-pointer transition-colors whitespace-nowrap truncate"
                 }
                 onClick={idx !== breadcrumbLinks.length - 1 ? () => router.push(crumb.href) : undefined}
-                style={{ maxWidth: 120 }}
+                style={{ maxInlineSize: 120 }}
               >
                 {crumb.label}
               </span>
@@ -108,10 +115,19 @@ export default function HeaderSeller({ onMenuClick, isSidebarOpen = false }: Das
         </div>
 
         {/* Profile/Notification Section - Optional */}
-        <div className="flex items-center gap-2 shrink-0 hidden md:flex">
-          <Button variant="ghost" size="icon" className="h-9 w-9">
+        <div className="hidden md:flex items-center gap-2 shrink-0">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={`h-9 w-9 ${isNotificationPanelOpen ? "bg-muted" : ""}`}
+            onClick={onNotificationToggle}
+            aria-label={isNotificationPanelOpen ? "Close notifications panel" : "Open notifications panel"}
+            title={isNotificationPanelOpen ? "Close notifications panel" : "Open notifications panel"}
+          >
             <Bell className="h-5 w-5" />
-            <span className="sr-only">Notifications</span>
+            <span className="sr-only">
+              {isNotificationPanelOpen ? "Close notifications panel" : "Open notifications panel"}
+            </span>
           </Button>
           <Button variant="ghost" size="icon" className="h-9 w-9 relative">
             <div className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
@@ -135,7 +151,7 @@ export default function HeaderSeller({ onMenuClick, isSidebarOpen = false }: Das
                   : "hover:text-foreground cursor-pointer transition-colors whitespace-nowrap min-w-0 truncate"
               }
               onClick={idx !== breadcrumbLinks.length - 1 ? () => router.push(crumb.href) : undefined}
-              style={{ maxWidth: 80 }}
+              style={{ maxInlineSize: 80 }}
             >
               {crumb.label}
             </span>

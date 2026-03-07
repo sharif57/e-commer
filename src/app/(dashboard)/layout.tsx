@@ -24,6 +24,7 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
     const [userType, setUserType] = useState('');
     const [mounted, setMounted] = useState(false);
     const [showSubscriptionModal, setShowSubscriptionModal] = useState(false);
+    const [isRightbarOpen, setIsRightbarOpen] = useState(true);
 
     const { data } = useGetUsersQuery(undefined);
 
@@ -58,14 +59,22 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
                 />
 
                 {/* Main Content Area */}
-                <div className="flex-1 flex flex-col overflow-hidden">
+                <div className="flex-1 flex flex-col overflow-hidden relative">
                     {/* Header */}
                     {
                         userType === 'buyer' ? (
-                            <DashboardHeader onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+                            <DashboardHeader
+                                onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+                                isNotificationPanelOpen={isRightbarOpen}
+                                onNotificationToggle={() => setIsRightbarOpen((prev) => !prev)}
+                            />
                         ) : (
                             // <DashboardHeader onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
-                            <HeaderSeller onMenuClick={() => setSidebarOpen(!sidebarOpen)} />
+                            <HeaderSeller
+                                onMenuClick={() => setSidebarOpen(!sidebarOpen)}
+                                isNotificationPanelOpen={isRightbarOpen}
+                                onNotificationToggle={() => setIsRightbarOpen((prev) => !prev)}
+                            />
                         )
                     }
                     {/* <Navbar /> */}
@@ -78,12 +87,17 @@ function DashboardContent({ children }: { children: React.ReactNode }) {
                         </main>
 
                         {/* Right Sidebar - Hidden on Mobile */}
+                        <div
+                            className={`hidden lg:block transition-all duration-300 ${isRightbarOpen ? "w-64" : "w-0"
+                                } overflow-hidden`}
+                        >
+                            {isRightbarOpen && (
+                                <DashboardRightbar onToggle={() => setIsRightbarOpen(false)} />
+                            )}
+                        </div>
 
                     </div>
 
-                </div>
-                <div className="hidden lg:block">
-                    <DashboardRightbar />
                 </div>
             </div>
 

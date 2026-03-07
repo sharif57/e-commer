@@ -2,7 +2,7 @@
 
 "use client";
 
-import { Search, Menu, ChevronDown, Handbag, Heart } from "lucide-react";
+import { Search, Menu, ChevronDown, Handbag, Heart, Bell } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -19,15 +19,21 @@ import { useGetCategoriesQuery } from "@/redux/feature/buyer/categorySlice";
 
 interface DashboardHeaderProps {
   onMenuClick: () => void;
+  isNotificationPanelOpen?: boolean;
+  onNotificationToggle?: () => void;
 }
 
-export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
+export default function DashboardHeader({
+  onMenuClick,
+  isNotificationPanelOpen = false,
+  onNotificationToggle,
+}: DashboardHeaderProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
 
-  const {data} = useGetUsersQuery(undefined);
+  const { data } = useGetUsersQuery(undefined);
 
-  const {data: categories} = useGetCategoriesQuery({limit: 100});  
+  const { data: categories } = useGetCategoriesQuery({ limit: 100 });
 
   const categoriesList = categories?.data
   const onCategoryChange = (category: string) => {
@@ -46,7 +52,7 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
           </Button>
         </div>
 
-       
+
         {/* Search - Desktop */}
         <div className="hidden md:flex items-center flex-1 mx-8">
 
@@ -101,10 +107,17 @@ export default function DashboardHeader({ onMenuClick }: DashboardHeaderProps) {
 
         {/* Right */}
         <div className="flex items-center gap-3">
-          {/* <Button variant="ghost" size="icon" className="relative">
+          <Button
+            variant="ghost"
+            size="icon"
+            className={`relative ${isNotificationPanelOpen ? "bg-gray-100" : ""}`}
+            onClick={onNotificationToggle}
+            aria-label={isNotificationPanelOpen ? "Close notifications panel" : "Open notifications panel"}
+            title={isNotificationPanelOpen ? "Close notifications panel" : "Open notifications panel"}
+          >
             <Bell className="w-5 h-5" />
-            <span className="absolute top-1 right-1 w-2 h-2 bg-red-500 rounded-full"></span>
-          </Button> */}
+          </Button>
+
           <Link href="/wise-list"
             className="p-2 hover:bg-gray-100 rounded-md transition-colors"
             aria-label="Wishlist"

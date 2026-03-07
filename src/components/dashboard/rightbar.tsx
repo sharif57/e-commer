@@ -3,12 +3,14 @@
 
 "use client";
 
-import { useState } from "react";
-import { Bell, ChevronDown } from "lucide-react";
+import { Bell, ChevronRight } from "lucide-react";
 import { useGetNotificationsQuery } from "@/redux/feature/notificationSlice";
 
-export default function DashboardRightbar() {
-  const [isOpen, setIsOpen] = useState(true); // default open
+interface DashboardRightbarProps {
+  onToggle: () => void;
+}
+
+export default function DashboardRightbar({ onToggle }: DashboardRightbarProps) {
 
   const { data, isLoading, error } = useGetNotificationsQuery(undefined);
 
@@ -36,8 +38,6 @@ export default function DashboardRightbar() {
     read: notif.read,
   })) || [];
 
-
-
   return (
     <div className="w-64 bg-white border-l border-gray-200 flex flex-col h-full">
 
@@ -48,20 +48,19 @@ export default function DashboardRightbar() {
           <h3 className="font-semibold text-lg">Notifications</h3>
         </div>
 
-        <button onClick={() => setIsOpen(!isOpen)}>
-          <ChevronDown
-            className={`transition-transform duration-300 ${isOpen ? "rotate-180" : ""
-              }`}
-          />
+        <button
+          type="button"
+          onClick={onToggle}
+          className="rounded-md p-1 text-gray-600 hover:bg-gray-100"
+          aria-label="Collapse right sidebar"
+          title="Collapse right sidebar"
+        >
+          <ChevronRight className="w-5 h-5" />
         </button>
       </div>
 
-      {/* Content (collapsible) */}
-      <div
-        className={`transition-all duration-300 overflow-hidden flex-1 ${isOpen ? "opacity-100" : "max-h-0 opacity-0"
-          }`}
-      >
-        <div className="p-4 space-y-6 h-full overflow-y-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+      <div className="overflow-hidden flex-1">
+        <div className="p-4 space-y-6 h-full overflow-y-auto scrollbar-hide">
           {/* Notifications */}
           <div>
             <h4 className="text-sm font-medium text-gray-700 mb-3">
