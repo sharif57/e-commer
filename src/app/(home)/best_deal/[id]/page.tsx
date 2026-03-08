@@ -34,6 +34,7 @@ export default function ProductPage() {
     const [missingFields, setMissingFields] = useState<string[]>([])
     const [sharePending, setSharePending] = useState(false)
     const [isZoomActive, setIsZoomActive] = useState(false)
+    const [isTouchDevice, setIsTouchDevice] = useState(false)
     const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 })
     const [lensPosition, setLensPosition] = useState({ x: 0, y: 0 })
     const imageContainerRef = useRef<HTMLDivElement | null>(null)
@@ -87,6 +88,13 @@ export default function ProductPage() {
         }
         setIsZoomActive(false)
     }, [images.length, mainImage])
+
+    useEffect(() => {
+        if (typeof window === "undefined") return
+        const coarsePointer = window.matchMedia("(pointer: coarse)").matches
+        const hasTouch = navigator.maxTouchPoints > 0
+        setIsTouchDevice(coarsePointer || hasTouch)
+    }, [])
 
     const handleQuantityChange = (value: number) => {
         if (value > 0 && value <= 10) {
@@ -359,12 +367,12 @@ export default function ProductPage() {
         }
     }
 
-    const handleZoomMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+    const updateZoomFromCoordinates = (clientX: number, clientY: number) => {
         if (!imageContainerRef.current || !images?.length) return
 
         const rect = imageContainerRef.current.getBoundingClientRect()
-        const x = event.clientX - rect.left
-        const y = event.clientY - rect.top
+        const x = clientX - rect.left
+        const y = clientY - rect.top
 
         const clampedX = Math.max(0, Math.min(x, rect.width))
         const clampedY = Math.max(0, Math.min(y, rect.height))
@@ -376,6 +384,26 @@ export default function ProductPage() {
 
         setLensPosition({ x: clampedX, y: clampedY })
         setZoomPosition({ x: boundedX, y: boundedY })
+    }
+
+    const handleZoomMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (isTouchDevice) return
+        updateZoomFromCoordinates(event.clientX, event.clientY)
+    }
+
+    const handleZoomTouchStart = (event: React.TouchEvent<HTMLDivElement>) => {
+        if (!images?.length) return
+        const touch = event.touches[0]
+        if (!touch) return
+        setIsZoomActive(true)
+        updateZoomFromCoordinates(touch.clientX, touch.clientY)
+    }
+
+    const handleZoomTouchMove = (event: React.TouchEvent<HTMLDivElement>) => {
+        if (!isZoomActive) return
+        const touch = event.touches[0]
+        if (!touch) return
+        updateZoomFromCoordinates(touch.clientX, touch.clientY)
     }
 
     // Review submit handler
@@ -445,15 +473,17 @@ export default function ProductPage() {
                                 {/* Main Image */}
                                 <div
                                     ref={imageContainerRef}
-                                    onMouseEnter={() => images.length > 0 && setIsZoomActive(true)}
-                                    onMouseLeave={() => setIsZoomActive(false)}
+                                    onMouseEnter={() => !isTouchDevice && images.length > 0 && setIsZoomActive(true)}
+                                    onMouseLeave={() => !isTouchDevice && setIsZoomActive(false)}
                                     onMouseMove={handleZoomMouseMove}
+                                    onTouchStart={handleZoomTouchStart}
+                                    onTouchMove={handleZoomTouchMove}
                                     className="relative bg-gray-100 rounded-lg overflow-hidden aspect-[4/5] cursor-zoom-in"
                                 >
                                     <Image src={images[mainImage] || "/placeholder.svg"} alt="Product" className="w-full h-full object-cover" fill />
                                     {images.length > 0 && (
-                                        <div className="hidden lg:block absolute top-3 left-3 bg-black/60 text-white text-xs font-medium px-2 py-1 rounded-md">
-                                            Hover to zoom
+                                        <div className="absolute top-3 left-3 bg-black/60 text-white text-xs font-medium px-2 py-1 rounded-md">
+                                            {isTouchDevice ? "Tap image to zoom" : "Hover to zoom"}
                                         </div>
                                     )}
                                     {isZoomActive && images.length > 0 && (
@@ -485,11 +515,31 @@ export default function ProductPage() {
                                     <div className="absolute bottom-4 left-4 bg-white px-3 py-1 rounded-full text-sm font-medium text-black">
                                         {mainImage + 1} of {images.length}
                                     </div>
+                                    {isTouchDevice && images.length > 0 && (
+                                        <button
+                                            onClick={() => setIsZoomActive((prev) => !prev)}
+                                            className="absolute bottom-4 right-4 bg-white px-3 py-1 rounded-full text-sm font-medium text-black"
+                                        >
+                                            {isZoomActive ? "Close zoom" : "Zoom"}
+                                        </button>
+                                    )}
                                 </div>
 
                                 {isZoomActive && images.length > 0 && (
                                     <div
                                         className="hidden lg:block pointer-events-none absolute z-20 top-0 left-full ml-5 w-[360px] h-[430px] rounded-lg border border-gray-200 bg-white shadow-lg overflow-hidden transition-opacity duration-150"
+                                        style={{
+                                            backgroundImage: `url(${images[mainImage] || "/placeholder.svg"})`,
+                                            backgroundRepeat: "no-repeat",
+                                            backgroundSize: "240% 240%",
+                                            backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                                        }}
+                                    />
+                                )}
+
+                                {isZoomActive && images.length > 0 && (
+                                    <div
+                                        className="lg:hidden relative w-full aspect-[4/5] rounded-lg border border-gray-200 bg-white shadow-md overflow-hidden"
                                         style={{
                                             backgroundImage: `url(${images[mainImage] || "/placeholder.svg"})`,
                                             backgroundRepeat: "no-repeat",
