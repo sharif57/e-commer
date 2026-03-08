@@ -2,17 +2,16 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Search, ChevronDown, Edit, Trash2, X, Upload, Eye } from "lucide-react"
+import { Search, ChevronDown, Edit, Trash2, X, Upload, Plus, Minus, Star, Pencil } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
-import { useDeleteProductMutation, useGetSellerProductsQuery, useGetSingleProductSellerQuery, useUpdateProductMutation } from "@/redux/feature/seller/productSellerSlice"
+import { useDeleteProductMutation, useGetSellerProductsQuery, useUpdateProductMutation } from "@/redux/feature/seller/productSellerSlice"
 import Image from "next/image"
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
-import Link from "next/link"
 
 interface InventoryItem {
   _id: string
@@ -24,9 +23,11 @@ interface InventoryItem {
     title: string
   }
   subCategoryId: {
+    _id?: string
     title: string
   }
   image: string[]
+  stock?: number
   inStock: boolean
   status: string
   des: string
@@ -36,6 +37,7 @@ interface InventoryItem {
   createdAt: string
   updatedAt: string
   return?: string
+  shippingCost?: number
   deliveryChargeInDc?: string
   deliveryChargeOutOfDc?: string
   carrier?: string
@@ -60,6 +62,8 @@ export default function ManageInventory() {
   const [newImages, setNewImages] = useState<File[]>([])
   const [existingImages, setExistingImages] = useState<string[]>([])
   const [imagePreviews, setImagePreviews] = useState<string[]>([])
+  const [stockUpdatingId, setStockUpdatingId] = useState<string | null>(null)
+  const [stockOverrides, setStockOverrides] = useState<Record<string, number>>({})
 
   // Prepare query params based on stock filter
   const queryParams: { page: number; inStock?: boolean } = { page: currentPage };
@@ -70,20 +74,50 @@ export default function ManageInventory() {
   }
 
   const { data, isLoading } = useGetSellerProductsQuery(queryParams);
-  const products: InventoryItem[] = data?.data?.result || [];
+  const products: InventoryItem[] = useMemo(() => data?.data?.result || [], [data]);
   const totalProducts = data?.data?.meta?.total || 0;
   const totalPages = Math.ceil(totalProducts / 10);
 
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
 
+  const filteredProducts = useMemo(() => {
+    const keyword = searchTerm.trim().toLowerCase();
+
+    return products.filter((item) => {
+      const matchesSearch =
+        !keyword ||
+        item.title?.toLowerCase().includes(keyword) ||
+        item._id?.toLowerCase().includes(keyword) ||
+        item.sku?.toLowerCase().includes(keyword);
+
+      const matchesCategory =
+        categoryFilter === "all" ||
+        item.categoryId?.title?.toLowerCase() === categoryFilter.toLowerCase();
+
+      return matchesSearch && matchesCategory;
+    });
+  }, [products, searchTerm, categoryFilter]);
+
   const getSlicedTitle = (title: string, limit = 28) => {
     if (!title) return "";
     return title.length > limit ? `${title.slice(0, limit)}...` : title;
   };
 
-  const handleEdit = (productId: string) => {
-    const product = products.find(p => p._id === productId);
+  const getIdString = (value: any) => {
+    if (!value) return "";
+    if (typeof value === "string") return value;
+    if (typeof value === "object" && typeof value._id === "string") return value._id;
+    return "";
+  };
+
+  const isValidObjectId = (value: string) => /^[a-f\d]{24}$/i.test(value);
+
+  const handleEdit = (productOrId: InventoryItem | string) => {
+    const product = typeof productOrId === "string"
+      ? products.find((p) => p._id === productOrId)
+      : productOrId;
+
     if (product) {
       setSelectedProduct(product);
       setEditFormData({
@@ -93,17 +127,19 @@ export default function ManageInventory() {
         size: product.size,
         des: product.des,
         return: product.return || "7 days return available",
+        shippingCost: product.shippingCost ?? Number(product.deliveryChargeInDc || 0),
         deliveryChargeInDc: product.deliveryChargeInDc || "50",
         deliveryChargeOutOfDc: product.deliveryChargeOutOfDc || "100",
         carrier: product.carrier || "RedX",
         sku: product.sku,
-        categoryId: product.categoryId,
-        subCategoryId: product.subCategoryId,
+        categoryId: getIdString(product.categoryId),
+        subCategoryId: getIdString(product.subCategoryId),
         closureType: product.closureType || "",
         origin: product.origin || "",
         careInsturction: product.careInsturction || "",
         frbricType: product.frbricType || "",
         color: product.color,
+        stock: typeof product.stock === "number" ? product.stock : (product.inStock ? 1 : 0),
         inStock: product.inStock,
         status: product.status
       });
@@ -164,17 +200,49 @@ export default function ManageInventory() {
     setEditFormData((prev: any) => ({ ...prev, [field]: array }));
   };
 
+  const getStockValue = (item: InventoryItem) => {
+    const overrideStock = stockOverrides[item._id];
+    if (typeof overrideStock === "number") return overrideStock;
+
+    const rawStock = (item as any)?.stock;
+    if (typeof rawStock === "number") return rawStock;
+    if (typeof rawStock === "string" && rawStock.trim() !== "") return Number(rawStock) || 0;
+    return item.inStock ? 1 : 0;
+  };
+
+  const handleStockChange = async (item: InventoryItem, delta: number) => {
+    const currentStock = getStockValue(item);
+    const nextStock = Math.max(0, currentStock + delta);
+
+    try {
+      setStockUpdatingId(item._id);
+      const formData = new FormData();
+      formData.append("data", JSON.stringify({
+        stock: nextStock,
+        inStock: nextStock > 0,
+      }));
+
+      await updateProduct({ productId: item._id, data: formData }).unwrap();
+      setStockOverrides((prev) => ({ ...prev, [item._id]: nextStock }));
+      toast.success("Stock updated");
+    } catch (error: any) {
+      toast.error(error?.data?.message || "Failed to update stock");
+    } finally {
+      setStockUpdatingId(null);
+    }
+  };
+
   const handleUpdateProduct = async () => {
     if (!selectedProduct) return;
 
     try {
       const formData = new FormData();
 
+      const categoryId = getIdString(editFormData.categoryId) || getIdString(selectedProduct.categoryId);
+      const subCategoryId = getIdString(editFormData.subCategoryId) || getIdString(selectedProduct.subCategoryId);
+      const shippingCost = Number(editFormData.shippingCost);
 
-
-      // Add existing images that weren't removed
-      // formData.append('', JSON.stringify(existingImages));
-      formData.append('data', JSON.stringify({
+      const payload: any = {
         title: editFormData.title,
         price: editFormData.price,
         brand: editFormData.brand,
@@ -184,19 +252,28 @@ export default function ManageInventory() {
         deliveryChargeOutOfDc: editFormData.deliveryChargeOutOfDc,
         carrier: editFormData.carrier,
         sku: editFormData.sku,
-        categoryId: editFormData.categoryId,
-        subCategoryId: editFormData.subCategoryId,
         closureType: editFormData.closureType,
         origin: editFormData.origin,
         careInsturction: editFormData.careInsturction,
         frbricType: editFormData.frbricType,
         color: editFormData.color,
+        stock: Number(editFormData.stock),
         inStock: editFormData.inStock,
         status: editFormData.status,
         size: editFormData.size,
         image: existingImages,
-      })
-      )
+      };
+
+      if (!Number.isNaN(shippingCost)) {
+        payload.shippingCost = shippingCost;
+      }
+      if (isValidObjectId(categoryId)) {
+        payload.categoryId = categoryId;
+      }
+      if (isValidObjectId(subCategoryId)) {
+        payload.subCategoryId = subCategoryId;
+      }
+      formData.append('data', JSON.stringify(payload))
 
       // Add new images
       newImages.forEach((file) => {
@@ -249,7 +326,7 @@ export default function ManageInventory() {
             <div className="relative">
               <Button
                 onClick={() => setShowCategoryDropdown(!showCategoryDropdown)}
-                className="bg-white hover:bg-gray-50 text-gray-700 border border-gray-400 px-4 sm:px-5 py-2 rounded-full font-medium text-xs sm:text-sm flex items-center gap-2 transition-colors"
+                className="bg-white hover:bg-gray-50 text-black border border-gray-400 px-4 sm:px-5 py-2 rounded-full font-medium text-xs sm:text-sm flex items-center gap-2 transition-colors"
               >
                 By category <ChevronDown className="h-4 w-4" />
               </Button>
@@ -260,7 +337,7 @@ export default function ManageInventory() {
                       setCategoryFilter("all")
                       setShowCategoryDropdown(false)
                     }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-black"
                   >
                     All Categories
                   </button>
@@ -269,7 +346,7 @@ export default function ManageInventory() {
                       setCategoryFilter("Electronics")
                       setShowCategoryDropdown(false)
                     }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-black"
                   >
                     Electronics
                   </button>
@@ -283,7 +360,7 @@ export default function ManageInventory() {
                 onClick={() => setShowStockDropdown(!showStockDropdown)}
                 className={`hover:bg-gray-50 border border-gray-400 px-4 sm:px-5 py-2 rounded-full font-medium text-xs sm:text-sm flex items-center gap-2 transition-colors ${stockFilter !== "all"
                   ? "bg-yellow-400 text-black border-yellow-400"
-                  : "bg-white text-gray-700"
+                  : "bg-white text-black"
                   }`}
               >
                 {stockFilter === "in-stock"
@@ -301,7 +378,7 @@ export default function ManageInventory() {
                       setShowStockDropdown(false)
                       setCurrentPage(1) // Reset to first page
                     }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-black"
                   >
                     All
                   </button>
@@ -311,7 +388,7 @@ export default function ManageInventory() {
                       setShowStockDropdown(false)
                       setCurrentPage(1) // Reset to first page
                     }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-black"
                   >
                     In Stock
                   </button>
@@ -321,7 +398,7 @@ export default function ManageInventory() {
                       setShowStockDropdown(false)
                       setCurrentPage(1) // Reset to first page
                     }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-gray-700"
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-100 text-sm text-black"
                   >
                     Out of Stock
                   </button>
@@ -332,103 +409,96 @@ export default function ManageInventory() {
         </div>
 
         {/* Table Container - Responsive */}
-        <div className="border border-gray-200 rounded-lg overflow-hidden">
+        <div className=" overflow-hidden">
           {/* Desktop Table View */}
           <div className="hidden sm:block overflow-x-auto">
             <table className="w-full">
               <thead>
                 <tr className="bg-gray-50 border-b border-gray-200">
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap">Product</th>
-
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap">
-                    productId
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap">
-                    Category
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap">
-                    Price (USD)
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap">
-                    Stock Status
-                  </th>
-                  <th className="px-4 py-3 text-left text-xs font-semibold text-gray-700 whitespace-nowrap">Status</th>
-                  <th className="px-4 py-3 text-center text-xs font-semibold text-gray-700 whitespace-nowrap">
-                    Action
-                  </th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-medium text-black whitespace-nowrap">Sl No.</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-medium text-black whitespace-nowrap">Items</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-medium text-black whitespace-nowrap">Product ID</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-medium text-black whitespace-nowrap">Category</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-medium text-black whitespace-nowrap">Price (USD)</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-medium text-black whitespace-nowrap">In Stock</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-medium text-black whitespace-nowrap">Ratings</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-medium text-black whitespace-nowrap">Action</th>
                 </tr>
               </thead>
               <tbody>
-                {products && products.length > 0 ? (
-                  products.map((item: InventoryItem, index: number) => (
+                {filteredProducts && filteredProducts.length > 0 ? (
+                  filteredProducts.map((item: InventoryItem, index: number) => (
                     <tr key={item._id} className="border-b border-gray-200 hover:bg-gray-50 transition-colors">
-                      <td className="px-4 py-3">
-                        <div className="flex items-center gap-3">
+                      <td className="px-3 py-2.5 text-sm text-black whitespace-nowrap">{String((currentPage - 1) * 10 + index + 1).padStart(2, "0")}</td>
+                      <td className="px-3 py-2.5">
+                        <div className="flex items-center gap-2.5 min-w-[300px] max-w-[360px]">
                           {item.image && item.image.length > 0 ? (
                             <Image
                               src={item.image[0]}
                               alt={item.title}
                               height={100}
                               width={100}
-                              className="h-10 w-10 object-cover rounded bg-gray-100"
+                              className="h-5 w-5 object-cover rounded bg-gray-100"
                             />
                           ) : (
-                            <div className="h-10 w-10 bg-gray-200 rounded flex items-center justify-center">
-                              <span className="text-xs text-gray-500">No image</span>
+                            <div className="h-5 w-5 bg-gray-200 rounded flex items-center justify-center">
+                              <span className="text-[9px] text-gray-500">-</span>
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-gray-900 truncate">{getSlicedTitle(item.title)}</p>
-                            <p className="text-xs text-gray-500">{item.des?.substring(0, 30)}...</p>
+                            <p className="text-[13px] text-black truncate">{getSlicedTitle(item.title, 42)}</p>
                           </div>
                         </div>
                       </td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{item._id}</td>
-                      <td className="px-4 py-3 text-sm text-gray-600">{item.categoryId?.title}</td>
-                      <td className="px-4 py-3 text-sm font-semibold text-gray-900">${item.price.toFixed(2)}</td>
-                      <td className="px-4 py-3 text-sm">
-                        <span
-                          className={`inline-flex px-2 py-1 rounded-full text-xs font-semibold ${item.inStock
-                            ? "bg-green-100 text-green-800"
-                            : "bg-red-100 text-red-800"
-                            }`}
-                        >
-                          {item.inStock ? "In Stock" : "Out of Stock"}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3 text-sm">
-                        <span
-                          className={`inline-flex px-2 py-1 rounded-full text-xs font-semibold ${item.status === "active"
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-gray-100 text-gray-800"
-                            }`}
-                        >
-                          {item.status}
-                        </span>
-                      </td>
-                      <td className="px-4 py-3">
-                        <div className="flex items-center justify-center gap-2">
-                          <Link
-                            href={`/best_deal/${item._id}`}
-
-                            className="p-2 hover:bg-gray-200 rounded transition-colors"
-                            title="view product"
-                          >
-                            <Eye className="h-4 w-4 text-gray-600" />
-                          </Link>
+                      <td className="px-3 py-2.5 text-[13px] text-black whitespace-nowrap">{item._id}</td>
+                      <td className="px-3 py-2.5 text-[13px] text-black whitespace-nowrap">{item.categoryId?.title}</td>
+                      <td className="px-3 py-2.5 text-[13px] text-black whitespace-nowrap">
+                        <div className="flex items-center gap-2">
+                          <span>${item.price.toFixed(2)}</span>
                           <button
-                            onClick={() => handleEdit(item._id)}
-                            className="p-2 hover:bg-gray-200 rounded transition-colors"
+                            onClick={() => handleEdit(item)}
+                            className="p-0.5 hover:bg-gray-200 rounded"
+                            title="Edit Price"
+                          >
+                            <Pencil className="h-3.5 w-3.5 text-gray-500" />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-3 py-2.5 text-[13px] whitespace-nowrap">
+                        <div className="flex items-center gap-1.5">
+                          <span className="font-medium min-w-4 text-center text-black">{getStockValue(item)}</span>
+                          <button
+                            onClick={() => handleStockChange(item, 1)}
+                            disabled={stockUpdatingId === item._id}
+                            className="p-0.5 hover:bg-gray-200 rounded disabled:opacity-50"
+                            title="Increase stock"
+                          >
+                            <Plus className="h-3.5 w-3.5 text-gray-600" />
+                          </button>
+                        </div>
+                      </td>
+                      <td className="px-3 py-2.5 text-[13px] text-black whitespace-nowrap">
+                        <div className="flex items-center gap-1.5">
+                          <Star className="h-3.5 w-3.5 text-gray-600" />
+                          <span>{(item.rating ?? 4.7).toFixed(1)}</span>
+                        </div>
+                      </td>
+                      <td className="px-3 py-2.5">
+                        <div className="flex items-center gap-1.5 whitespace-nowrap">
+                          <button
+                            onClick={() => handleEdit(item)}
+                            className="inline-flex items-center gap-1 text-[13px] text-black hover:text-black"
                             title="Edit"
                           >
-                            <Edit className="h-4 w-4 text-gray-600" />
+                            <Edit className="h-3.5 w-3.5 text-gray-600" />
+                            Edit
                           </button>
                           <button
                             onClick={() => handleDeleteClick(item._id)}
-                            className="p-2 hover:bg-red-100 rounded transition-colors"
+                            className="p-0.5 hover:bg-red-100 rounded transition-colors"
                             title="Delete"
                           >
-                            <Trash2 className="h-4 w-4 text-red-600" />
+                            <Trash2 className="h-3.5 w-3.5 text-red-500" />
                           </button>
                         </div>
                       </td>
@@ -453,7 +523,7 @@ export default function ManageInventory() {
               </Card>
             ) : (
               <div className="space-y-4 p-4">
-                {products?.map((item: InventoryItem) => (
+                {filteredProducts?.map((item: InventoryItem) => (
                   <Card key={item._id} className="p-4 border border-gray-200">
                     <div className="flex gap-3 mb-3">
                       {item.image && item.image.length > 0 ? (
@@ -485,22 +555,36 @@ export default function ManageInventory() {
                       </div>
                       <div>
                         <p className="text-gray-600">Stock</p>
-                        <p className={`font-semibold ${item.inStock ? "text-green-600" : "text-red-600"}`}>
-                          {item.inStock ? "In Stock" : "Out"}
-                        </p>
+                        <div className="flex items-center gap-1 mt-1">
+                          <button
+                            onClick={() => handleStockChange(item, -1)}
+                            disabled={stockUpdatingId === item._id}
+                            className="p-1 border rounded disabled:opacity-50"
+                          >
+                            <Minus className="h-3 w-3" />
+                          </button>
+                          <span className="font-semibold min-w-4 text-center">{getStockValue(item)}</span>
+                          <button
+                            onClick={() => handleStockChange(item, 1)}
+                            disabled={stockUpdatingId === item._id}
+                            className="p-1 border rounded disabled:opacity-50"
+                          >
+                            <Plus className="h-3 w-3" />
+                          </button>
+                        </div>
                       </div>
                       <div>
-                        <p className="text-gray-600">Status</p>
-                        <p className={`font-semibold ${item.status === "active" ? "text-blue-600" : "text-gray-600"}`}>
-                          {item.status}
+                        <p className="text-gray-600">Rating</p>
+                        <p className="font-semibold flex items-center gap-1">
+                          <Star className="h-3.5 w-3.5" /> {(item.rating ?? 4.7).toFixed(1)}
                         </p>
                       </div>
                     </div>
 
                     <div className="flex gap-2 pt-3 border-t border-gray-200">
                       <button
-                        onClick={() => handleEdit(item._id)}
-                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-gray-400 rounded-lg hover:bg-gray-50 transition-colors text-xs font-medium text-gray-700"
+                        onClick={() => handleEdit(item)}
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 border border-gray-400 rounded-lg hover:bg-gray-50 transition-colors text-xs font-medium text-black"
                       >
                         <Edit className="h-4 w-4" /> Edit
                       </button>
@@ -546,7 +630,7 @@ export default function ManageInventory() {
             </div>
             <div className="hidden sm:flex sm:flex-1 sm:items-center sm:justify-between">
               <div>
-                <p className="text-sm text-gray-700">
+                <p className="text-sm text-black">
                   Showing <span className="font-medium">{products.length}</span> of{" "}
                   <span className="font-medium">{totalProducts}</span> products
                 </p>
@@ -588,7 +672,7 @@ export default function ManageInventory() {
                       return (
                         <span
                           key={pageNum}
-                          className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-gray-700 ring-1 ring-inset ring-gray-300"
+                          className="relative inline-flex items-center px-4 py-2 text-sm font-semibold text-black ring-1 ring-inset ring-gray-300"
                         >
                           ...
                         </span>
@@ -755,6 +839,18 @@ export default function ManageInventory() {
                     id="deliveryChargeInDc"
                     value={editFormData.deliveryChargeInDc || ''}
                     onChange={(e) => handleFormChange('deliveryChargeInDc', e.target.value)}
+                    placeholder="50"
+                  />
+                </div>
+
+                {/* Shipping Cost */}
+                <div className="space-y-2">
+                  <Label htmlFor="shippingCost">Shipping Cost</Label>
+                  <Input
+                    id="shippingCost"
+                    type="number"
+                    value={editFormData.shippingCost ?? ''}
+                    onChange={(e) => handleFormChange('shippingCost', Number(e.target.value))}
                     placeholder="50"
                   />
                 </div>
