@@ -85,7 +85,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
   const buyerDashboardItems = [
     { icon: LayoutDashboard, label: "Purchase History", link: "/dashboard" },
     { icon: Inbox, label: "Message", badge: "9+", link: "/dashboard/message" },
-    { icon: CreditCard, label: "My Card", link: "/dashboard/my-card" },
+    { icon: CreditCard, label: "My Card", link: "/dashboard/add-my-card" },
   ]
 
   const buyerAccountItems = [
