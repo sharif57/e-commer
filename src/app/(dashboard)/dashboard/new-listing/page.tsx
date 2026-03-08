@@ -43,6 +43,8 @@ export default function SellerDashboardNewListing() {
     nationalIdFront: null,
     nationalIdBack: null,
     shopLogo: null,
+    shippingCost: "",
+    freeDelivery: false,
   })
 
   const handleNext = () => {

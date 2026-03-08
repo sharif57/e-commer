@@ -15,6 +15,20 @@ export default function ListFive({ data, onChangeStep, onChange, onNext, onPrevi
     const [showMore, setShowMore] = useState(false)
     const [isPublishing, setIsPublishing] = useState(false)
 
+    const isEmpty = (value: any) => value === undefined || value === null || String(value).trim() === ""
+    const getShippingCost = () => {
+        if (!isEmpty(data.shippingCost)) return Number(data.shippingCost)
+        if (data.freeDelivery) return 0
+
+        const deliveryInDc = data.deliveryChargeInDc ?? data.deliveryInside
+        if (!isEmpty(deliveryInDc)) return Number(deliveryInDc)
+
+        const deliveryOutDc = data.deliveryChargeOutOfDc ?? data.deliveryOutside
+        if (!isEmpty(deliveryOutDc)) return Number(deliveryOutDc)
+
+        return null
+    }
+
     console.log("Review Data:", data)
 
     const categoryLabel = data.category || data.categoryName || data.categoryTitle || data.categoryId || "N/A"
@@ -39,6 +53,8 @@ export default function ListFive({ data, onChangeStep, onChange, onNext, onPrevi
             if (!data.subCategoryId) missingFields.push("Subcategory")
             if (!data.closureType && !data.closure) missingFields.push("Closure Type")
             if (!data.origin) missingFields.push("Origin")
+            const shippingCost = getShippingCost()
+            if (shippingCost === null || Number.isNaN(shippingCost)) missingFields.push("Shipping Cost")
 
             if (missingFields.length > 0) {
                 alert(`Please fill in the following required fields:\n• ${missingFields.join("\n• ")}`)
@@ -54,6 +70,7 @@ export default function ListFive({ data, onChangeStep, onChange, onNext, onPrevi
                 subCategoryId: String(data.subCategoryId),
                 closureType: (data.closureType || data.closure || "").trim(),
                 origin: (data.origin || "").trim(),
+                shippingCost,
             }
 
             // Add optional fields only if they have values
@@ -122,10 +139,10 @@ export default function ListFive({ data, onChangeStep, onChange, onNext, onPrevi
 
             // Trigger create product mutation
             const result: any = await createProduct(formData).unwrap()
-            
+
             router.push('/dashboard/inventory');
             setIsPublishing(false)
-            toast.success( result?.data?.message || "Product published successfully!")
+            toast.success(result?.data?.message || "Product published successfully!")
             console.log("Product published successfully:", result)
             // alert("Product published successfully!")
 
@@ -158,6 +175,8 @@ export default function ListFive({ data, onChangeStep, onChange, onNext, onPrevi
             if (!data.subCategoryId) missingFields.push("Subcategory")
             if (!data.closureType && !data.closure) missingFields.push("Closure Type")
             if (!data.origin) missingFields.push("Origin")
+            const shippingCost = getShippingCost()
+            if (shippingCost === null || Number.isNaN(shippingCost)) missingFields.push("Shipping Cost")
 
             if (missingFields.length > 0) {
                 toast.error(`Please fill in the following required fields:\n• ${missingFields.join("\n• ")}`)
@@ -173,6 +192,7 @@ export default function ListFive({ data, onChangeStep, onChange, onNext, onPrevi
                 subCategoryId: String(data.subCategoryId),
                 closureType: (data.closureType || data.closure || "").trim(),
                 origin: (data.origin || "").trim(),
+                shippingCost,
             }
 
             // Add optional fields only if they have values
@@ -244,7 +264,7 @@ export default function ListFive({ data, onChangeStep, onChange, onNext, onPrevi
             router.push('/dashboard/draft');
             setIsPublishing(false)
             console.log("Product published successfully:", result)
-            toast.success( result?.data?.message || "Product draft add!")
+            toast.success(result?.data?.message || "Product draft add!")
 
             // Move to next step or reset
             if (onNext) onNext()

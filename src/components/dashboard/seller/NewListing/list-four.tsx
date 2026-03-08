@@ -16,15 +16,17 @@ interface StepThreeProps {
 
 export default function ListFour({ data, onChange, onNext, onPrevious }: StepThreeProps) {
     const [errors, setErrors] = useState<Record<string, string>>({})
-    const [freeDelivery, setFreeDelivery] = useState(false)
+    const [freeDelivery, setFreeDelivery] = useState(!!data.freeDelivery)
+    const isEmpty = (value: any) => value === undefined || value === null || String(value).trim() === ""
+    const toNumberOrEmpty = (value: string) => value === "" ? "" : Number(value)
 
     const validateStep = () => {
         const newErrors: Record<string, string> = {}
 
-        if (!freeDelivery) {
-            if (!data.deliveryInside) newErrors.deliveryInside = "Delivery charge is required"
-            if (!data.deliveryOutside) newErrors.deliveryOutside = "Delivery charge is required"
-        }
+        if (isEmpty(data.deliveryInside)) newErrors.deliveryInside = "Delivery charge is required"
+        if (isEmpty(data.deliveryOutside)) newErrors.deliveryOutside = "Delivery charge is required"
+        if (isEmpty(data.shippingCost)) newErrors.shippingCost = "Shipping cost is required"
+        if (isEmpty(data.carrier)) newErrors.carrier = "Carrier is required"
 
         setErrors(newErrors)
         return Object.keys(newErrors).length === 0
@@ -72,11 +74,9 @@ export default function ListFour({ data, onChange, onNext, onPrevious }: StepThr
                     <input
                         type="number"
                         placeholder="$"
-                        disabled={freeDelivery}
                         value={data.deliveryInside || ""}
-                        onChange={(e) => onChange({ deliveryInside: e.target.value })}
-                        className={`w-full px-2 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 
-                        ${freeDelivery ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                        onChange={(e) => onChange({ deliveryInside: e.target.value, shippingCost: toNumberOrEmpty(e.target.value) })}
+                        className="w-full px-2 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500"
                     />
                     {errors.deliveryInside && <p className="text-red-500 text-xs mt-1">{errors.deliveryInside}</p>}
                 </div>
@@ -89,11 +89,9 @@ export default function ListFour({ data, onChange, onNext, onPrevious }: StepThr
                     <input
                         type="number"
                         placeholder="$"
-                        disabled={freeDelivery}
                         value={data.deliveryOutside || ""}
                         onChange={(e) => onChange({ deliveryOutside: e.target.value })}
-                        className={`w-full px-2 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 
-                        ${freeDelivery ? "bg-gray-100 cursor-not-allowed" : ""}`}
+                        className="w-full px-2 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500"
                     />
                     {errors.deliveryOutside && <p className="text-red-500 text-xs mt-1">{errors.deliveryOutside}</p>}
                 </div>
@@ -102,13 +100,32 @@ export default function ListFour({ data, onChange, onNext, onPrevious }: StepThr
                 <div className="bg-white p-2 rounded-lg">
                     <div className="flex justify-between items-center">
                         <h3 className="text-sm font-medium">I won’t charge delivery fee for this product</h3>
-                        <Switch checked={freeDelivery} onCheckedChange={setFreeDelivery} />
+                        <Switch
+                            checked={freeDelivery}
+                            onCheckedChange={(checked) => {
+                                setFreeDelivery(checked)
+                                onChange({ freeDelivery: checked })
+                            }}
+                        />
                     </div>
+                </div>
+
+                {/* Shipping Cost */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-900 mb-2">Shipping Cost</label>
+                    <input
+                        type="number"
+                        placeholder="$"
+                        value={data.shippingCost ?? ""}
+                        onChange={(e) => onChange({ shippingCost: toNumberOrEmpty(e.target.value) })}
+                        className="w-full px-2 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500"
+                    />
+                    {errors.shippingCost && <p className="text-red-500 text-xs mt-1">{errors.shippingCost}</p>}
                 </div>
 
                 {/* Carrier */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-2">Carrier (Optional)</label>
+                    <label className="block text-sm font-medium text-gray-900 mb-2">Carrier</label>
                     <select
                         value={data.carrier || ""}
                         onChange={(e) => onChange({ carrier: e.target.value })}
@@ -119,6 +136,7 @@ export default function ListFour({ data, onChange, onNext, onPrevious }: StepThr
                         <option value="FedEx">FedEx</option>
                         <option value="No Carrier">No Carrier</option>
                     </select>
+                    {errors.carrier && <p className="text-red-500 text-xs mt-1">{errors.carrier}</p>}
 
                 </div>
 

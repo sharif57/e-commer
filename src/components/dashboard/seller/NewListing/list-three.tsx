@@ -24,16 +24,24 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
     const measurements = ["S", "M", "L", "XL", "XXL"]
     const selectedSizes = Array.isArray(data.size) ? data.size : []
     const colors = Array.isArray(data.color) ? data.color : []
+    const isEmpty = (value: any) => value === undefined || value === null || String(value).trim() === ""
 
     const validateStep = () => {
         const newErrors: Record<string, string> = {}
 
-        if (!data.title) newErrors.title = "Product title is required"
-        if (!data.fabric) newErrors.fabric = "Fabric type is required"
-        if (!data.stock) newErrors.stock = "Stock quantity is required"
-        if (!data.price) newErrors.price = "Price is required"
-        if (!data.closure) newErrors.closure = "Closure type is required"
-        if (!data.origin) newErrors.origin = "Origin is required"
+        if (isEmpty(data.title)) newErrors.title = "Product title is required"
+        if (!selectedSizes.length) newErrors.size = "At least one product size is required"
+        if (!colors.length) newErrors.color = "At least one product color is required"
+        if (isEmpty(data.brand)) newErrors.brand = "Brand is required"
+        if (isEmpty(data.fabric)) newErrors.fabric = "Fabric type is required"
+        if (isEmpty(data.care)) newErrors.care = "Care instructions are required"
+        if (isEmpty(data.origin)) newErrors.origin = "Origin is required"
+        if (isEmpty(data.closure)) newErrors.closure = "Closure type is required"
+        if (isEmpty(data.sku)) newErrors.sku = "SKU is required"
+        if (isEmpty(data.stock)) newErrors.stock = "Stock quantity is required"
+        if (isEmpty(data.price)) newErrors.price = "Price is required"
+        if (isEmpty(data.description)) newErrors.description = "Description is required"
+        if (!returnEnabled) newErrors.return = "7 days return policy is required"
 
         setErrors(newErrors)
         return Object.keys(newErrors).length === 0
@@ -67,6 +75,13 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
     const handleReturnToggle = (checked: boolean) => {
         setReturnEnabled(checked)
         onChange({ return: checked ? "7 days return available" : "" })
+        if (checked) {
+            setErrors((prev) => {
+                const nextErrors = { ...prev }
+                delete nextErrors.return
+                return nextErrors
+            })
+        }
     }
 
     return (
@@ -130,6 +145,7 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
                             </Badge>
                         ))}
                     </div>
+                    {errors.size && <p className="text-red-500 text-xs mt-1">{errors.size}</p>}
                 </div>
 
                 {/* Colors */}
@@ -155,17 +171,18 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
                     {/* Color Badges */}
                     <div className="flex flex-wrap gap-2 mt-3">
                         {colors.map((c: string, i: number) => (
-                                                    <Badge key={i} className="bg-[#F2C94C] text-gray-900 font-semibold text-sm relative group">
-                                                        {c}
-                                                        <button
-                                                            onClick={() => handleRemoveColor(c)}
-                                                            className="ml-2 text-gray-700 hover:text-red-600"
-                                                        >
-                                                            ×
-                                                        </button>
-                                                    </Badge>
-                                                ))}
+                            <Badge key={i} className="bg-[#F2C94C] text-gray-900 font-semibold text-sm relative group">
+                                {c}
+                                <button
+                                    onClick={() => handleRemoveColor(c)}
+                                    className="ml-2 text-gray-700 hover:text-red-600"
+                                >
+                                    ×
+                                </button>
+                            </Badge>
+                        ))}
                     </div>
+                    {errors.color && <p className="text-red-500 text-xs mt-1">{errors.color}</p>}
                 </div>
 
                 {/* Brand */}
@@ -181,6 +198,7 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
                         <option value="NIKE">NIKE</option>
                         <option value="No Brand">No Brand</option>
                     </select>
+                    {errors.brand && <p className="text-red-500 text-xs mt-1">{errors.brand}</p>}
 
                     <div className="flex justify-between items-center mt-3">
                         <h3 className="text-sm font-medium">Product has no brand</h3>
@@ -214,6 +232,7 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
                         <option value="Dry clean">Dry clean</option>
                         <option value="Hand wash">Hand wash</option>
                     </select>
+                    {errors.care && <p className="text-red-500 text-xs mt-1">{errors.care}</p>}
                 </div>
 
                 {/* Origin */}
@@ -229,6 +248,7 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
                         <option value="China">China</option>
                         <option value="India">India</option>
                     </select>
+                    {errors.origin && <p className="text-red-500 text-xs mt-1">{errors.origin}</p>}
                 </div>
 
                 {/* Closure Type */}
@@ -249,7 +269,7 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
 
                 {/* SKU */}
                 <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-2">SKU (Optional)</label>
+                    <label className="block text-sm font-medium text-gray-900 mb-2">SKU</label>
                     <input
                         type="text"
                         placeholder="e.g. TSHIRT-2025-001"
@@ -257,6 +277,7 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
                         onChange={(e) => onChange({ sku: e.target.value })}
                         className="w-full px-2 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500"
                     />
+                    {errors.sku && <p className="text-red-500 text-xs mt-1">{errors.sku}</p>}
                 </div>
 
                 {/* Quantity */}
@@ -268,7 +289,7 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
                         value={data.stock}
                         onChange={(e) => onChange({ stock: e.target.value })}
                         className="w-full px-2 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500"
-                        // {errors.origin && <p className="text-red-500 text-xs mt-1">{errors.origin}</p>}
+                    // {errors.origin && <p className="text-red-500 text-xs mt-1">{errors.origin}</p>}
                     />
                     {errors.stock && <p className="text-red-500 text-xs mt-1">{errors.stock}</p>}
                 </div>
@@ -295,6 +316,7 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
                         onChange={(e) => onChange({ description: e.target.value })}
                         className="w-full px-2 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500"
                     />
+                    {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
                 </div>
 
                 {/* Return Policy Switch */}
@@ -303,6 +325,7 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
                         <h3 className="text-sm font-medium">7 Days return policy available for this product</h3>
                         <Switch checked={returnEnabled} onCheckedChange={handleReturnToggle} />
                     </div>
+                    {errors.return && <p className="text-red-500 text-xs mt-1">{errors.return}</p>}
                 </div>
             </div>
         </div>
