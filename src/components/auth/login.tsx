@@ -278,9 +278,9 @@ export default function SignInForm() {
                                 Stay logged in
                             </label>
                         </div>
-                        <a href="#" className="text-sm text-accent hover:underline font-medium">
+                        <Link  href="/auth/forgot-password" className="text-sm text-black hover:underline font-medium">
                             Forgot password
-                        </a>
+                        </Link>
                     </div>
 
                     {/* Sign In Button */}
