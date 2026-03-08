@@ -4,8 +4,8 @@ import React, { useState } from "react";
 import { Dialog, DialogContent, DialogHeader } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { X } from "lucide-react";
+import ReactSelect, { SingleValue } from "react-select";
+import { Country } from "country-state-city";
 import Stripe from "@/components/icon/stripe";
 import Mastercard from "@/components/icon/masterCard";
 
@@ -26,6 +26,11 @@ interface SavedCard {
     icon: React.ReactNode;
 }
 
+interface CountryOption {
+    value: string;
+    label: string;
+}
+
 export default function MyCardAdd() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [formData, setFormData] = useState<CardData>({
@@ -33,7 +38,7 @@ export default function MyCardAdd() {
         expiryDate: "",
         cvc: "",
         nameOnCard: "",
-        country: "United State",
+        country: "United States",
         zipCode: "",
     });
 
@@ -51,7 +56,10 @@ export default function MyCardAdd() {
         },
     ]);
 
-    const countries = ["United State", "Canada", "Mexico", "UK", "Australia", "Germany", "France"];
+    const countryOptions = React.useMemo<CountryOption[]>(
+        () => Country.getAllCountries().map((country) => ({ value: country.isoCode, label: country.name })),
+        []
+    );
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -77,10 +85,10 @@ export default function MyCardAdd() {
         }));
     };
 
-    const handleSelectChange = (value: string) => {
+    const handleCountryChange = (option: SingleValue<CountryOption>) => {
         setFormData((prev) => ({
             ...prev,
-            country: value,
+            country: option?.label ?? "",
         }));
     };
 
@@ -114,7 +122,7 @@ export default function MyCardAdd() {
                 expiryDate: "",
                 cvc: "",
                 nameOnCard: "",
-                country: "United State",
+                country: "United States",
                 zipCode: "",
             });
             setIsModalOpen(false);
@@ -132,10 +140,6 @@ export default function MyCardAdd() {
                     : card
             )
         );
-    };
-
-    const handleRemoveCard = (cardId: string) => {
-        setSavedCards(savedCards.filter((card) => card.id !== cardId));
     };
 
     return (
@@ -167,7 +171,7 @@ export default function MyCardAdd() {
                     {/* Cards List */}
                     <div className="p-6 sm:p-8 space-y-4">
                         {savedCards.map((card) => (
-                            <div key={card.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4  bg-[#1C1C1C0F] p-2 rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors">
+                            <div key={card.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 bg-[#1C1C1C0F] rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors">
                                 {/* Card Info */}
                                 <div className="flex items-start gap-4 min-w-0" >
                                     <div className="size-[50px] flex-shrink-0 mt-2">
@@ -307,34 +311,30 @@ export default function MyCardAdd() {
                         {/* Country Dropdown */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">Country <span className="text-red-500">*</span></label>
-                            <Select value={formData.country} onValueChange={handleSelectChange}>
-                                <SelectTrigger className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                    <SelectValue placeholder="Select country" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    {countries.map((country) => (
-                                        <SelectItem key={country} value={country}>
-                                            {country}
-                                        </SelectItem>
-                                    ))}
-                                </SelectContent>
-                            </Select>
+                            <ReactSelect
+                                options={countryOptions}
+                                value={countryOptions.find((option) => option.label === formData.country) ?? null}
+                                onChange={handleCountryChange}
+                                placeholder="Select country"
+                                className="text-sm"
+                                classNamePrefix="country-select"
+                                isSearchable
+                            />
                         </div>
 
                         {/* ZIP Code */}
                         <div>
                             <label className="block text-sm font-medium text-gray-700 mb-2">ZIP Code <span className="text-red-500">*</span></label>
-                            <Select value={formData.zipCode} onValueChange={(value) => setFormData((prev) => ({ ...prev, zipCode: value }))}>
-                                <SelectTrigger className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent">
-                                    <SelectValue placeholder="47987" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="47987">47987</SelectItem>
-                                    <SelectItem value="10001">10001</SelectItem>
-                                    <SelectItem value="90210">90210</SelectItem>
-                                    <SelectItem value="60611">60611</SelectItem>
-                                </SelectContent>
-                            </Select>
+                            <Input
+                                type="text"
+                                name="zipCode"
+                                value={formData.zipCode}
+                                onChange={handleInputChange}
+                                placeholder="47987"
+                                maxLength={10}
+                                required
+                                className="w-full px-3 py-2 sm:py-3 border border-gray-300 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                            />
                         </div>
 
                         {/* Add Card Button */}
