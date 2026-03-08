@@ -95,7 +95,7 @@ export default function MessagesPage() {
     setCreatingFor(msg.id);
 
     try {
-  
+
       const result = await createInbox(msg.receiverId).unwrap();
 
       const inboxId = typeof result === 'string' ? result : result?.data?._id;
@@ -152,111 +152,112 @@ export default function MessagesPage() {
   const totalConversations = meta?.total ?? messages.length;
 
   return (
-    <div className="min-h-screen bg-gray-50/40">
-      <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
-        {/* Header & filters */}
-        <div className="border-b bg-white py-6">
-          <h1 className="text-2xl font-bold text-gray-900">Messages</h1>
+    <div className="min-h-screen  rounded-lg">
+      <div className="">
+        <div >
+          {/* Header & filters */}
+          <div className="border-b bg-white py-6 p-4 ">
+            <h1 className="text-2xl font-bold text-gray-900">Messages</h1>
 
-          <div className="mt-5 space-y-5">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <label className="flex items-center gap-2.5">
-                <input
-                  type="checkbox"
-                  checked={showUnreadOnly}
-                  onChange={(e) => setShowUnreadOnly(e.target.checked)}
-                  className="h-4 w-4 rounded border-gray-300 text-indigo-600"
-                />
-                <span className="text-sm text-gray-700">Show unread only</span>
-              </label>
+            <div className="mt-5 space-y-5">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <label className="flex items-center gap-2.5">
+                  <input
+                    type="checkbox"
+                    checked={showUnreadOnly}
+                    onChange={(e) => setShowUnreadOnly(e.target.checked)}
+                    className="h-4 w-4 rounded border-gray-300 text-indigo-600"
+                  />
+                  <span className="text-sm text-gray-700">Show unread only</span>
+                </label>
 
-              <div className="flex items-center gap-3">
-                <span className="text-sm text-gray-600">Sort:</span>
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value as any)}
-                  className="rounded border border-gray-300 px-3 py-1.5 text-sm"
-                >
-                  <option value="recent">Most recent</option>
-                  <option value="oldest">Oldest</option>
-                  <option value="name">Name</option>
-                </select>
-              </div>
-            </div>
-
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div className="relative w-full max-w-md">
-                <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                <Input
-                  placeholder="Search..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="pl-10"
-                />
+                <div className="flex items-center gap-3">
+                  <span className="text-sm text-gray-600">Sort:</span>
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value as any)}
+                    className="rounded border border-gray-300 px-3 py-1.5 text-sm"
+                  >
+                    <option value="recent">Most recent</option>
+                    <option value="oldest">Oldest</option>
+                    <option value="name">Name</option>
+                  </select>
+                </div>
               </div>
 
-              <div className="flex gap-6 text-sm text-gray-600">
-                <span>{totalConversations} conversations</span>
-                {unreadCount > 0 && (
-                  <span className="flex items-center gap-1.5">
-                    <span className="h-2 w-2 rounded-full bg-red-500"></span>
-                    {unreadCount} unread
-                  </span>
-                )}
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                <div className="relative w-full max-w-md">
+                  <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                  <Input
+                    placeholder="Search..."
+                    value={searchQuery}
+                    onChange={(e) => setSearchQuery(e.target.value)}
+                    className="pl-10"
+                  />
+                </div>
+
+                <div className="flex gap-6 text-sm text-gray-600">
+                  <span>{totalConversations} conversations</span>
+                  {unreadCount > 0 && (
+                    <span className="flex items-center gap-1.5">
+                      <span className="h-2 w-2 rounded-full bg-red-500"></span>
+                      {unreadCount} unread
+                    </span>
+                  )}
+                </div>
               </div>
             </div>
           </div>
-        </div>
 
-        {/* List */}
-        <div className="divide-y divide-gray-200 bg-white">
-          {isLoading ? (
-            <div className="py-12 text-center text-gray-500">Loading...</div>
-          ) : filteredAndSorted.length === 0 ? (
-            <div className="py-12 text-center text-gray-500">No messages found</div>
-          ) : (
-            filteredAndSorted.map((msg) => {
-              const isCreating = creatingFor === msg.id;
+          {/* List */}
+          <div className="divide-y divide-gray-200 bg-white">
+            {isLoading ? (
+              <div className="py-12 text-center text-gray-500">Loading...</div>
+            ) : filteredAndSorted.length === 0 ? (
+              <div className="py-12 text-center text-gray-500">No messages found</div>
+            ) : (
+              filteredAndSorted.map((msg) => {
+                const isCreating = creatingFor === msg.id;
 
-              return (
-                <div
-                  key={msg.id}
-                  onClick={() => !isCreating && handleOpenConversation(msg)}
-                  className={`group flex gap-4 px-4 py-5 hover:bg-gray-50 sm:px-6 lg:px-8 ${
-                    isCreating ? 'opacity-60 pointer-events-none' : 'cursor-pointer'
-                  }`}
-                >
-                  {/* Avatar */}
-                  <div className="flex-shrink-0">
-                    {msg.image ? (
-                      <img
-                        src={msg.image}
-                        alt=""
-                        className="h-12 w-12 rounded-full object-cover ring-1 ring-gray-200"
-                      />
-                    ) : (
-                      <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 text-base font-semibold text-gray-600">
-                        {msg.avatar}
-                      </div>
-                    )}
-                  </div>
-
-                  {/* Content */}
-                  <div className="min-w-0 flex-1">
-                    <div className="flex items-center gap-2">
-                      <h3 className="truncate font-medium text-gray-900">{msg.sender}</h3>
-                      {msg.isNew && (
-                        <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
-                          New
-                        </span>
+                return (
+                  <div
+                    key={msg.id}
+                    onClick={() => !isCreating && handleOpenConversation(msg)}
+                    className={`group flex gap-4 px-4 py-5 hover:bg-gray-50 sm:px-6 lg:px-8 ${isCreating ? 'opacity-60 pointer-events-none' : 'cursor-pointer'
+                      }`}
+                  >
+                    {/* Avatar */}
+                    <div className="flex-shrink-0">
+                      {msg.image ? (
+                        <img
+                          src={msg.image}
+                          alt=""
+                          className="h-12 w-12 rounded-full object-cover ring-1 ring-gray-200"
+                        />
+                      ) : (
+                        <div className="flex h-12 w-12 items-center justify-center rounded-full bg-gray-200 text-base font-semibold text-gray-600">
+                          {msg.avatar}
+                        </div>
                       )}
                     </div>
-                    <p className="mt-1 line-clamp-1 text-sm text-gray-600">{msg.message}</p>
+
+                    {/* Content */}
+                    <div className="min-w-0 flex-1">
+                      <div className="flex items-center gap-2">
+                        <h3 className="truncate font-medium text-gray-900">{msg.sender}</h3>
+                        {msg.isNew && (
+                          <span className="rounded-full bg-blue-100 px-2.5 py-0.5 text-xs font-medium text-blue-700">
+                            New
+                          </span>
+                        )}
+                      </div>
+                      <p className="mt-1 line-clamp-1 text-sm text-gray-600">{msg.message}</p>
+                    </div>
                   </div>
-                </div>
-              );
-            })
-          )}
+                );
+              })
+            )}
+          </div>
         </div>
 
         {/* Pagination */}

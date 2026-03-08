@@ -10,10 +10,11 @@ import { useCreateProductDraftMutation, useCreateProductMutation } from "@/redux
 import { toast } from "sonner"
 import { useRouter } from "next/navigation"
 
-export default function ListFive({ data, onChangeStep, onChange, onNext, onPrevious }: any) {
+export default function ListFive({ data, onChangeStep, onNext }: any) {
     const router = useRouter();
     const [showMore, setShowMore] = useState(false)
     const [isPublishing, setIsPublishing] = useState(false)
+    const [isDraftSaving, setIsDraftSaving] = useState(false)
 
     const isEmpty = (value: any) => value === undefined || value === null || String(value).trim() === ""
     const getShippingCost = () => {
@@ -34,7 +35,6 @@ export default function ListFive({ data, onChangeStep, onChange, onNext, onPrevi
     const categoryLabel = data.category || data.categoryName || data.categoryTitle || data.categoryId || "N/A"
     const subCategoryLabel = data.subcategory || data.subCategory || data.subCategoryName || data.subCategoryTitle || data.subCategoryId || "N/A"
     const deliveryInside = data.deliveryInside ?? data.deliveryChargeInDc ?? ""
-    const deliveryOutside = data.deliveryOutside ?? data.deliveryChargeOutOfDc ?? ""
 
     const [createProductDraft] = useCreateProductDraftMutation();
 
@@ -42,6 +42,7 @@ export default function ListFive({ data, onChangeStep, onChange, onNext, onPrevi
 
     const handlePublish = async () => {
         try {
+            if (isPublishing || isDraftSaving) return
             setIsPublishing(true)
 
             // Validate required fields with specific error messages
@@ -164,7 +165,8 @@ export default function ListFive({ data, onChangeStep, onChange, onNext, onPrevi
 
     const handleDraft = async () => {
         try {
-            setIsPublishing(true)
+            if (isPublishing || isDraftSaving) return
+            setIsDraftSaving(true)
 
             // Validate required fields with specific error messages
             const missingFields: string[] = []
@@ -180,7 +182,7 @@ export default function ListFive({ data, onChangeStep, onChange, onNext, onPrevi
 
             if (missingFields.length > 0) {
                 toast.error(`Please fill in the following required fields:\n• ${missingFields.join("\n• ")}`)
-                setIsPublishing(false)
+                setIsDraftSaving(false)
                 return
             }
 
@@ -262,14 +264,14 @@ export default function ListFive({ data, onChangeStep, onChange, onNext, onPrevi
             // Trigger create product mutation
             const result: any = await createProductDraft(formData).unwrap()
             router.push('/dashboard/draft');
-            setIsPublishing(false)
+            setIsDraftSaving(false)
             console.log("Product published successfully:", result)
             toast.success(result?.data?.message || "Product draft add!")
 
             // Move to next step or reset
             if (onNext) onNext()
         } catch (err: any) {
-            setIsPublishing(false)
+            setIsDraftSaving(false)
             console.error("Publish error:", err)
 
             // Better error handling
@@ -287,16 +289,16 @@ export default function ListFive({ data, onChangeStep, onChange, onNext, onPrevi
             <div className="flex justify-end items-center gap-6 mb-8">
                 <Button
                     onClick={handleDraft}
-                    disabled={isPublishing}
+                    disabled={isDraftSaving || isPublishing}
                     variant="link"
                     className="text-gray-600 flex items-center gap-2 hover:text-gray-900 font-medium text-sm"
                 >
-                    Save to Draft
+                    {isDraftSaving ? "Saving Draft..." : "Save to Draft"}
                 </Button>
 
                 <button
                     onClick={handlePublish}
-                    disabled={isPublishing}
+                    disabled={isPublishing || isDraftSaving}
                     className="group px-6 py-2.5 flex items-center justify-center gap-2 bg-primary text-white rounded-full font-semibold text-sm shadow-md hover:shadow-lg transition-all hover:scale-[1.02] disabled:opacity-60"
                 >
                     {isPublishing ? "Publishing..." : "Publish"}

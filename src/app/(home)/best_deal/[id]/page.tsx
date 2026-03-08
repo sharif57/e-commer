@@ -3,7 +3,7 @@
 
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useRef, useState } from "react"
 import { Heart, Star, CreditCard, Minus, Plus, ChevronDown, ChevronUp, Check, Share2 } from "lucide-react"
 import Method from "@/components/icon/method"
 import Image from "next/image"
@@ -33,6 +33,10 @@ export default function ProductPage() {
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [missingFields, setMissingFields] = useState<string[]>([])
     const [sharePending, setSharePending] = useState(false)
+    const [isZoomActive, setIsZoomActive] = useState(false)
+    const [zoomPosition, setZoomPosition] = useState({ x: 50, y: 50 })
+    const [lensPosition, setLensPosition] = useState({ x: 0, y: 0 })
+    const imageContainerRef = useRef<HTMLDivElement | null>(null)
 
     const { data, isLoading } = useGetSingleProductQuery(id as string);
     const { data: userData } = useGetUsersQuery(undefined);
@@ -65,13 +69,24 @@ export default function ProductPage() {
         }
     }, [product?._id]);
 
-    // Set default selections when product loads
-    if (product && !selectedSize && sizes?.length > 0) {
-        setSelectedSize(sizes[0])
-    }
-    if (product && !selectedColor && product?.color?.length > 0) {
-        setSelectedColor(product.color[0])
-    }
+    useEffect(() => {
+        if (!selectedSize && sizes?.length > 0) {
+            setSelectedSize(sizes[0])
+        }
+    }, [sizes, selectedSize])
+
+    useEffect(() => {
+        if (!selectedColor && product?.color?.length > 0) {
+            setSelectedColor(product.color[0])
+        }
+    }, [product?.color, selectedColor])
+
+    useEffect(() => {
+        if (mainImage > images.length - 1) {
+            setMainImage(0)
+        }
+        setIsZoomActive(false)
+    }, [images.length, mainImage])
 
     const handleQuantityChange = (value: number) => {
         if (value > 0 && value <= 10) {
@@ -344,6 +359,25 @@ export default function ProductPage() {
         }
     }
 
+    const handleZoomMouseMove = (event: React.MouseEvent<HTMLDivElement>) => {
+        if (!imageContainerRef.current || !images?.length) return
+
+        const rect = imageContainerRef.current.getBoundingClientRect()
+        const x = event.clientX - rect.left
+        const y = event.clientY - rect.top
+
+        const clampedX = Math.max(0, Math.min(x, rect.width))
+        const clampedY = Math.max(0, Math.min(y, rect.height))
+
+        const xPercent = (clampedX / rect.width) * 100
+        const yPercent = (clampedY / rect.height) * 100
+        const boundedX = Math.max(8, Math.min(xPercent, 92))
+        const boundedY = Math.max(8, Math.min(yPercent, 92))
+
+        setLensPosition({ x: clampedX, y: clampedY })
+        setZoomPosition({ x: boundedX, y: boundedY })
+    }
+
     // Review submit handler
     const handleReviewSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
@@ -407,10 +441,31 @@ export default function ProductPage() {
                     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                         <div className="grid grid-cols-1 md:grid-cols-3 gap-8 lg:gap-12">
                             {/* Image Gallery */}
-                            <div className="flex flex-col gap-4">
+                            <div className="relative flex flex-col gap-4">
                                 {/* Main Image */}
-                                <div className="relative bg-gray-100 rounded-lg overflow-hidden aspect-[4/5]">
+                                <div
+                                    ref={imageContainerRef}
+                                    onMouseEnter={() => images.length > 0 && setIsZoomActive(true)}
+                                    onMouseLeave={() => setIsZoomActive(false)}
+                                    onMouseMove={handleZoomMouseMove}
+                                    className="relative bg-gray-100 rounded-lg overflow-hidden aspect-[4/5] cursor-zoom-in"
+                                >
                                     <Image src={images[mainImage] || "/placeholder.svg"} alt="Product" className="w-full h-full object-cover" fill />
+                                    {images.length > 0 && (
+                                        <div className="hidden lg:block absolute top-3 left-3 bg-black/60 text-white text-xs font-medium px-2 py-1 rounded-md">
+                                            Hover to zoom
+                                        </div>
+                                    )}
+                                    {isZoomActive && images.length > 0 && (
+                                        <div
+                                            className="hidden lg:block pointer-events-none absolute h-24 w-24 rounded-full border-2 border-white/80 ring-1 ring-black/10 bg-white/15 shadow-sm"
+                                            style={{
+                                                insetInlineStart: `${lensPosition.x}px`,
+                                                insetBlockStart: `${lensPosition.y}px`,
+                                                transform: "translate(-50%, -50%)",
+                                            }}
+                                        />
+                                    )}
                                     <button
                                         onClick={handleShareProduct}
                                         disabled={sharePending}
@@ -432,12 +487,27 @@ export default function ProductPage() {
                                     </div>
                                 </div>
 
+                                {isZoomActive && images.length > 0 && (
+                                    <div
+                                        className="hidden lg:block pointer-events-none absolute z-20 top-0 left-full ml-5 w-[360px] h-[430px] rounded-lg border border-gray-200 bg-white shadow-lg overflow-hidden transition-opacity duration-150"
+                                        style={{
+                                            backgroundImage: `url(${images[mainImage] || "/placeholder.svg"})`,
+                                            backgroundRepeat: "no-repeat",
+                                            backgroundSize: "240% 240%",
+                                            backgroundPosition: `${zoomPosition.x}% ${zoomPosition.y}%`,
+                                        }}
+                                    />
+                                )}
+
                                 {/* Thumbnails */}
                                 <div className="grid grid-cols-4 gap-3">
                                     {product?.image?.map((thumb: any, idx: number) => (
                                         <button
                                             key={idx}
-                                            onClick={() => setMainImage(idx)}
+                                            onClick={() => {
+                                                setMainImage(idx)
+                                                setIsZoomActive(false)
+                                            }}
                                             className={`relative rounded-lg overflow-hidden aspect-square border-2 transition-all ${mainImage === idx ? "border-amber-500" : "border-gray-200 hover:border-gray-300"
                                                 }`}
                                         >

@@ -311,16 +311,16 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
               <div className={cn(
                 "rounded-xl p-4 space-y-3 border",
                 hasActiveSubscription
-                  ? "bg-gradient-to-br from-yellow-50 to-amber-100 border-yellow-200"
+                  ? "bg-[#F2C94C]"
                   : "bg-gradient-to-br from-red-50 to-orange-100 border-red-200"
               )}>
-                <div className="flex justify-center">
+                <div className="flex justify-start">
                   <Crown className={cn(
                     "w-8 h-8 stroke-width-1.5",
-                    hasActiveSubscription ? "text-amber-600" : "text-red-600"
+                    hasActiveSubscription ? "text-black" : "text-red-600"
                   )} strokeWidth={1.5} />
                 </div>
-                <div className="text-center">
+                <div className="text-start">
                   {hasActiveSubscription ? (
                     <>
                       <p className="text-lg capitalize text-gray-600 font-medium">{subscriptionType?.packageId?.interval}</p>
@@ -337,7 +337,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
                   <button className={cn(
                     "w-full py-2.5 border-2 rounded-xl font-semibold transition-all duration-300 text-sm shadow-sm hover:shadow-md",
                     hasActiveSubscription
-                      ? "border-amber-600 bg-white text-amber-600 hover:bg-amber-600 hover:text-white"
+                      ? "border-black  text-black bg-[#F2C94C] hover:text-black/90"
                       : "border-red-600 bg-white text-red-600 hover:bg-red-600 hover:text-white"
                   )}>
                     {hasActiveSubscription ? "Renew my plan" : "Upgrade Now"}
