@@ -77,6 +77,11 @@ export default function ManageInventory() {
   const [updateProduct, { isLoading: isUpdating }] = useUpdateProductMutation();
   const [deleteProduct, { isLoading: isDeleting }] = useDeleteProductMutation();
 
+  const getSlicedTitle = (title: string, limit = 28) => {
+    if (!title) return "";
+    return title.length > limit ? `${title.slice(0, limit)}...` : title;
+  };
+
   const handleEdit = (productId: string) => {
     const product = products.find(p => p._id === productId);
     if (product) {
@@ -117,7 +122,7 @@ export default function ManageInventory() {
   const handleConfirmDelete = async () => {
     if (!selectedProductIdForDelete) return
     try {
-     const res = await deleteProduct(selectedProductIdForDelete).unwrap()
+      const res = await deleteProduct(selectedProductIdForDelete).unwrap()
       setIsDeleteModalOpen(false)
       setSelectedProductIdForDelete(null)
       toast.success(res?.data?.message || "Product deleted successfully!")
@@ -373,7 +378,7 @@ export default function ManageInventory() {
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <p className="text-sm font-semibold text-gray-900 truncate">{item.title}</p>
+                            <p className="text-sm font-semibold text-gray-900 truncate">{getSlicedTitle(item.title)}</p>
                             <p className="text-xs text-gray-500">{item.des?.substring(0, 30)}...</p>
                           </div>
                         </div>
@@ -464,7 +469,7 @@ export default function ManageInventory() {
                       )}
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-semibold text-gray-600 uppercase">SKU: {item.sku}</p>
-                        <p className="text-sm font-semibold text-gray-900 truncate">{item.title}</p>
+                        <p className="text-sm font-semibold text-gray-900 truncate">{getSlicedTitle(item.title)}</p>
                         <p className="text-xs text-gray-600 mt-1">{item.brand}</p>
                       </div>
                     </div>
