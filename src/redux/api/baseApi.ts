@@ -29,7 +29,8 @@ export const baseApi = createApi({
     "Notification",
     "Review",
     "Package",
-    "Wallet"
+    "Wallet",
+    'ReturnProduct'
    
   ],
   endpoints: () => ({}),

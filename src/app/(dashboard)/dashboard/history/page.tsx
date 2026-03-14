@@ -45,6 +45,7 @@ function OrderPage() {
         ];
 
         return {
+            orderId: orderData._id,
             orderNumber: `Order#${orderData.orderId}`,
             orderDate: new Date(orderData.createdAt).toLocaleDateString('en-US', {
                 year: 'numeric',
