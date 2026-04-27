@@ -418,6 +418,7 @@
 
 import { useState, useEffect } from "react"
 import DeliveryAddressModal, { type AddressData } from "./delivery-address-modal"
+import MissingInfoModal from "./missing-info-modal"
 import { useCreateCheckoutSessionMutation, useCreateOrderMutation } from "@/redux/feature/buyer/productSlice"
 import { useGetUsersQuery, useUpdateUserMutation } from "@/redux/feature/userSlice"
 import { useRouter } from "next/navigation"
@@ -455,6 +456,7 @@ interface OrderItem {
 export default function CheckoutPage() {
   const router = useRouter()
   const [isModalOpen, setIsModalOpen] = useState(false)
+  const [missingFields, setMissingFields] = useState<string[]>([])
   const [deliveryAddress, setDeliveryAddress] = useState<AddressData>({
     firstName: "",
     lastName: "",
@@ -553,8 +555,8 @@ export default function CheckoutPage() {
   const orderTotal = amountDetails.total;
 
   // Handle address change from modal — also update user profile with new data
-  const handleAddressChange = async (newAddress: AddressData) => {
-    setDeliveryAddress(newAddress)
+  const handleAddressChange = async (newAddress: any) => {
+    setDeliveryAddress((prev) => ({ ...prev, ...newAddress }))
 
     // Build update payload — only send fields that have values
     const updatePayload: Record<string, any> = {}
@@ -632,15 +634,18 @@ export default function CheckoutPage() {
 
   // Handle order submission
   const handleSubmitOrder = async () => {
-    if (!deliveryAddress.firstName || !deliveryAddress.lastName) {
-      setOrderError2("Please provide your name")
-      toast.error("Please provide your name")
-      return
-    }
+    const missing: string[] = []
+    if (!deliveryAddress.firstName) missing.push("firstName")
+    if (!deliveryAddress.lastName) missing.push("lastName")
+    if (!deliveryAddress.streetName) missing.push("streetName")
+    if (!deliveryAddress.city) missing.push("city")
+    if (!deliveryAddress.zip) missing.push("zip")
+    if (!deliveryAddress.country) missing.push("country")
 
-    if (!deliveryAddress.streetName || !deliveryAddress.city) {
-      setOrderError2("Please provide complete address")
-      toast.error("Please provide complete address")
+    if (missing.length > 0) {
+      setMissingFields(missing)
+      setIsModalOpen(true)
+      toast.error("Please provide complete address information")
       return
     }
 
@@ -718,8 +723,7 @@ export default function CheckoutPage() {
   const canPlaceOrder =
     !isProcessing &&
     !isCreatingOrder &&
-    orderItems.length > 0 &&
-    !!isAddressComplete()
+    orderItems.length > 0
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -731,7 +735,10 @@ export default function CheckoutPage() {
               ⚠️ Please add your delivery address to place an order.
             </p>
             <button
-              onClick={() => setIsModalOpen(true)}
+              onClick={() => {
+                setMissingFields([])
+                setIsModalOpen(true)
+              }}
               className="text-sm font-medium text-yellow-900 underline hover:no-underline"
             >
               Add Address
@@ -868,7 +875,10 @@ export default function CheckoutPage() {
                   <p className="text-gray-500 mb-4 text-sm">No address added yet.</p>
                 )}
                 <button
-                  onClick={() => setIsModalOpen(true)}
+                  onClick={() => {
+                    setMissingFields([])
+                    setIsModalOpen(true)
+                  }}
                   className="text-blue-600 hover:text-blue-700 font-medium text-sm transition-colors"
                 >
                   {isAddressComplete() ? "Change address" : "Add address"}
@@ -919,10 +929,10 @@ export default function CheckoutPage() {
                 onClick={handleSubmitOrder}
                 disabled={!canPlaceOrder}
                 className={`w-full font-semibold py-3 px-4 rounded-md transition-colors mb-3 flex items-center justify-center gap-2 ${isProcessing || isCreatingOrder
-                    ? "bg-gray-400 cursor-not-allowed text-white"
-                    : !canPlaceOrder
-                      ? "bg-gray-300 cursor-not-allowed text-black"
-                      : "bg-primary hover:bg-primary/90 text-white"
+                  ? "bg-gray-400 cursor-not-allowed text-white"
+                  : !canPlaceOrder
+                    ? "bg-gray-300 cursor-not-allowed text-black"
+                    : "bg-primary hover:bg-primary/90 text-white"
                   }`}
               >
                 {isProcessing || isCreatingOrder ? (
@@ -969,13 +979,15 @@ export default function CheckoutPage() {
         </div>
       </div>
 
-      {/* Delivery Address Modal */}
-      <DeliveryAddressModal
+      {/* Missing Info Modal */}
+      <MissingInfoModal
         isOpen={isModalOpen}
         onClose={() => setIsModalOpen(false)}
         onConfirm={handleAddressChange}
-        initialData={deliveryAddress}
+        initialData={{...deliveryAddress, billingAddress: ""}}
+        missingFields={missingFields}
       />
+
     </div>
   )
 }
