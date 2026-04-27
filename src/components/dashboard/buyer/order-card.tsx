@@ -38,11 +38,16 @@ export function OrderCard({ status, deliveryDate, productImage, productQuantity,
                     </div>
                 </div>
 
-                {/* View details link - responsive */}
-                <Link href={`/dashboard/history?id=${id}`} className="flex items-center gap-2 px-3 py-2 border border-[#171717] rounded-full bg-[#f1f1f1] text-sm font-medium hover:bg-secondary transition-colors whitespace-nowrap">
-                    View details
-                    <ArrowRight className="w-4 h-4" />
-                </Link>
+                <div className='flex flex-col gap-2 w-fit'>
+                    {/* View details link - responsive */}
+                    <Link href={`/dashboard/track-order?id=${id}`} className="flex items-center justify-center gap-2 px-3 py-2 bg-primary  rounded-xl text-white text-sm font-medium hover:bg-primary/90 transition-colors whitespace-nowrap">
+                        Track order
+                    </Link>
+                    <Link href={`/dashboard/history?id=${id}`} className="flex items-center justify-center gap-2 px-3 py-2  border border-[#171717] rounded-xl bg-[#f1f1f1] text-sm font-medium hover:bg-secondary transition-colors whitespace-nowrap">
+                        View details
+                        <ArrowRight className="w-4 h-4" />
+                    </Link>
+                </div>
             </div>
 
             {/* Product and total section */}

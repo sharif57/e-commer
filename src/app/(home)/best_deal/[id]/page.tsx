@@ -16,6 +16,7 @@ import { useCreateReviewMutation, useGetAllReviewsQuery } from "@/redux/feature/
 import { useGetUsersQuery } from "@/redux/feature/userSlice"
 import MissingInfoModal, { type AddressData } from "@/components/missing-info-modal"
 import { validateDeliveryAddress } from "@/lib/validationHelpers"
+import { useCreateBillingAddressMutation } from "@/redux/feature/buyer/orderProductSlice"
 
 export default function ProductPage() {
     const { id } = useParams();
@@ -45,6 +46,10 @@ export default function ProductPage() {
     const [createOrder] = useCreateOrderMutation()
     const [createReview] = useCreateReviewMutation();
     const { data: reviewData, refetch: refetchReviews } = useGetAllReviewsQuery({ id: id as string, page });
+
+    // billing Address
+    const [createBillingAddress] = useCreateBillingAddressMutation();
+
     const product = data?.data;
     const sizes = product?.size
     const images = product?.image || []
@@ -278,11 +283,37 @@ export default function ProductPage() {
     }
 
     // Handle modal confirmation
-    const handleModalConfirm = (completeAddress: AddressData) => {
-        // Update user data and proceed with order
+    // const handleModalConfirm = (completeAddress: AddressData) => {
+    //     // Update user data and proceed with order
+    //     setIsModalOpen(false);
+    //     processOrder(completeAddress);
+    // }
+    const handleModalConfirm = async (completeAddress: AddressData) => {
         setIsModalOpen(false);
-        processOrder(completeAddress);
-    }
+
+        try {
+            // API 1: Save billing address
+            const billingPayload = {
+                streetName: completeAddress.streetName,
+                apt: completeAddress.area,
+                city: completeAddress.city,
+                zip: completeAddress.zip,
+                state: completeAddress.state,
+                country: completeAddress.country,
+            };
+
+            await createBillingAddress(billingPayload).unwrap();
+            toast.success("Address saved successfully!");
+
+            // API 2: Process order with complete address
+            await processOrder(completeAddress);
+
+        } catch (error: any) {
+            console.error("Failed during confirm changes flow:", error);
+            const errorMessage = error?.data?.message || error?.message || "Something went wrong. Please try again.";
+            toast.error(errorMessage);
+        }
+    };
     // --- END BUY NOW FUNCTIONALITY ---
     // --- END BUY NOW FUNCTIONALITY ---
 

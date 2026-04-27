@@ -100,6 +100,16 @@ export const productSellerApi = baseApi.injectEndpoints({
             invalidatesTags: ["SellerProduct"],
         }),
 
+        // /order-confirmation/delivery-track/69aa8fb5650c0d73989a1c5e
+        deliveryTrack: builder.mutation({
+            query: ({ id, body }) => ({
+                url: `/order-confirmation/delivery-track/${id}`,
+                method: "PATCH",
+                body,
+            }),
+            invalidatesTags: ["SellerProduct"],
+        }),
+
     }),
 });
 
@@ -114,4 +124,5 @@ export const {
     useCreateProductDraftMutation,
     useGetDraftProductsQuery,
     useDraftProductUpdateMutation,
+    useDeliveryTrackMutation,
 } = productSellerApi;

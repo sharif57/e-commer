@@ -3,7 +3,7 @@ import baseApi from "@/redux/api/baseApi";
 export const orderProductApi = baseApi.injectEndpoints({
     endpoints: (builder) => ({
         orderHistory: builder.query({
-query: ({ page = 1 }) => ({
+            query: ({ page = 1 }) => ({
                 url: `/order/get-all-order-for-buyer?page=${page}`,
                 method: "GET",
             }),
@@ -18,10 +18,22 @@ query: ({ page = 1 }) => ({
             }),
             providesTags: ["Order"],
         }),
+
+        // /billing-address/create-billing-address
+        createBillingAddress: builder.mutation({
+            query: (data: any) => ({
+                url: `/billing-address/create-billing-address`,
+                method: "POST",
+                body: data,
+            }),
+            invalidatesTags: ["Order"],
+        }),
+
     }),
 });
 
 export const {
     useOrderHistoryQuery,
     useOrderHistoryDetailQuery,
+    useCreateBillingAddressMutation
 } = orderProductApi;

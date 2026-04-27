@@ -51,7 +51,7 @@ export default function OrderHistory() {
     const { data: ordersData } = useGetProductsQuery(undefined)
     const orders: Order[] = ordersData?.data?.result || []
 
-    
+
     const filteredOrders = orders.filter((order) => {
         const matchesSearch =
             order.productId.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
@@ -229,7 +229,7 @@ export default function OrderHistory() {
 
                                         </div>
                                         <div className="flex flex-col sm:flex-col gap-2">
-                                            <Button
+                                            {/* <Button
                                                 className={`${getButtonColor(order.deliveryStatus)} px-4 py-2 rounded-lg font-medium text-sm transition-colors`}
                                             >
                                                 {order.deliveryStatus === "placed"
@@ -237,9 +237,15 @@ export default function OrderHistory() {
                                                     : order.deliveryStatus === "preparing"
                                                         ? "Update status"
                                                         : "View details"}
-                                            </Button>
+                                            </Button> */}
+                                            <Link href={`/dashboard/tracking-seller-order?orderId=${order._id}`}>
+                                                <Button className="w-40 bg-white hover:bg-gray-50 text-[#171717] border-2 border-[#171717] px-4 py-2 rounded-lg font-medium text-sm transition-colors">
+                                                    Tracking Order
+                                                </Button>
+                                            </Link>
+
                                             <Link href={`/dashboard/order-history/${order._id}`}>
-                                                <Button className="bg-white hover:bg-gray-50 text-[#171717] border-2 border-[#171717] px-4 py-2 rounded-lg font-medium text-sm transition-colors">
+                                                <Button className="w-40 bg-white hover:bg-gray-50 text-[#171717] border-2 border-[#171717] px-4 py-2 rounded-lg font-medium text-sm transition-colors">
                                                     View details
                                                 </Button>
                                             </Link>
