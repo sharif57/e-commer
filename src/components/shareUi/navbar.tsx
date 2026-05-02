@@ -42,7 +42,7 @@ export default function Navbar() {
   const pathname = usePathname();
   const router = useRouter();
 
-  const { data } = useGetCategoriesQuery({limit: 100});
+  const { data } = useGetCategoriesQuery({ limit: 100 });
   const categories = data?.data?.result || [];
 
 
@@ -215,7 +215,7 @@ export default function Navbar() {
 
               {/* Become Seller */}
               {profile?.data?.role !== "SELLER" && (
-                <Link href="/auth/getting_start_screen">
+                <Link href="/auth/become-seller-signup">
                   <button className="hidden md:block text-sm text-[#171717] hover:text-primary transition-colors font-medium">
                     Become a Seller
                   </button>
