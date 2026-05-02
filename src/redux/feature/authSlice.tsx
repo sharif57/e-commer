@@ -11,7 +11,7 @@ export const authApi = baseApi.injectEndpoints({
         const isSeller = data?.role === "seller";
 
         return {
-          url: isSeller ? "/user/create-seller" : "/user/create-buyer",
+          url: '/user/create-buyer',
           method: "POST",
           body: data,
         };

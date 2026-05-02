@@ -55,7 +55,7 @@ export default function MessageDetailsPage() {
     }, [inboxId])
 
     useEffect(() => {
-        if (!receiverId  || !inboxId) {
+        if (!receiverId || !inboxId) {
             return
         }
 
@@ -191,7 +191,7 @@ export default function MessageDetailsPage() {
 
             try {
                 const response = await fetch(
-                    `http://69.62.70.69:5003/api/v1/message/get-message/${activeInboxId}`,
+                    `https://api.modvora.com/api/v1/message/get-message/${activeInboxId}`,
                     {
                         headers: {
                             'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
@@ -260,7 +260,7 @@ export default function MessageDetailsPage() {
             return
         }
 
-        
+
 
         if (!activeInboxId) {
             console.error(' No inbox ID')

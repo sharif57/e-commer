@@ -52,30 +52,30 @@ export default function SignInForm() {
         return Object.keys(newErrors).length === 0
     }
 
-    const handleSubmit = async (e: React.FormEvent) => {
-        e.preventDefault()
+        const handleSubmit = async (e: React.FormEvent) => {
+            e.preventDefault()
 
-        if (!validateForm()) return
+            if (!validateForm()) return
 
-        setIsLoading(true)
-        try {
-            // Simulate API call
-            const res = await login({ email, password }).unwrap();
-            toast.success(res.data.message || "Login successful")
-            localStorage.setItem("accessToken", res?.data?.accessToken);
-            localStorage.setItem("accountType", res?.data?.user?.role);
-            dispatch(setUser(res?.data?.user))
-            await saveTokens(res?.data?.accessToken);
-            router.push('/');
+            setIsLoading(true)
+            try {
+                // Simulate API call
+                const res = await login({ email, password }).unwrap();
+                toast.success(res.data.message || "Login successful")
+                localStorage.setItem("accessToken", res?.data?.accessToken);
+                localStorage.setItem("accountType", res?.data?.user?.role);
+                dispatch(setUser(res?.data?.user))
+                await saveTokens(res?.data?.accessToken);
+                router.push('/');
 
-            await new Promise((resolve) => setTimeout(resolve, 1500))
-        } catch (error: any) {
-            toast.error(error.data.message || "Login failed")
-            console.error("Sign in error:", error)
-        } finally {
-            setIsLoading(false)
+                await new Promise((resolve) => setTimeout(resolve, 1500))
+            } catch (error: any) {
+                toast.error(error.data.message || "Login failed")
+                console.error("Sign in error:", error)
+            } finally {
+                setIsLoading(false)
+            }
         }
-    }
     const decodeGoogleToken = (token: string) => {
         const parts = token.split(".")
         if (parts.length < 2) return null
