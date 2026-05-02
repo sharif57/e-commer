@@ -18,7 +18,7 @@ export async function middleware(request: Request) {
 export const config = {
 
   matcher: [
-    "/auth/getting_start_screen",
+    // "/auth/getting_start_screen",
     '/dashboard/:path*',
     '/seller_profile'
   ],
