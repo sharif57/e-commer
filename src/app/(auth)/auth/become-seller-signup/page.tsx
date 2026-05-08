@@ -76,7 +76,6 @@ export default function SignupPage() {
             setErrors(validationErrors)
             return
         }
-
         setIsSubmitting(true)
 
         try {
