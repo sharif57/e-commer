@@ -100,7 +100,7 @@ export default function SignupPage() {
 
     const inputClass = (field: keyof FormErrors) =>
         [
-            'w-full px-4 py-3.5 border rounded-xl text-base bg-white text-[#1a1a18]',
+            'w-full px-4 py-2 border-2 border-[#000000] rounded-xl text-base bg-white text-[#1a1a18]',
             'placeholder-gray-400 outline-none transition-all',
             errors[field]
                 ? 'border-red-400 focus:border-red-400 focus:ring-2 focus:ring-red-400/10'
@@ -111,14 +111,14 @@ export default function SignupPage() {
         <BecomeSellerWrapper>
             <div className="space-y-6">
                 <div>
-                    <h2 className="text-2xl font-bold text-[#111] mb-6">Create seller account</h2>
+                    <h2 className="text-[24px] font-bold text-[#000000] mb-6">Create seller account</h2>
                 </div>
 
                 <form onSubmit={handleSubmit} className="space-y-5" noValidate>
                     {/* Name grid */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
-                            <label className="block text-sm font-bold text-gray-700">First Name</label>
+                            <label className="block text-sm font-medium text-[#000000]">First Name</label>
                             <input
                                 type="text"
                                 name="firstName"
@@ -130,7 +130,7 @@ export default function SignupPage() {
                             {errors.firstName && <p className="text-xs text-red-500">{errors.firstName}</p>}
                         </div>
                         <div className="space-y-2">
-                            <label className="block text-sm font-bold text-gray-700">Last Name</label>
+                            <label className="block text-sm font-medium text-[#000000]">Last Name</label>
                             <input
                                 type="text"
                                 name="lastName"
@@ -145,7 +145,7 @@ export default function SignupPage() {
 
                     {/* Email */}
                     <div className="space-y-2">
-                        <label className="block text-sm font-bold text-gray-700">Email</label>
+                        <label className="block text-sm font-medium text-[#000000]">Email</label>
                         <input
                             type="email"
                             name="email"
@@ -159,7 +159,7 @@ export default function SignupPage() {
 
                     {/* Password */}
                     <div className="space-y-2">
-                        <label className="block text-sm font-bold text-gray-700">Password</label>
+                        <label className="block text-sm font-medium text-[#000000]">Password</label>
                         <div className="relative">
                             <input
                                 type={showPassword ? 'text' : 'password'}
@@ -193,7 +193,7 @@ export default function SignupPage() {
                         <button
                             type="submit"
                             disabled={isSubmitting}
-                            className="w-full py-4 rounded-xl text-base font-bold text-white bg-[#2D7A54] hover:bg-[#246344] active:scale-[0.99] transition-all disabled:opacity-70"
+                            className="w-full py-2 rounded-xl text-[14px] font-bold text-white bg-[#2D7A54] hover:bg-[#246344] active:scale-[0.99] transition-all disabled:opacity-70"
                         >
                             {isSubmitting ? 'Creating...' : 'Create'}
                         </button>
@@ -201,13 +201,13 @@ export default function SignupPage() {
                 </form>
 
                 {/* Already have an account */}
-                <div className="pt-6 border-t border-gray-100">
+                <div className="pt-4 border-t border-gray-100">
                     <div className="text-center mb-4">
-                        <h3 className="text-lg font-bold">Already have an account?</h3>
+                        <h3 className="text-[20px] font-semibold">Already have an account?</h3>
                     </div>
                     <Link
                         href="/auth/become-seller-login"
-                        className="block w-full py-4 rounded-xl text-base font-bold text-white bg-[#2D7A54] text-center hover:bg-[#246344] transition-all"
+                        className="block w-full py-2 rounded-xl text-[14px] font-bold text-white bg-[#2D7A54] text-center hover:bg-[#246344] transition-all"
                     >
                         Sign in
                     </Link>

@@ -122,7 +122,7 @@ export default function LoginPage() {
 
                     {/* Password */}
                     <div className="space-y-2">
-                        <label className="block text-sm font-bold text-gray-700">Password</label>
+                        <label className="block text-sm font-medium text-[#000000]">Password</label>
                         <div className="relative">
                             <input
                                 type={showPassword ? 'text' : 'password'}
