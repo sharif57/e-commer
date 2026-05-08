@@ -27,7 +27,7 @@ const BecomeSellerWrapper: React.FC<BecomeSellerWrapperProps> = ({
       <main className="max-w-[1400px] mx-auto px-6 lg:px-12 py-4 flex flex-col lg:flex-row gap-12 items-start justify-between">
 
         {/* Left Side: Content & Form */}
-        <div className="w-full lg:w-1/2 max-w-[540px]">
+        <div className="w-full lg:w-1/2 max-w-[540px] ">
           <div className="mb-10">
             <h1 className="text-xl lg:text-[36px] text-[#000000] font-bold mb- tracking-tight">
               {title}
@@ -38,7 +38,7 @@ const BecomeSellerWrapper: React.FC<BecomeSellerWrapperProps> = ({
           </div>
 
           {/* Form Container */}
-          <div className="bg-white   p-8 mb-8">
+          <div className="bg-white    mb-8">
             {children}
           </div>
 
