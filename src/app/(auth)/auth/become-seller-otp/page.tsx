@@ -5,7 +5,10 @@ import { useState, useRef, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import Link from 'next/link'
 import { toast } from 'sonner'
+import { useDispatch } from 'react-redux'
 import { useVerifyEmailMutation } from '@/redux/feature/authSlice'
+import { setUser } from '@/redux/feature/authApi'
+import { saveTokens } from '@/service/authService'
 import BecomeSellerWrapper from '@/components/auth/become-seller-wrapper'
 
 const RESEND_SECONDS = 60
@@ -14,6 +17,7 @@ function VerifyOtpForm() {
     const router = useRouter()
     const searchParams = useSearchParams()
     const email = searchParams.get('email') || ''
+    const dispatch = useDispatch()
 
     const [verifyEmail] = useVerifyEmailMutation()
 
@@ -87,7 +91,13 @@ function VerifyOtpForm() {
         try {
             const res = await verifyEmail({ email, oneTimeCode: Number(otpValue) }).unwrap()
             toast.success(res.data.message || 'OTP verification successful')
-            router.push('/auth/become-seller-login')
+            
+            localStorage.setItem('accessToken', res?.data?.accessToken)
+            localStorage.setItem('accountType', res?.data?.user?.role)
+            dispatch(setUser(res?.data?.user))
+            await saveTokens(res?.data?.accessToken)
+            
+            router.push('/auth/getting_start_screen')
         } catch (err: any) {
             toast.error(err?.data?.message || 'OTP verification failed')
             setError(err?.data?.message || 'Something went wrong. Please try again.')
