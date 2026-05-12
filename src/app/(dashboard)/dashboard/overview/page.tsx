@@ -2,12 +2,12 @@
 "use client"
 
 import { useState } from "react"
-import { Package, Star, Handbag, PackageSearch, AudioWaveform, ChartNoAxesCombined, Zap } from "lucide-react"
+import { Package, Star, Handbag, PackageSearch, AudioWaveform, ChartNoAxesCombined, Zap, ChartLine, TruckElectric } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import Image from "next/image"
 import SalesReport from "@/components/seller/sales-report"
-import { useAccountHealthRatioQuery, useAccountMsgResponseQuery, useAllReviewAndRatingRatioQuery, useOnTimeDeliveryRatioQuery, useSellerWalletDataQuery } from "@/redux/feature/seller/accountSetting"
+import { useAccountHealthRatioQuery, useAccountMsgResponseQuery, useAllReviewAndRatingRatioQuery, useOnTimeDeliveryRatioQuery, useSellerWalletDataQuery, useTodaySalesQuery, useTotalPendingOrdersQuery } from "@/redux/feature/seller/accountSetting"
 import { useGetRecentMessageQuery } from "@/redux/feature/seller/message"
 import MessageSkeleton from "@/components/Skeleton/MessageSkeleton"
 import Link from "next/link"
@@ -15,7 +15,7 @@ import { useGetSellerProductsQuery } from "@/redux/feature/seller/productSellerS
 import InventorySkeleton from "@/components/Skeleton/InventorySkeleton"
 
 export default function DashboardOverview() {
-    const [timeRange, setTimeRange] = useState("monthly")
+    const [timeRange, setTimeRange] = useState("total balance")
     const [inventoryFilter, setInventoryFilter] = useState("in-stock")
 
     const { data } = useAccountHealthRatioQuery(undefined);
@@ -34,14 +34,34 @@ export default function DashboardOverview() {
     }
 
     const { data: msg, isLoading } = useGetRecentMessageQuery(undefined);
-    const { data: sellerWalletData } = useSellerWalletDataQuery(timeRange)
+    const { data: sellerWalletData } = useSellerWalletDataQuery(timeRange);
+    const { data: pendingOrdersData } = useTotalPendingOrdersQuery(undefined);
+    const { data: todaySalesData } = useTodaySalesQuery(undefined);
+
+    console.log(pendingOrdersData, '======pending orders==')
+    console.log(todaySalesData, '======today sales==')
 
     const stats = [
         {
+            icon: ChartLine,
+            label: "Sales",
+            value: `$${sellerWalletData?.data?.totalAmount || 0}`,
+            badge: 'today',
+            badgeColor: "text-gray-400",
+        },
+        {
+            icon: TruckElectric,
+            label: "Open Orders",
+            value: `1`,
+            badge: "Total Count",
+            badgeColor: "text-gray-400",
+            status: "1 Unshipped",
+        },
+        {
             icon: Package,
-            label: "Total Wallet",
-            value: sellerWalletData?.data?.totalAmount || 0,
-            badge: timeRange,
+            label: "Payments",
+            value: `$${sellerWalletData?.data?.totalAmount || 0}`,
+            badge: 'total balance',
             badgeColor: "text-gray-400",
         },
         {
@@ -151,7 +171,7 @@ export default function DashboardOverview() {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 rounded-xl overflow-hidden">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-7 rounded-xl overflow-hidden">
                 {stats.map((stat, index) => {
                     const Icon = stat.icon
                     return (
@@ -165,6 +185,20 @@ export default function DashboardOverview() {
                                     <p className="text-2xl font-bold text-[#FFFFFF]">{stat.value}</p>
                                     <p className={`text-xs font-semibold ${stat.badgeColor}`}>{stat.badge}</p>
                                 </div>
+                                <div className="flex items-center justify-between">
+                                    {
+                                        stat.status && (
+                                            <p className="text-xs font-medium text-gray-400">Status</p>
+                                        )
+                                    }
+                                    {stat.status && (
+                                        <p className={`text-xs font-medium ${stat.status === 'Excellent' ? 'text-green-400' : stat.status === 'Good' ? 'text-yellow-400' : 'text-[#1877F2]'}`}>
+                                            {stat.status}
+                                        </p>
+                                    )}
+
+                                </div>
+
                             </div>
                         </div>
                     )

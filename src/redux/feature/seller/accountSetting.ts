@@ -54,6 +54,22 @@ export const accountSettingApi = baseApi.injectEndpoints({
             }),
             providesTags: ["AccountHealthRatio"],
         }),
+        // /account-health-response/total-pending-orders
+        totalPendingOrders: builder.query({
+            query: () => ({
+                url: `/account-health-response/total-pending-orders`,
+                method: "GET",
+            }),
+            providesTags: ["AccountHealthRatio"],
+        }),
+        // /account-health-response/today-sales
+        todaySales: builder.query({
+            query: () => ({
+                url: `/account-health-response/today-sales`,
+                method: "GET",
+            }),
+            providesTags: ["AccountHealthRatio"],
+        }),
 
     }),
 });
@@ -65,4 +81,6 @@ export const {
     useOnTimeDeliveryRatioQuery,
     useAllReviewAndRatingRatioQuery,
     useSellerWalletDataQuery,
+    useTotalPendingOrdersQuery,
+    useTodaySalesQuery,
 } = accountSettingApi;
