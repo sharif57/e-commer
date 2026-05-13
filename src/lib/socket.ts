@@ -2,7 +2,7 @@ import io, { Socket } from 'socket.io-client';
 
 let socket: Socket | null = null;
 
-const SOCKET_URL = 'http://69.62.70.69:5003';
+const SOCKET_URL = 'https://api.ebakx.com';
 
 export const initSocket = () => {
   if (socket) {

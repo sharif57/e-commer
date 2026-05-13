@@ -150,7 +150,7 @@ export default function ShoppingBag() {
                     {
                         productId: item.id,
                         quantity: item.quantity,
-                        price: item.price,
+                        price: item.price * item.quantity,
                         sellerId,
                         shippingCost: shippingCost,
                         size: item.selectedSize,

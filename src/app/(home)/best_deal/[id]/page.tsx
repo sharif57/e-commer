@@ -217,7 +217,7 @@ export default function ProductPage() {
                     {
                         productId: product._id,
                         quantity: quantity,
-                        price: product.price,
+                        price: product.price * quantity,
                         sellerId: product.userId,
                         shippingCost: product.shippingCost || 0,
                         size: selectedSize,
