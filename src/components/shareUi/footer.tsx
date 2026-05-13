@@ -135,7 +135,7 @@ export default function Footer() {
           <p className="text-sm text-slate-200 font-medium text-center sm:text-left">
             Copyright © ebakx Inc. {new Date().getFullYear()} All Rights Reserved
           </p>
-          <div className="flex items-center gap-4 text-sm text-slate-200 font-medium">
+          <div className="flex items-center gap-4 text-sm text-slate-200 font-medium mx-32">
             <Link href="#" className="hover:text-white transition-colors">Terms</Link>
             <Link href="#" className="hover:text-white transition-colors">Privacy</Link>
           </div>
