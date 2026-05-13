@@ -101,12 +101,12 @@ export default function ProductGrid() {
       </div>
 
       {/* Product Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
         {isLoading && page === 1
-          ? Array.from({ length: 8 }).map((_, i) => (
+          ? Array.from({ length: 10 }).map((_, i) => (
             <ProductCardSkeleton key={i} />
           ))
-          : products.map((product) => (
+          : products?.slice(0, 10).map((product) => (
             <Link href={`/best_deal/${product._id}`} key={product._id}>
               <ProductCard
                 product={product}

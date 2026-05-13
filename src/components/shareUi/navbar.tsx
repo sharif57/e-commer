@@ -179,7 +179,7 @@ export default function Navbar() {
                   </div>
                   <Select value={selectedCategory} onValueChange={(val) => setSelectedCategory(val)} >
                     <SelectTrigger className="w-[140px] rounded-l-none border-r-0  bg-gray-100">
-                      <SelectValue placeholder="Category" />
+                      <SelectValue placeholder="All Category" />
                     </SelectTrigger>
                     <SelectContent>
                       {

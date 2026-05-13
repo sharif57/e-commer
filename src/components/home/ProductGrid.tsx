@@ -45,9 +45,9 @@ export default function ProductGrid() {
       // Get current wishlist from localStorage
       const savedWishlist = localStorage.getItem("wishlist");
       const wishlistProducts = savedWishlist ? JSON.parse(savedWishlist) : [];
-      
+
       const newWishlist = new Set(wishlist)
-      
+
       if (newWishlist.has(productId)) {
         // Remove from wishlist
         newWishlist.delete(productId)
@@ -85,18 +85,18 @@ export default function ProductGrid() {
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-12">
       <div className="flex items-center justify-between mb-8">
         <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-black">Best selling products</h1>
-        <Link href="/best_deal"  className="text-[#1877F2] hover:underline hover:text-primary/80 font-medium text-lg flex items-center gap-1 transition-colors"
+        <Link href="/best_deal" className="text-[#1877F2] hover:underline hover:text-primary/80 font-medium text-lg flex items-center gap-1 transition-colors"
         >
           See all
           <ChevronRight className="w-4 h-4" />
         </Link>
       </div>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8">
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
         {isLoading
-          ? Array.from({ length: 8 }).map((_, i) => (
+          ? Array.from({ length: 10 }).map((_, i) => (
             <ProductCardSkeleton key={i} />
           ))
-          : products?.slice(0, 8).map((product: any) => (
+          : products?.slice(0, 10).map((product: any) => (
             <ProductCard
               key={product?._id}
               product={product}

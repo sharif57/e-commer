@@ -633,6 +633,24 @@ export default function ProductPage() {
 
                                 {/* Customization */}
                                 <div className="space-y-4">
+                                    {/* Color Selection */}
+                                    <div>
+                                        <label className="block text-sm font-semibold text-black mb-3">Color</label>
+                                        <div className="flex gap-3 flex-wrap">
+                                            {product?.color?.map((color: string) => (
+                                                <button
+                                                    key={color}
+                                                    onClick={() => setSelectedColor(color)}
+                                                    className={`px-6 py-2.5 rounded-lg border-2 font-medium text-sm capitalize transition-all ${selectedColor === color
+                                                        ? "border-[#29845A] bg-[#29845A] text-white"
+                                                        : "border-gray-300 text-gray-700 hover:border-gray-400"
+                                                        }`}
+                                                >
+                                                    {color}
+                                                </button>
+                                            ))}
+                                        </div>
+                                    </div>
                                     {/* Size Selection */}
                                     <div>
                                         <label className="block text-sm font-semibold text-black mb-3">Size</label>
@@ -652,24 +670,7 @@ export default function ProductPage() {
                                         </div>
                                     </div>
 
-                                    {/* Color Selection */}
-                                    <div>
-                                        <label className="block text-sm font-semibold text-black mb-3">Color</label>
-                                        <div className="flex gap-3 flex-wrap">
-                                            {product?.color?.map((color: string) => (
-                                                <button
-                                                    key={color}
-                                                    onClick={() => setSelectedColor(color)}
-                                                    className={`px-6 py-2.5 rounded-lg border-2 font-medium text-sm capitalize transition-all ${selectedColor === color
-                                                        ? "border-[#29845A] bg-[#29845A] text-white"
-                                                        : "border-gray-300 text-gray-700 hover:border-gray-400"
-                                                        }`}
-                                                >
-                                                    {color}
-                                                </button>
-                                            ))}
-                                        </div>
-                                    </div>
+
                                 </div>
 
                                 {/* Specifications */}

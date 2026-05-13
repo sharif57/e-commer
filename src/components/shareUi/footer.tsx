@@ -16,8 +16,8 @@ export default function Footer() {
 
   return (
     <footer className="border-t bg-[#1F2937] text-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8 sm:pt-14 sm:pb-10">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 lg:gap-12">
+      <div className="container mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-8 sm:pt-14 sm:pb-10">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8 lg:gap-12">
           <div className="flex flex-col">
             <div className="mb-4">
               <FooterLogo />
@@ -108,6 +108,12 @@ export default function Footer() {
               <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Refund Policy</Link></li>
               <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Security</Link></li>
               <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Contact Us</Link></li>
+            </ul>
+          </div>
+          <div className="flex flex-col">
+            <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wide">Help Center</h3>
+            <ul className="space-y-3">
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Compline</Link></li>
             </ul>
           </div>
         </div>
