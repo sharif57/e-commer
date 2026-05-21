@@ -23,6 +23,10 @@ export default function StepTwo({ data, onChange, onNext, onPrevious }: StepTwoP
     if (!data.contactEmail) newErrors.contactEmail = "Contact email is required"
     if (!data.contactNumber) newErrors.contactNumber = "Contact number is required"
     if (!data.address) newErrors.address = "Address is required"
+    if (!data.seller_city) newErrors.seller_city = "City is required"
+    if (!data.billing_address_state) newErrors.billing_address_state = "State is required"
+    if (!data.seller_country) newErrors.seller_country = "Country is required"
+    if (!data.post_code) newErrors.post_code = "Post Code is required"
     if (!data.residency) newErrors.residency = "Residency is required"
     if (!data.nationalIdFront) newErrors.nationalIdFront = "National ID front is required"
     if (!data.nationalIdBack) newErrors.nationalIdBack = "National ID back is required"
@@ -126,6 +130,62 @@ export default function StepTwo({ data, onChange, onNext, onPrevious }: StepTwoP
             required
           />
           {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
+        </div>
+
+        {/* City */}
+        <div>
+          <label className="block text-sm font-medium text-black mb-2">City <span className="text-red-500">*</span></label>
+          <input
+            type="text"
+            placeholder="Enter city"
+            value={data.seller_city}
+            onChange={(e) => onChange({ seller_city: e.target.value })}
+            className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
+          />
+          {errors.seller_city && <p className="text-red-500 text-xs mt-1">{errors.seller_city}</p>}
+        </div>
+
+        {/* State */}
+        <div>
+          <label className="block text-sm font-medium text-black mb-2">State <span className="text-red-500">*</span></label>
+          <input
+            type="text"
+            placeholder="Enter state"
+            value={data.billing_address_state}
+            onChange={(e) => onChange({ billing_address_state: e.target.value })}
+            className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
+          />
+          {errors.billing_address_state && <p className="text-red-500 text-xs mt-1">{errors.billing_address_state}</p>}
+        </div>
+
+        {/* Post Code */}
+        <div>
+          <label className="block text-sm font-medium text-black mb-2">Post Code <span className="text-red-500">*</span></label>
+          <input
+            type="text"
+            placeholder="Enter post code"
+            value={data.post_code}
+            onChange={(e) => onChange({ post_code: e.target.value })}
+            className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
+          />
+          {errors.post_code && <p className="text-red-500 text-xs mt-1">{errors.post_code}</p>}
+        </div>
+
+        {/* Country */}
+        <div>
+          <label className="block text-sm font-medium text-black mb-2">Country <span className="text-red-500">*</span></label>
+          <input
+            type="text"
+            placeholder="Enter country"
+            value={data.seller_country}
+            onChange={(e) => onChange({ seller_country: e.target.value })}
+            className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
+          />
+          {errors.seller_country && <p className="text-red-500 text-xs mt-1">{errors.seller_country}</p>}
         </div>
 
         {/* Residency */}

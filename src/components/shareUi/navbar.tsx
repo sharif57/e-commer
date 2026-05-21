@@ -12,6 +12,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useGetCategoriesQuery } from "@/redux/feature/buyer/categorySlice";
 import { useGetUsersQuery } from "@/redux/feature/userSlice";
+import { useGetProductsByFilterQuery } from "@/redux/feature/buyer/productSlice";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { Input } from "../ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
@@ -30,7 +31,6 @@ import { logout } from "@/service/authService";
 import { toast } from "sonner";
 
 export default function Navbar() {
-  const [searchQuery, setSearchQuery] = useState("");
   const [items, setItems] = useState<Array<any>>([]);
   const [wishlistCount, setWishlistCount] = useState(0);
   const categoryScrollRef = useRef<HTMLDivElement>(null);
@@ -47,6 +47,31 @@ export default function Navbar() {
 
 
   const { data: profile } = useGetUsersQuery(undefined);
+
+  const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
+  const [isSearchDropdownOpen, setIsSearchDropdownOpen] = useState(false);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setDebouncedSearchTerm(searchTerm);
+    }, 300);
+    return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+  const { data: searchResults, isFetching: isSearching } = useGetProductsByFilterQuery(
+    { searchTerm: debouncedSearchTerm, limit: 50 },
+    { skip: !debouncedSearchTerm }
+  );
+
+  const searchProducts = searchResults?.data?.result || [];
+
+  useEffect(() => {
+    if (debouncedSearchTerm.length > 0) {
+      setIsSearchDropdownOpen(true);
+    } else {
+      setIsSearchDropdownOpen(false);
+    }
+  }, [debouncedSearchTerm]);
 
   if (pathname === "/upgrade") {
     return null;
@@ -122,10 +147,11 @@ export default function Navbar() {
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
     const params = new URLSearchParams();
-    const term = searchTerm || searchQuery;
+    const term = searchTerm;
     if (term && term.trim().length > 0) params.set('searchTerm', term.trim());
     if (selectedCategory && selectedCategory.trim().length > 0) params.set('category', selectedCategory.trim());
     router.push(`/category${params.toString() ? `?${params.toString()}` : ''}`);
+    setIsSearchDropdownOpen(false);
   };
 
   const scrollCategories = (distance: number) => {
@@ -156,14 +182,14 @@ export default function Navbar() {
         <div className=" px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-3 sm:gap-4 py-3 sm:py-4">
             {/* Logo */}
-            <Link href={'/'} className="cursor-crosshair">
+            <Link href={'/'} className="cursor-pointer">
               <Logo />
             </Link>
 
             {/* Search Bar - Hidden on mobile */}
             <form
               onSubmit={handleSearch}
-              className="hidden sm:flex items-center w-full max-w-lg lg:max-w-2xl rounded-md border border-gray-300 overflow-hidden relative bg-white"
+              className="hidden sm:flex items-center w-full max-w-lg lg:max-w-2xl rounded-md border border-gray-300 overflow-visible relative bg-white"
             >
 
               <div className="w-full max-w-2xl  rounded-lg">
@@ -178,7 +204,7 @@ export default function Navbar() {
                     />
                   </div>
                   <Select value={selectedCategory} onValueChange={(val) => setSelectedCategory(val)} >
-                    <SelectTrigger className="w-[140px] rounded-l-none border-r-0  bg-gray-100">
+                    <SelectTrigger className="w-[140px] cursor-pointer rounded-l-none border-r-0  bg-gray-100">
                       <SelectValue placeholder="All Category" />
                     </SelectTrigger>
                     <SelectContent>
@@ -191,7 +217,7 @@ export default function Navbar() {
                   </Select>
                   <button
                     type="submit"
-                    className="px-3 bg-primary hover:bg-primary/90 text-white flex items-center justify-center"
+                    className="px-3 bg-primary hover:bg-primary/90 text-white flex items-center justify-center rounded-r-md"
                     aria-label="Search"
                     title="Search"
                   >
@@ -200,6 +226,35 @@ export default function Navbar() {
 
                 </div>
               </div>
+
+              {/* Search Dropdown Desktop */}
+              {isSearchDropdownOpen && debouncedSearchTerm && (
+                <div className="absolute top-full left-0 w-full mt-1 bg-white border border-gray-200 shadow-xl rounded-md z-[100] max-h-[400px] overflow-y-auto">
+                  {isSearching ? (
+                    <div className="p-4 text-center text-sm text-gray-500">Searching...</div>
+                  ) : searchProducts.length > 0 ? (
+                    <ul className="py-2">
+                      {searchProducts.map((product: any) => (
+                        <li key={product._id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
+                          <Link
+                            href={`/best_deal/${product._id}`}
+                            className="flex items-center gap-3 px-4 py-2"
+                            onClick={() => { setIsSearchDropdownOpen(false); setSearchTerm(''); }}
+                          >
+                            <img src={product?.image?.[0]} alt={product.title} className="w-10 h-10 object-cover rounded" />
+                            <div className="flex flex-col">
+                              <span className="text-sm font-medium text-gray-900 line-clamp-1">{product.title}</span>
+                              <span className="text-xs text-primary font-bold">${product.price.toFixed(2)}</span>
+                            </div>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="p-4 text-center text-sm text-gray-500">No products found</div>
+                  )}
+                </div>
+              )}
 
             </form>
 
@@ -216,7 +271,7 @@ export default function Navbar() {
               {/* Become Seller */}
               {profile?.data?.role !== "SELLER" && (
                 <Link href="/auth/become-seller-signup">
-                  <button className="hidden md:block text-sm text-[#171717] hover:text-primary transition-colors font-medium">
+                  <button className="hidden md:block cursor-pointer text-sm text-[#171717] hover:text-primary transition-colors font-medium">
                     Become a Seller
                   </button>
                 </Link>
@@ -225,7 +280,7 @@ export default function Navbar() {
               {/* Wishlist */}
               <Link href={'/wise-list'}>
                 <button
-                  className="relative p-2 hover:bg-gray-100 rounded-md transition-colors"
+                  className="relative p-2 cursor-pointer hover:bg-gray-100 rounded-md transition-colors"
                   aria-label="Wishlist"
                 >
                   <Heart size={20} className="text-black" />
@@ -259,14 +314,14 @@ export default function Navbar() {
                 !profile?.data?.firstName ? (
                   <>
                     <Link href="/auth">
-                      <button className="hidden sm:block text-sm text-black hover:text-primary transition-colors font-medium">
+                      <button className="hidden sm:block cursor-pointer text-sm text-black hover:text-primary transition-colors font-medium">
                         Sign In
                       </button>
                     </Link>
 
                     {/* Register */}
                     <Link href="/auth/register">
-                      <button className="px-3 sm:px-4 py-1.5 sm:py-2 bg-primary hover:bg-primary/90 text-white rounded-md transition-colors font-medium text-sm">
+                      <button className="px-3 sm:px-4 cursor-pointer py-1.5 sm:py-2 bg-primary hover:bg-primary/90 text-white rounded-md transition-colors font-medium text-sm">
                         Register
                       </button>
                     </Link>
@@ -335,10 +390,39 @@ export default function Navbar() {
               <input
                 type="text"
                 placeholder="Search products..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-primary/50 text-sm"
               />
+
+              {/* Search Dropdown Mobile */}
+              {isSearchDropdownOpen && debouncedSearchTerm && (
+                <div className="absolute top-full left-0 w-full mt-1 bg-white border border-gray-200 shadow-xl rounded-md z-[100] max-h-[300px] overflow-y-auto">
+                  {isSearching ? (
+                    <div className="p-4 text-center text-sm text-gray-500">Searching...</div>
+                  ) : searchProducts.length > 0 ? (
+                    <ul className="py-2">
+                      {searchProducts.map((product: any) => (
+                        <li key={product._id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
+                          <Link
+                            href={`/best_deal/${product._id}`}
+                            className="flex items-center gap-3 px-4 py-2"
+                            onClick={() => { setIsSearchDropdownOpen(false); setSearchTerm(''); }}
+                          >
+                            <img src={product?.image?.[0]} alt={product.title} className="w-10 h-10 object-cover rounded" />
+                            <div className="flex flex-col">
+                              <span className="text-sm font-medium text-gray-900 line-clamp-1">{product.title}</span>
+                              <span className="text-xs text-primary font-bold">${product.price.toFixed(2)}</span>
+                            </div>
+                          </Link>
+                        </li>
+                      ))}
+                    </ul>
+                  ) : (
+                    <div className="p-4 text-center text-sm text-gray-500">No products found</div>
+                  )}
+                </div>
+              )}
             </div>
             <button
               type="submit"

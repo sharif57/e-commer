@@ -90,6 +90,17 @@ export default function Footer() {
             </ul>
           </div>
 
+
+          <div className="flex flex-col">
+            <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wide">Sell</h3>
+            <ul className="space-y-3">
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Sell on ebakx</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Trams</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Forums</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Affiliates & Creators</Link></li>
+            </ul>
+          </div>
+
           <div className="flex flex-col">
             <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wide">Shop</h3>
             <ul className="space-y-3">
