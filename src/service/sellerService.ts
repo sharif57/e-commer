@@ -11,6 +11,10 @@ class SellerService {
     if (!data.legalBusinessName) errors.legalBusinessName = "Legal business name is required";
     if (!data.businessRegistrationNo) errors.businessRegistrationNo = "Business registration number is required";
     if (!data.businessAddress) errors.businessAddress = "Business address is required";
+    if (!data.businessCity) errors.businessCity = "Business city is required";
+    if (!data.businessState) errors.businessState = "Business state is required";
+    if (!data.businessPostCode) errors.businessPostCode = "Business post code is required";
+    if (!data.businessCountry) errors.businessCountry = "Business country is required";
     if (!data.businessPhone) errors.businessPhone = "Business phone is required";
     if (!data.businessEmail) errors.businessEmail = "Business email is required";
     if (!data.einTinNumber) errors.einTinNumber = "EIN/TIN number is required";
@@ -30,9 +34,11 @@ class SellerService {
     if (!data.accountNumber) errors.accountNumber = "Account number is required";
     if (!data.swiftCode) errors.swiftCode = "SWIFT code is required";
     if (!data.accountType) errors.accountType = "Account type is required";
-    if (!data.street) errors.street = "Street is required";
-    if (!data.city) errors.city = "City is required";
-    if (!data.zip) errors.zip = "ZIP code is required";
+    if (!data.address) errors.address = "Street Address is required";
+    if (!data.seller_city) errors.seller_city = "City is required";
+    if (!data.post_code) errors.post_code = "ZIP/Post code is required";
+    if (!data.billing_address_state) errors.billing_address_state = "State is required";
+    if (!data.seller_country) errors.seller_country = "Country is required";
 
     return {
       isValid: Object.keys(errors).length === 0,
@@ -47,7 +53,7 @@ class SellerService {
     if (value === null || value === undefined || value === "") {
       return defaultValue;
     }
-    
+
     const num = Number(value);
     return isNaN(num) ? defaultValue : num;
   }
@@ -63,6 +69,10 @@ class SellerService {
       bankName: data.bankName || "",
       businessAccHolderName: data.businessAccHolderName || "",
       businessAddress: data.businessAddress || "",
+      businessCity: data.businessCity || "",
+      businessState: data.businessState || "",
+      businessPostCode: data.businessPostCode || "",
+      businessCountry: data.businessCountry || "Bangladesh",
       businessEmail: data.businessEmail || "",
       businessName: data.legalBusinessName || "",
       businessPhone: data.businessPhone || "",
@@ -71,7 +81,6 @@ class SellerService {
       categories: data.categories || [],
       contactAdress: data.address || "",
       contactEmail: data.contactEmail || "",
-      country: data.country || "Bangladesh",
       fullName: data.fullName || "",
       residency: data.residency || "",
       role: "seller",
@@ -79,12 +88,14 @@ class SellerService {
       shopName: data.shopName || "",
       stripeId: data.stripeId || "",
       tin: this.toNumber(data.tin || data.einTinNumber),
-      zip: this.toNumber(data.zip),
+      zip: data.post_code || "",
       returnPolicy: data.returnPolicy || "",
       fashion: data.fashion || false,
       homeLiving: data.homeLiving || false,
-      city: data.city || "",
-      street: data.street || "",
+      seller_city: data.seller_city || "",
+      billing_address_state: data.billing_address_state || "",
+      post_code: data.post_code || "",
+      seller_country: data.seller_country || "",
       swiftCode: data.swiftCode || "",
     };
 

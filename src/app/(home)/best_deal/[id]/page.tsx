@@ -4,7 +4,7 @@
 "use client"
 
 import { useEffect, useRef, useState } from "react"
-import { Heart, Star, CreditCard, Minus, Plus, ChevronDown, ChevronUp, Check, Share2 } from "lucide-react"
+import { Heart, Star, CreditCard, Minus, Plus, ChevronDown, ChevronUp, Check, Share2, CloudCog } from "lucide-react"
 import Method from "@/components/icon/method"
 import Image from "next/image"
 import Link from "next/link"
@@ -12,11 +12,12 @@ import { useCreateCheckoutSessionMutation, useCreateOrderMutation, useGetSingleP
 import { useParams } from "next/navigation"
 import ProductSkeleton from "@/components/Skeleton/ProductDetailsSkeleton"
 import { toast } from "sonner"
-import { useCreateReviewMutation, useGetAllReviewsQuery } from "@/redux/feature/buyer/reviewSlice"
+import { useCreateReviewMutation, useGetAllReviewsQuery, useReviewCountQuery } from "@/redux/feature/buyer/reviewSlice"
 import { useGetUsersQuery } from "@/redux/feature/userSlice"
 import MissingInfoModal, { type AddressData } from "@/components/missing-info-modal"
 import { validateDeliveryAddress } from "@/lib/validationHelpers"
 import { useCreateBillingAddressMutation } from "@/redux/feature/buyer/orderProductSlice"
+import ReviewModal from "@/components/ReviewModal"
 
 export default function ProductPage() {
     const { id } = useParams();
@@ -31,6 +32,7 @@ export default function ProductPage() {
     const [reviewRating, setReviewRating] = useState(0);
     const [reviewLoading, setReviewLoading] = useState(false);
     const [isReviewSectionOpen, setIsReviewSectionOpen] = useState(true);
+    const [isReviewModalOpen, setIsReviewModalOpen] = useState(false);
     const [isModalOpen, setIsModalOpen] = useState(false)
     const [missingFields, setMissingFields] = useState<string[]>([])
     const [sharePending, setSharePending] = useState(false)
@@ -46,6 +48,8 @@ export default function ProductPage() {
     const [createOrder] = useCreateOrderMutation()
     const [createReview] = useCreateReviewMutation();
     const { data: reviewData, refetch: refetchReviews } = useGetAllReviewsQuery({ id: id as string, page });
+    const { data: reviewCount } = useReviewCountQuery(id as string)
+    console.log(reviewCount, '=====cound')
 
     // billing Address
     const [createBillingAddress] = useCreateBillingAddressMutation();
@@ -485,6 +489,14 @@ export default function ProductPage() {
                 }}
                 missingFields={missingFields}
             />
+            <ReviewModal
+                isOpen={isReviewModalOpen}
+                onClose={() => setIsReviewModalOpen(false)}
+                reviews={reviewList}
+                totalReviews={totalReviews}
+                averageRating={averageReviewRating}
+                reviewCountData={reviewCount?.data}
+            />
             {isLoading ? <ProductSkeleton /> :
                 <div className="min-h-screen ">
                     {/* Breadcrumb */}
@@ -611,17 +623,20 @@ export default function ProductPage() {
                                     <h1 className="text-2xl md:text-3xl font-bold text-black mb-3">
                                         {product?.title || "Product Title"}
                                     </h1>
-                                    <div className="flex items-center gap-2">
+                                    <div
+                                        className="flex items-center gap-2 cursor-pointer hover:opacity-80 transition-opacity"
+                                        onClick={() => setIsReviewModalOpen(true)}
+                                    >
                                         <div className="flex gap-1">
                                             {[...Array(5)].map((_, i) => (
                                                 <Star
                                                     key={i}
                                                     size={18}
-                                                    className={i < (product?.rating || 0) ? "fill-amber-400 text-amber-400" : "fill-gray-300 text-gray-300"}
+                                                    className={i < Math.round(averageReviewRating) ? "fill-amber-400 text-amber-400" : "fill-gray-300 text-gray-300"}
                                                 />
                                             ))}
                                         </div>
-                                        <span className="text-sm text-[#1877F2]">{product?.rating || 0} Ratings</span>
+                                        <span className="text-sm text-[#1877F2] font-medium hover:underline">{totalReviews} Ratings</span>
                                     </div>
                                 </div>
 
@@ -869,7 +884,7 @@ export default function ProductPage() {
                     </div>
 
                     {/* Reviews Section */}
-                    <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                    {/* <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-8">
                         <div className="rounded-2xl border border-gray-200 bg-gray-50 p-4 sm:p-6">
                             <div className="mb-6 flex items-center justify-between gap-4">
                                 <div>
@@ -1022,7 +1037,7 @@ export default function ProductPage() {
                                 </>
                             )}
                         </div>
-                    </div>
+                    </div> */}
                 </div>
             }
         </>

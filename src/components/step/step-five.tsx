@@ -147,7 +147,7 @@ export default function StepFive({ data, onPrevious }: StepFiveProps) {
                 Processing...
               </>
             ) : (
-              "Pay $29.99 and Submit for Review"
+              " Submit for Review"
             )}
           </button>
           <p className="text-xs text-amber-700 flex items-start gap-2">
@@ -186,11 +186,13 @@ export default function StepFive({ data, onPrevious }: StepFiveProps) {
               </div>
               <div className="flex justify-between">
                 <span className="text-lg text-black">Business Address:</span>
-                <span className="text-lg font-medium text-black">{data.businessAddress}</span>
+                <span className="text-lg font-medium text-black">
+                  {data.businessAddress}, {data.businessCity}, {data.businessPostCode}
+                </span>
               </div>
               <div className="flex justify-between">
                 <span className="text-lg text-black">Country:</span>
-                <span className="text-lg font-medium text-black">{data.country}</span>
+                <span className="text-lg font-medium text-black">{data.businessCountry}</span>
               </div>
               <div className="flex justify-between">
                 <span className="text-lg text-black">Business Phone:</span>
@@ -329,7 +331,7 @@ export default function StepFive({ data, onPrevious }: StepFiveProps) {
               <div className="flex justify-between">
                 <span className="text-lg text-black">Billing Address:</span>
                 <span className="text-lg font-medium text-black">
-                  {data.street}, {data.city}, {data.zip}
+                  {data.address}, {data.seller_city}, {data.post_code}
                 </span>
               </div>
             </div>
@@ -369,7 +371,7 @@ export default function StepFive({ data, onPrevious }: StepFiveProps) {
                 Processing...
               </>
             ) : (
-              "Pay $29.99 and Submit for Review"
+              "Submit for Review"
             )}
           </Button>
         </div>

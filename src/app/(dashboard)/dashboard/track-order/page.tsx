@@ -7,13 +7,14 @@ import { OrderTimeline } from '@/components/dashboard/buyer/order-timeline'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
 import { useGetSingleProductSellerQuery, useOrderConfirmationMutation } from '@/redux/feature/seller/productSellerSlice'
-import { Printer, Download } from 'lucide-react'
+import { Printer, Download, Star, Paperclip, Loader2 } from 'lucide-react'
 import { useParams, useSearchParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
 import { toast } from 'sonner'
 import { getSocket } from '@/lib/socket'
 import Logo from '@/components/icon/logo'
 import Link from 'next/link'
+import { useCreateReviewMutation } from '@/redux/feature/buyer/reviewSlice'
 
 export default function TrackOrderPage() {
     const searchParams = useSearchParams()
@@ -29,7 +30,11 @@ export default function TrackOrderPage() {
     const [selectedStatus, setSelectedStatus] = useState<string>('placed')
     const [statusMessage, setStatusMessage] = useState<string | null>(null)
     const [statusError, setStatusError] = useState<string | null>(null)
-
+    const [createReview] = useCreateReviewMutation();
+    const [reviewRating, setReviewRating] = useState<number>(0);
+    const [reviewText, setReviewText] = useState<string>('');
+    const [reviewImage, setReviewImage] = useState<File | null>(null);
+    const [isReviewLoading, setIsReviewLoading] = useState<boolean>(false);
 
     // Initialize socket on mount
     useEffect(() => {
@@ -118,6 +123,40 @@ export default function TrackOrderPage() {
         }
     }
 
+    const handleReviewSubmit = async () => {
+        if (!reviewText || !reviewRating) {
+            toast.error("Please provide a rating and a review.");
+            return;
+        }
+
+        setIsReviewLoading(true);
+        try {
+            const formData = new FormData();
+
+            // Append the image if selected
+            if (reviewImage) {
+                formData.append('image', reviewImage);
+            }
+
+            // Append the JSON data as a string
+            formData.append('data', JSON.stringify({
+                productId: orderData.productId._id,
+                rating: Number(reviewRating),
+                review: reviewText,
+            }));
+
+            const res = await createReview(formData).unwrap();
+            toast.success(res?.data?.message || res?.message || "Review submitted successfully!");
+            setReviewText("");
+            setReviewRating(0);
+            setReviewImage(null);
+        } catch (error: any) {
+            toast.error(error?.data?.message || "Failed to submit review");
+        } finally {
+            setIsReviewLoading(false);
+        }
+    }
+
     // Calculate totals
     const subtotal = orderData.price * orderData.quantity
     const deliveryFee = parseInt(orderData.productId.deliveryChargeInDc) || 0
@@ -181,6 +220,70 @@ export default function TrackOrderPage() {
 
                         </div>
                     </div>
+
+                    {/* Review Section */}
+                    {orderData.deliveryStatus === 'delivered' && (
+                        <div className="mt-6 bg-white rounded-lg p-6 sm:p-8 border border-border">
+                            <h3 className="text-2xl font-bold mb-4 text-[#111827]">How would you rate this product?</h3>
+
+                            <div className="flex gap-2 mb-8">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <Star
+                                        key={star}
+                                        strokeWidth={1.5}
+                                        className={`w-12 h-12 cursor-pointer transition-colors ${reviewRating >= star
+                                            ? 'fill-[#FFD700] text-[#FFD700]'
+                                            : 'text-gray-400'
+                                            }`}
+                                        onClick={() => setReviewRating(star)}
+                                    />
+                                ))}
+                            </div>
+
+                            <h3 className="text-base font-bold mb-3 text-[#111827]">Write a Customer Review</h3>
+
+                            <div className="relative border border-gray-500 rounded-lg overflow-hidden bg-white">
+                                <textarea
+                                    value={reviewText}
+                                    onChange={(e) => setReviewText(e.target.value)}
+                                    placeholder="Share your thoughts with other customers..."
+                                    className="w-full min-h-[160px] p-4 pb-16 bg-transparent outline-none resize-none text-gray-700 placeholder:text-gray-500"
+                                />
+
+                                <div className="absolute bottom-4 left-4">
+                                    <input
+                                        type="file"
+                                        id="review-image"
+                                        className="hidden"
+                                        accept="image/*"
+                                        onChange={(e) => {
+                                            if (e.target.files && e.target.files[0]) {
+                                                setReviewImage(e.target.files[0]);
+                                            }
+                                        }}
+                                    />
+                                    <label
+                                        htmlFor="review-image"
+                                        className="inline-flex items-center gap-2 px-2 py-1 border-[1.5px] border-[#171717] rounded-lg text-sm font-semibold cursor-pointer hover:bg-gray-50 transition-colors text-[#171717]"
+                                    >
+                                        <Paperclip className="w-4 h-4" />
+                                        {reviewImage ? (reviewImage.name.length > 20 ? reviewImage.name.slice(0, 20) + '...' : reviewImage.name) : 'Attachment'}
+                                    </label>
+                                </div>
+                            </div>
+
+                            <div className="flex justify-end mt-4">
+                                <Button
+                                    onClick={handleReviewSubmit}
+                                    disabled={isReviewLoading}
+                                    className="bg-[#2D8D58] hover:bg-[#247046] text-white px-8 py-2 rounded-lg font-semibold text-base transition-colors"
+                                >
+                                    {isReviewLoading && <Loader2 className="w-4 h-4 animate-spin mr-2" />}
+                                    Submit
+                                </Button>
+                            </div>
+                        </div>
+                    )}
                 </div>
 
                 {/* Right Column */}

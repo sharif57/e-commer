@@ -6,7 +6,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Search, Heart, Handbag, ChevronLeft, ChevronRight } from "lucide-react";
+import { Search, Heart, Handbag, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
 import Logo from "../icon/logo";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -27,8 +27,9 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { Button } from "../ui/button";
-import { logout } from "@/service/authService";
 import { toast } from "sonner";
+import LocationModal, { LocationData } from "./LocationModal";
+import { logout } from "@/service/authService";
 
 export default function Navbar() {
   const [items, setItems] = useState<Array<any>>([]);
@@ -50,6 +51,9 @@ export default function Navbar() {
 
   const [debouncedSearchTerm, setDebouncedSearchTerm] = useState("");
   const [isSearchDropdownOpen, setIsSearchDropdownOpen] = useState(false);
+
+  const [deliveryLocation, setDeliveryLocation] = useState<LocationData | null>(null);
+  const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -119,6 +123,76 @@ export default function Navbar() {
     window.addEventListener('focus', updateCartFromStorage);
     window.addEventListener('focus', updateWishlistFromStorage);
 
+    // Initial load for delivery location
+    const savedLocation = localStorage.getItem("deliveryLocation");
+    if (savedLocation) {
+      try {
+        setDeliveryLocation(JSON.parse(savedLocation));
+      } catch (e) { }
+    } else {
+      // First time automatic user location set
+      if (typeof navigator !== 'undefined' && navigator.geolocation) {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            try {
+              const { latitude, longitude } = position.coords;
+              const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
+              if (!apiKey) return;
+
+              const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`);
+              const data = await response.json();
+
+              if (data.status === 'OK' && data.results.length > 0) {
+                let city = '';
+                let country = '';
+                let state = '';
+
+                for (const result of data.results) {
+                  if (!result.address_components) continue;
+                  for (const component of result.address_components) {
+                    if (!city && (component.types.includes('locality') || component.types.includes('postal_town'))) {
+                      city = component.long_name;
+                    }
+                    if (!country && component.types.includes('country')) {
+                      country = component.short_name;
+                    }
+                    if (!state && component.types.includes('administrative_area_level_1')) {
+                      state = component.short_name;
+                    }
+                  }
+                }
+
+                if (!city) {
+                  for (const result of data.results) {
+                    if (!result.address_components) continue;
+                    for (const component of result.address_components) {
+                      if (!city && (component.types.includes('administrative_area_level_2') || component.types.includes('neighborhood') || component.types.includes('sublocality'))) {
+                        city = component.long_name;
+                      }
+                    }
+                  }
+                }
+
+                if (city || country || state) {
+                  const loc = {
+                    city: city || state || 'Unknown',
+                    country: country || 'Unknown'
+                  };
+                  setDeliveryLocation(loc);
+                  localStorage.setItem("deliveryLocation", JSON.stringify(loc));
+                }
+              }
+            } catch (error) {
+              console.error("Auto location fetch failed", error);
+            }
+          },
+          (error) => {
+            console.error("Auto location permission denied or failed", error);
+          }
+        );
+      }
+    }
+
     return () => {
       window.removeEventListener('cartUpdated', handleCartUpdate);
       window.removeEventListener('wishlistUpdated', handleWishlistUpdate);
@@ -141,7 +215,10 @@ export default function Navbar() {
     }
   }
 
-
+  const handleLocationSelect = (location: LocationData) => {
+    setDeliveryLocation(location);
+    localStorage.setItem("deliveryLocation", JSON.stringify(location));
+  };
 
   // Handle search submission
   const handleSearch = (e: React.FormEvent) => {
@@ -177,14 +254,35 @@ export default function Navbar() {
 
   return (
     <div className="w-full bg-white  relative z-50">
+      <LocationModal
+        isOpen={isLocationModalOpen}
+        onClose={() => setIsLocationModalOpen(false)}
+        onLocationSelect={handleLocationSelect}
+      />
       {/* Main Header */}
       <header className="border-b border-gray-200">
         <div className=" px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between gap-3 sm:gap-4 py-3 sm:py-4">
-            {/* Logo */}
-            <Link href={'/'} className="cursor-pointer">
-              <Logo />
-            </Link>
+            {/* Logo and Delivery Location Group */}
+            <div className="flex items-center gap-1 sm:gap-3">
+              <Link href={'/'} className="cursor-pointer shrink-0">
+                <Logo />
+              </Link>
+
+              {/* Delivery Location Widget */}
+              <div
+                onClick={() => setIsLocationModalOpen(true)}
+                className="flex items-center gap-1 sm:gap-1.5 cursor-pointer hover:opacity-80 transition-opacity ml-1 sm:ml-2"
+              >
+                <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 self-end mb-0.5 shrink-0" strokeWidth={2.5} />
+                <div className="flex flex-col justify-end">
+                  <span className="text-[10px] sm:text-[13px] text-gray-800 leading-[1.1] sm:leading-[1.2]">Deliver to</span>
+                  <span className="text-[11px] sm:text-[15px] font-bold text-black leading-[1.1] sm:leading-[1.2] whitespace-nowrap">
+                    {deliveryLocation ? `${deliveryLocation.city}, ${deliveryLocation.country}` : "Select your address"}
+                  </span>
+                </div>
+              </div>
+            </div>
 
             {/* Search Bar - Hidden on mobile */}
             <form
@@ -349,7 +447,7 @@ export default function Navbar() {
                       <DropdownMenuGroup>
                         <Link href="/dashboard">
                           <DropdownMenuItem className="cursor-pointer">
-                            Dashboard
+                            {profile?.data?.role === 'seller' ? 'Seller Dashboard' : 'Acconunt'}
                             <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
                           </DropdownMenuItem>
                         </Link>

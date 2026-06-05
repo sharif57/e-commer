@@ -21,9 +21,10 @@ export default function StepOne({ data, onChange, onNext }: StepOneProps) {
     if (!data.legalBusinessName) newErrors.legalBusinessName = "Legal business name is required"
     if (!data.businessRegistrationNo) newErrors.businessRegistrationNo = "Registration number is required"
     if (!data.businessAddress) newErrors.businessAddress = "Business address is required"
-    if (!data.country) newErrors.country = "Country is required"
-    if (!data.businessPhone) newErrors.businessPhone = "Business phone is required"
-    if (!data.businessEmail) newErrors.businessEmail = "Business email is required"
+    if (!data.businessCity) newErrors.businessCity = "Business city is required"
+    if (!data.businessState) newErrors.businessState = "Business state is required"
+    if (!data.businessPostCode) newErrors.businessPostCode = "Business post code is required"
+    if (!data.businessCountry) newErrors.businessCountry = "Business country is required"
     if (!data.businessLicense) newErrors.businessLicense = "Business license is required"
     if (!data.bankStatement) newErrors.bankStatement = "Bank statement/Utility bill is required"
     if (!data.einTinNumber) newErrors.einTinNumber = "EIN/TIN number is required"
@@ -95,35 +96,20 @@ export default function StepOne({ data, onChange, onNext }: StepOneProps) {
           )}
         </div>
 
-        {/* Business Address */}
+        {/* Business Email */}
         <div>
-          <label className="block text-sm font-medium text-black mb-2">Business Address <span className="text-red-500">*</span></label>
+          <label className="block text-sm font-medium text-black mb-2">Business Email <span className="text-red-500">*</span></label>
           <input
-            type="text"
-            placeholder="Enter your business address"
-            value={data.businessAddress}
-            onChange={(e) => onChange({ businessAddress: e.target.value })}
+            type="email"
+            placeholder="Enter your business email"
+            value={data.businessEmail}
+            onChange={(e) => onChange({ businessEmail: e.target.value })}
             className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
             required
           />
-          {errors.businessAddress && <p className="text-red-500 text-xs mt-1">{errors.businessAddress}</p>}
+          {errors.businessEmail && <p className="text-red-500 text-xs mt-1">{errors.businessEmail}</p>}
         </div>
 
-        {/* Country */}
-        <div>
-          <label className="block text-sm font-medium text-black mb-2">Country <span className="text-red-500">*</span></label>
-          <select
-            value={data.country}
-            onChange={(e) => onChange({ country: e.target.value })}
-            className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
-            required
-          >
-            <option value="United States">United States</option>
-            <option value="Canada">Canada</option>
-            <option value="Mexico">Mexico</option>
-          </select>
-          {errors.country && <p className="text-red-500 text-xs mt-1">{errors.country}</p>}
-        </div>
 
         {/* Business Phone */}
         <div>
@@ -139,19 +125,94 @@ export default function StepOne({ data, onChange, onNext }: StepOneProps) {
           {errors.businessPhone && <p className="text-red-500 text-xs mt-1">{errors.businessPhone}</p>}
         </div>
 
-        {/* Business Email */}
-        <div>
-          <label className="block text-sm font-medium text-black mb-2">Business Email <span className="text-red-500">*</span></label>
+        {/* Business Address */}
+        {/* <div>
+          <label className="block text-sm font-medium text-black mb-2">Business Address <span className="text-red-500">*</span></label>
           <input
-            type="email"
-            placeholder="Enter your business email"
-            value={data.businessEmail}
-            onChange={(e) => onChange({ businessEmail: e.target.value })}
+            type="text"
+            placeholder="Enter your business address"
+            value={data.businessAddress}
+            onChange={(e) => onChange({ businessAddress: e.target.value })}
             className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-primary focus:border-transparent outline-none"
             required
           />
-          {errors.businessEmail && <p className="text-red-500 text-xs mt-1">{errors.businessEmail}</p>}
+          {errors.businessAddress && <p className="text-red-500 text-xs mt-1">{errors.businessAddress}</p>}
+        </div> */}
+
+        {/* Address */}
+        <div>
+          <label className="block text-sm font-medium text-black mb-2"> Business Address <span className="text-red-500">*</span></label>
+          <input
+            type="text"
+            placeholder="Street Address"
+            value={data.businessAddress}
+            onChange={(e) => onChange({ businessAddress: e.target.value })}
+            className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
+          />
+          {errors.businessAddress && <p className="text-red-500 text-xs mt-1">{errors.businessAddress}</p>}
         </div>
+
+        {/* City */}
+        <div>
+          <label className="block text-sm font-medium text-black mb-2">City <span className="text-red-500">*</span></label>
+          <input
+            type="text"
+            placeholder="Enter city"
+            value={data.businessCity}
+            onChange={(e) => onChange({ businessCity: e.target.value })}
+            className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
+          />
+          {errors.businessCity && <p className="text-red-500 text-xs mt-1">{errors.businessCity}</p>}
+        </div>
+
+        {/* State */}
+        <div>
+          <label className="block text-sm font-medium text-black mb-2">State <span className="text-red-500">*</span></label>
+          <input
+            type="text"
+            placeholder="Enter state"
+            value={data.businessState}
+            onChange={(e) => onChange({ businessState: e.target.value })}
+            className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
+          />
+          {errors.businessState && <p className="text-red-500 text-xs mt-1">{errors.businessState}</p>}
+        </div>
+
+        {/* Post Code */}
+        <div>
+          <label className="block text-sm font-medium text-black mb-2">Post Code / ZIP Code <span className="text-red-500">*</span></label>
+          <input
+            type="text"
+            placeholder="Enter post code"
+            value={data.businessPostCode}
+            onChange={(e) => onChange({ businessPostCode: e.target.value })}
+            className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
+          />
+          {errors.businessPostCode && <p className="text-red-500 text-xs mt-1">{errors.businessPostCode}</p>}
+        </div>
+
+        {/* Country */}
+        <div>
+          <label className="block text-sm font-medium text-black mb-2">Country <span className="text-red-500">*</span></label>
+          <input
+            type="text"
+            placeholder="Enter country"
+            value={data.businessCountry}
+            onChange={(e) => onChange({ businessCountry: e.target.value })}
+            className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+            required
+          />
+          {errors.businessCountry && <p className="text-red-500 text-xs mt-1">{errors.businessCountry}</p>}
+        </div>
+
+
+
+
+
 
         {/* Verification Section */}
         <div className=" pt-6 mt-6">

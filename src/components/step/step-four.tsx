@@ -22,12 +22,12 @@ export default function StepFour({ data, onChange, onNext, onPrevious }: StepFou
     if (!data.accountNumber) newErrors.accountNumber = "Account number is required"
     if (!data.swiftCode) newErrors.swiftCode = "SWIFT code is required"
     if (!data.accountType) newErrors.accountType = "Account type is required"
-    if (!data.stripeId) newErrors.stripeId = "Stripe ID is required"
-    if (!data.tin) newErrors.tin = "TIN number is required"
-    if (!data.street) newErrors.street = "Street is required"
-    if (!data.city) newErrors.city = "City is required"
-    if (!data.zip) newErrors.zip = "ZIP code is required"
-    if (!data.residency) newErrors.residency = "Residency is required"
+    // if (!data.tin) newErrors.tin = "TIN number is required"
+    if (!data.address) newErrors.address = "Street Address is required"
+    if (!data.seller_city) newErrors.seller_city = "City is required"
+    if (!data.post_code) newErrors.post_code = "ZIP/Post code is required"
+    if (!data.billing_address_state) newErrors.billing_address_state = "State is required"
+    if (!data.seller_country) newErrors.seller_country = "Country is required"
 
     setErrors(newErrors)
     return Object.keys(newErrors).length === 0
@@ -127,22 +127,10 @@ export default function StepFour({ data, onChange, onNext, onPrevious }: StepFou
           {errors.accountType && <p className="text-red-500 text-xs mt-1">{errors.accountType}</p>}
         </div>
 
-        {/* Stripe ID */}
-        <div>
-          <label className="block text-sm font-medium text-black mb-2">Stripe ID <span className="text-red-500">*</span></label>
-          <input
-            type="text"
-            placeholder="Enter Stripe ID"
-            value={data.stripeId}
-            onChange={(e) => onChange({ stripeId: e.target.value })}
-            className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
-            required
-          />
-          {errors.stripeId && <p className="text-red-500 text-xs mt-1">{errors.stripeId}</p>}
-        </div>
+
 
         {/* TIN Number */}
-        <div>
+        {/* <div>
           <label className="block text-sm font-medium text-black mb-2">TIN Number <span className="text-red-500">*</span></label>
           <input
             type="text"
@@ -153,25 +141,41 @@ export default function StepFour({ data, onChange, onNext, onPrevious }: StepFou
             required
           />
           {errors.tin && <p className="text-red-500 text-xs mt-1">{errors.tin}</p>}
-        </div>
+        </div> */}
 
         {/* Billing Address */}
         <div className="border-t border-[#171717] pt-6 mt-6">
           <h2 className="text-lg font-semibold text-black mb-6">Billing Address</h2>
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Street */}
+            {/* Address */}
             <div>
-              <label className="block text-sm font-medium text-black mb-2">Street <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-black mb-2"> Street Address <span className="text-red-500">*</span></label>
               <input
                 type="text"
-                placeholder="123 Main Street"
-                value={data.street}
-                onChange={(e) => onChange({ street: e.target.value })}
+                placeholder="Street Address, City, State, ZIP Code"
+                value={data.address}
+                onChange={(e) => onChange({ address: e.target.value })}
                 className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
                 required
               />
-              {errors.street && <p className="text-red-500 text-xs mt-1">{errors.street}</p>}
+              {errors.address && <p className="text-red-500 text-xs mt-1">{errors.address}</p>}
+            </div>
+
+
+
+            {/* State */}
+            <div>
+              <label className="block text-sm font-medium text-black mb-2">State <span className="text-red-500">*</span></label>
+              <input
+                type="text"
+                placeholder="Enter state"
+                value={data.billing_address_state}
+                onChange={(e) => onChange({ billing_address_state: e.target.value })}
+                className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
+                required
+              />
+              {errors.billing_address_state && <p className="text-red-500 text-xs mt-1">{errors.billing_address_state}</p>}
             </div>
 
             {/* City */}
@@ -180,40 +184,40 @@ export default function StepFour({ data, onChange, onNext, onPrevious }: StepFou
               <input
                 type="text"
                 placeholder="Enter city"
-                value={data.city}
-                onChange={(e) => onChange({ city: e.target.value })}
+                value={data.seller_city}
+                onChange={(e) => onChange({ seller_city: e.target.value })}
                 className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
                 required
               />
-              {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
+              {errors.seller_city && <p className="text-red-500 text-xs mt-1">{errors.seller_city}</p>}
             </div>
 
-            {/* ZIP Code */}
+            {/* Post Code */}
             <div>
-              <label className="block text-sm font-medium text-black mb-2">ZIP Code <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-black mb-2">Post Code / ZIP Code <span className="text-red-500">*</span></label>
               <input
                 type="text"
-                placeholder="Enter ZIP code"
-                value={data.zip}
-                onChange={(e) => onChange({ zip: e.target.value })}
+                placeholder="Enter post code"
+                value={data.post_code}
+                onChange={(e) => onChange({ post_code: e.target.value })}
                 className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
                 required
               />
-              {errors.zip && <p className="text-red-500 text-xs mt-1">{errors.zip}</p>}
+              {errors.post_code && <p className="text-red-500 text-xs mt-1">{errors.post_code}</p>}
             </div>
 
-            {/* Residency */}
+            {/* Country */}
             <div>
-              <label className="block text-sm font-medium text-black mb-2">Residency <span className="text-red-500">*</span></label>
+              <label className="block text-sm font-medium text-black mb-2">Country <span className="text-red-500">*</span></label>
               <input
                 type="text"
-                placeholder="Enter country of residency"
-                value={data.residency}
-                onChange={(e) => onChange({ residency: e.target.value })}
+                placeholder="Enter country"
+                value={data.seller_country}
+                onChange={(e) => onChange({ seller_country: e.target.value })}
                 className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 focus:border-transparent outline-none"
                 required
               />
-              {errors.residency && <p className="text-red-500 text-xs mt-1">{errors.residency}</p>}
+              {errors.seller_country && <p className="text-red-500 text-xs mt-1">{errors.seller_country}</p>}
             </div>
           </div>
         </div>
