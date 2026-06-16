@@ -1,6 +1,7 @@
 import baseApi from "@/redux/api/baseApi";
 
 export const productSellerApi = baseApi.injectEndpoints({
+    overrideExisting: true,
     endpoints: (builder) => ({
         createProduct: builder.mutation({
             query: (productData) => ({

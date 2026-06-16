@@ -17,18 +17,18 @@ export const PackageApi = baseApi.injectEndpoints({
                 url: "/subscription/check-out",
                 method: "POST",
                 body: data,
-            }),    
-            invalidatesTags: ["Package"],        
+            }),
+            invalidatesTags: ["Package"],
         }),
 
         // /subscription/update-subscription
         updateSubscription: builder.mutation({
             query: (data) => ({
                 url: "/subscription/update-subscription",
-                method: "POST",
+                method: "PATCH",
                 body: data,
-            }),    
-            invalidatesTags: ["Package"],        
+            }),
+            invalidatesTags: ["Package"],
         }),
 
         // /subscription/my-subscriptions

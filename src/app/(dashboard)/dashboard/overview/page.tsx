@@ -209,7 +209,7 @@ export default function DashboardOverview() {
             {/* Main Content Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Performing Products */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="bg-white rounded-lg border border-gray-200 p-6 flex flex-col h-full">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-2">
                             <Zap className="w-5 h-5 text-[#171717]" />
@@ -227,36 +227,47 @@ export default function DashboardOverview() {
                         </Select>
                     </div>
 
-                    <div className="space-y-4">
-                        {performingProducts.map((product) => (
-                            <div key={product.id} className="flex items-start gap-3">
-                                <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
-                                    <Image src={product.image || "/placeholder.svg"} alt={product.name} fill className="object-cover" />
+                    <div className="flex-1 flex flex-col">
+                        <div className="space-y-4 flex-1">
+                            {!performingProducts || performingProducts.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 py-10">
+                                    <Zap className="w-10 h-10 mb-3 text-gray-300" />
+                                    <p className="text-sm font-medium text-gray-900">No products found</p>
+                                    <p className="text-xs text-gray-500">There are no performing products to show.</p>
                                 </div>
-                                <div className="flex-1 min-w-0">
-                                    <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
-                                    <p className="text-xs text-gray-500 truncate">{product.category}</p>
-                                </div>
-                                <div className="text-right flex-shrink-0">
-                                    <p className="text-sm font-medium text-gray-900">{product.sold}</p>
-                                    <div className="flex items-center justify-end gap-1 mt-0.5">
-                                        <span className="text-xs font-medium text-gray-900">{product.rating}</span>
-                                        <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                            ) : (
+                                performingProducts.map((product) => (
+                                    <div key={product.id} className="flex items-start gap-3">
+                                        <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
+                                            <Image src={product.image || "/placeholder.svg"} alt={product.name} fill className="object-cover" />
+                                        </div>
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
+                                            <p className="text-xs text-gray-500 truncate">{product.category}</p>
+                                        </div>
+                                        <div className="text-right flex-shrink-0">
+                                            <p className="text-sm font-medium text-gray-900">{product.sold}</p>
+                                            <div className="flex items-center justify-end gap-1 mt-0.5">
+                                                <span className="text-xs font-medium text-gray-900">{product.rating}</span>
+                                                <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
+                                            </div>
+                                        </div>
                                     </div>
-                                </div>
+                                ))
+                            )}
+                        </div>
+
+                        {performingProducts && performingProducts.length > 0 && (
+                            <div className="flex flex-col items-start justify-start mt-auto">
+                                <Button
+                                    variant="link"
+                                    className="mt-4 text-sm text-blue-600 hover:text-blue-700 px-0"
+                                >
+                                    View all 21 items →
+                                </Button>
                             </div>
-                        ))}
+                        )}
                     </div>
-
-                    <div className="flex flex-col items-start justify-start">
-                        <Button
-                            variant="link"
-                            className="mt-4 text-sm text-blue-600 hover:text-blue-700"
-                        >
-                            View all 21 items →
-                        </Button>
-                    </div>
-
                 </div>
 
                 {/* Sales Report */}
@@ -266,7 +277,7 @@ export default function DashboardOverview() {
             {/* Bottom Grid */}
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
                 {/* Recent Messages */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="bg-white rounded-lg border border-gray-200 p-6 flex flex-col h-full">
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-2">
                             <div className="p-1.5  rounded">
@@ -283,13 +294,22 @@ export default function DashboardOverview() {
                         </div>
                     </div>
 
-                    <div className="space-y-4">
-                        <div className="space-y-4">
-                            {isLoading
-                                ? Array.from({ length: 5 }).map((_, index) => (
+                    <div className="flex-1 flex flex-col">
+                        <div className="space-y-4 flex-1">
+                            {isLoading ? (
+                                Array.from({ length: 5 }).map((_, index) => (
                                     <MessageSkeleton key={index} />
                                 ))
-                                : msg?.data?.result?.map((item: any) => (
+                            ) : !msg?.data?.result || msg?.data?.result?.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 py-10">
+                                    <svg className="w-10 h-10 mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z" />
+                                    </svg>
+                                    <p className="text-sm font-medium text-gray-900">No recent messages</p>
+                                    <p className="text-xs text-gray-500">You don't have any unread messages.</p>
+                                </div>
+                            ) : (
+                                msg?.data?.result?.map((item: any) => (
                                     <div key={item._id} className="flex items-start gap-3">
                                         {/* Avatar */}
                                         <div className="relative w-8 h-8 rounded-full overflow-hidden flex-shrink-0 bg-gray-100">
@@ -319,25 +339,25 @@ export default function DashboardOverview() {
 
                                         <div className="w-2 h-2 bg-red-500 rounded-full mt-1.5" />
                                     </div>
-                                ))}
+                                ))
+                            )}
                         </div>
 
-                        <Link href={'/dashboard/message'} className="flex flex-col items-start justify-start">
-                            <Button
-                                variant="link"
-                                className=" text-sm text-blue-600 hover:text-blue-700"
-                            >
-                                View all messages →
-                            </Button>
-                        </Link>
+                        {msg?.data?.result && msg?.data?.result?.length > 0 && (
+                            <Link href={'/dashboard/message'} className="mt-auto flex flex-col items-start justify-start">
+                                <Button
+                                    variant="link"
+                                    className="px-0 mt-4 text-sm text-blue-600 hover:text-blue-700"
+                                >
+                                    View all messages →
+                                </Button>
+                            </Link>
+                        )}
                     </div>
-
-
-
                 </div>
 
                 {/* Inventory */}
-                <div className="bg-white rounded-lg border border-gray-200 p-6">
+                <div className="bg-white rounded-lg border border-gray-200 p-6 flex flex-col h-full">
                     {/* Header */}
                     <div className="flex items-center justify-between mb-6">
                         <div className="flex items-center gap-2">
@@ -357,60 +377,72 @@ export default function DashboardOverview() {
                     </div>
 
                     {/* Content */}
-                    <div className="space-y-4">
-                        {sellerProductsLoading
-                            ? Array.from({ length: 4 }).map((_, i) => (
-                                <InventorySkeleton key={i} />
-                            ))
-                            : sellerProducts?.data?.result?.map((item: any) => (
-                                <div key={item._id} className="flex items-start gap-3">
-                                    {/* Image */}
-                                    <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-gray-100">
-                                        <Image
-                                            src={item.image?.[0] || "/placeholder.svg"}
-                                            alt={item.title}
-                                            fill
-                                            className="object-cover"
-                                        />
-                                    </div>
-
-                                    {/* Info */}
-                                    <div className="flex-1 min-w-0">
-                                        <p className="text-xs font-normal text-[#171717] truncate">
-                                            {item.title}
-                                        </p>
-                                        <p className="text-[11px] text-[#17171766] truncate">
-                                            {item.categoryId?.title}
-                                            {item.subCategoryId?.title &&
-                                                ` > ${item.subCategoryId.title}`}
-                                        </p>
-                                    </div>
-
-                                    {/* Stock */}
-                                    <div className="text-right">
-                                        <p className="text-sm font-semibold text-gray-900">
-                                            {item.inStock ? "Available" : "Out"}
-                                        </p>
-                                        <p
-                                            className={`text-xs ${item.inStock ? "text-[#04BF7B]" : "text-red-500"
-                                                }`}
-                                        >
-                                            {item.inStock ? "In stock" : "Out of stock"}
-                                        </p>
-                                    </div>
+                    <div className="flex-1 flex flex-col">
+                        <div className="space-y-4 flex-1">
+                            {sellerProductsLoading ? (
+                                Array.from({ length: 4 }).map((_, i) => (
+                                    <InventorySkeleton key={i} />
+                                ))
+                            ) : !sellerProducts?.data?.result || sellerProducts?.data?.result?.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 py-10">
+                                    <Package className="w-10 h-10 mb-3 text-gray-300" />
+                                    <p className="text-sm font-medium text-gray-900">No inventory found</p>
+                                    <p className="text-xs text-gray-500">There are no items matching your filter.</p>
                                 </div>
-                            ))}
-                    </div>
+                            ) : (
+                                sellerProducts?.data?.result?.map((item: any) => (
+                                    <div key={item._id} className="flex items-start gap-3">
+                                        {/* Image */}
+                                        <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
+                                            <Image
+                                                src={item.image?.[0] || "/placeholder.svg"}
+                                                alt={item.title}
+                                                fill
+                                                className="object-cover"
+                                            />
+                                        </div>
 
-                    {/* Footer */}
-                    <Link href={'/dashboard/inventory'}>
-                        <Button
-                            variant="link"
-                            className="mt-4 text-sm text-blue-600 hover:text-blue-700"
-                        >
-                            View all →
-                        </Button>
-                    </Link>
+                                        {/* Info */}
+                                        <div className="flex-1 min-w-0">
+                                            <p className="text-sm font-medium text-[#171717] truncate">
+                                                {item.title}
+                                            </p>
+                                            <p className="text-[11px] text-[#17171766] truncate">
+                                                {item.categoryId?.title}
+                                                {item.subCategoryId?.title &&
+                                                    ` > ${item.subCategoryId.title}`}
+                                            </p>
+                                        </div>
+
+                                        {/* Stock */}
+                                        <div className="text-right flex-shrink-0">
+                                            <p className="text-sm font-semibold text-gray-900">
+                                                {item.inStock ? "Available" : "Out"}
+                                            </p>
+                                            <p
+                                                className={`text-xs ${item.inStock ? "text-[#04BF7B]" : "text-red-500"
+                                                    }`}
+                                            >
+                                                {item.inStock ? "In stock" : "Out of stock"}
+                                            </p>
+                                        </div>
+                                    </div>
+                                ))
+                            )}
+                        </div>
+
+                        {/* Footer */}
+                        {sellerProducts?.data?.result && sellerProducts?.data?.result?.length > 0 && (
+                            <Link href={'/dashboard/inventory'} className="mt-auto flex flex-col items-start justify-start">
+                                <Button
+                                    variant="link"
+                                    className="px-0 mt-4 text-sm text-blue-600 hover:text-blue-700"
+                                >
+                                    View all →
+                                </Button>
+                            </Link>
+                        )}
+                    </div>
                 </div>
             </div>
         </div>

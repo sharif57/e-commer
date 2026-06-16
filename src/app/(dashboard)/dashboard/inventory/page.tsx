@@ -2,7 +2,7 @@
 "use client"
 
 import { useState, useMemo } from "react"
-import { Search, ChevronDown, Edit, Trash2, X, Upload, Plus, Minus, Star, Pencil } from "lucide-react"
+import { Search, ChevronDown, Edit, Trash2, X, Upload, Plus, Minus, Star, Pencil, View, ViewIcon, Eye } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Card } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
@@ -12,6 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/u
 import { Label } from "@/components/ui/label"
 import { Textarea } from "@/components/ui/textarea"
 import { toast } from "sonner"
+import Link from "next/link"
 
 interface InventoryItem {
   _id: string
@@ -446,7 +447,7 @@ export default function ManageInventory() {
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <p className="text-[13px] text-black truncate">{getSlicedTitle(item.title, 42)}</p>
+                            <Link href={`/best_deal/${item._id}`} className="text-[13px] text-black truncate">{getSlicedTitle(item.title, 42)}</Link>
                           </div>
                         </div>
                       </td>
@@ -493,6 +494,11 @@ export default function ManageInventory() {
                             <Edit className="h-3.5 w-3.5 text-gray-600" />
                             Edit
                           </button>
+                          <Link href={`/best_deal/${item._id}`}
+                            className="inline-flex items-center gap-1 text-[13px] text-black hover:text-black"
+                          >
+                            <Eye className="h-3.5 w-3.5 text-gray-600" />
+                          </Link>
                           <button
                             onClick={() => handleDeleteClick(item._id)}
                             className="p-0.5 hover:bg-red-100 rounded transition-colors"
@@ -588,6 +594,12 @@ export default function ManageInventory() {
                       >
                         <Edit className="h-4 w-4" /> Edit
                       </button>
+                      <Link
+                        href={`/best_deal/${item._id}`}
+                        className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-500 hover:bg-red-600 rounded-lg transition-colors text-xs font-medium text-white"
+                      >
+                        <View className="h-4 w-4" />
+                      </Link>
                       <button
                         onClick={() => handleDeleteClick(item._id)}
                         className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-500 hover:bg-red-600 rounded-lg transition-colors text-xs font-medium text-white"

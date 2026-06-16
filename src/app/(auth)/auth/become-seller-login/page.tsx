@@ -80,7 +80,7 @@ export default function LoginPage() {
             localStorage.setItem('accountType', res?.data?.user?.role)
             dispatch(setUser(res?.data?.user))
             await saveTokens(res?.data?.accessToken)
-            router.push('/auth/getting_start_screen')
+            router.push('/dashboard')
         } catch (error: any) {
             toast.error(error?.data?.message || 'Login failed')
         } finally {

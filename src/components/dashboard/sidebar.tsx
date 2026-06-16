@@ -102,7 +102,7 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
 
   const sellerDashboardItems = [
     { icon: LayoutDashboard, label: "Overview", link: "/dashboard" },
-    { icon: LibraryBig, label: "Order History", link: "/dashboard/order-history" },
+    { icon: LibraryBig, label: "Order", link: "/dashboard/order-history" },
     // { icon: Heart, label: "Listings", link: "/dashboard/listings" },
     { icon: Plus, label: "New Listing", link: "/dashboard/new-listing" },
     { icon: Trash2, label: "Draft", link: "/dashboard/draft" },

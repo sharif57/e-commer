@@ -333,7 +333,7 @@ export default function Navbar() {
                   ) : searchProducts.length > 0 ? (
                     <ul className="py-2">
                       {searchProducts.map((product: any) => (
-                        <li key={product._id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
+                        <li key={product._id} className="border-b border-gray-100 hover:bg-gray-50">
                           <Link
                             href={`/best_deal/${product._id}`}
                             className="flex items-center gap-3 px-4 py-2"
@@ -347,6 +347,18 @@ export default function Navbar() {
                           </Link>
                         </li>
                       ))}
+                      <div className="px-4 py-2 mt-2 border-t border-gray-100">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleSearch(e as unknown as React.FormEvent);
+                          }}
+                          className="w-full py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary/90 transition-colors flex justify-center items-center"
+                        >
+                          Show all results
+                        </button>
+                      </div>
                     </ul>
                   ) : (
                     <div className="p-4 text-center text-sm text-gray-500">No products found</div>
@@ -501,7 +513,7 @@ export default function Navbar() {
                   ) : searchProducts.length > 0 ? (
                     <ul className="py-2">
                       {searchProducts.map((product: any) => (
-                        <li key={product._id} className="border-b border-gray-100 last:border-0 hover:bg-gray-50">
+                        <li key={product._id} className="border-b border-gray-100 hover:bg-gray-50">
                           <Link
                             href={`/best_deal/${product._id}`}
                             className="flex items-center gap-3 px-4 py-2"
@@ -515,6 +527,18 @@ export default function Navbar() {
                           </Link>
                         </li>
                       ))}
+                      <div className="px-4 py-2 mt-2 border-t border-gray-100">
+                        <button
+                          type="button"
+                          onClick={(e) => {
+                            e.preventDefault();
+                            handleSearch(e as unknown as React.FormEvent);
+                          }}
+                          className="w-full py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary/90 transition-colors flex justify-center items-center"
+                        >
+                          Show all results
+                        </button>
+                      </div>
                     </ul>
                   ) : (
                     <div className="p-4 text-center text-sm text-gray-500">No products found</div>

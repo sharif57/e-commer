@@ -63,11 +63,13 @@ export default function SalesReport() {
     }
 
     if (isLoading) {
-        return <div ><SalesReportSkeleton /></div>
+        return <div className="h-full bg-white rounded-lg border p-4"><SalesReportSkeleton /></div>
     }
 
+    const hasData = totalRevenue > 0 || (data?.data?.monthlyReport && Object.keys(data.data.monthlyReport).length > 0)
+
     return (
-        <div className="bg-white rounded-lg border p-4">
+        <div className="bg-white rounded-lg border p-4 flex flex-col h-full">
             {/* Header */}
             <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-2">
@@ -89,67 +91,77 @@ export default function SalesReport() {
                 </DropdownMenu>
             </div>
 
-            {/* Revenue */}
-            <div className="mt-3">
-                <span className="text-xl font-semibold">
-                    ${totalRevenue.toLocaleString()}
-                </span>
-                <span className="ml-2 text-sm text-muted-foreground">Revenue</span>
-            </div>
-
-            {/* Chart */}
-            <div className="mt-4">
-                <ResponsiveContainer width="100%" height={200}>
-                    <AreaChart
-                        data={chartData}
-                        onMouseMove={handleTooltip}
-                        onMouseLeave={() => setHoveredData(null)}
-                    >
-                        <defs>
-                            <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
-                                <stop offset="5%" stopColor="#7ee8c0" stopOpacity={0.4} />
-                                <stop offset="95%" stopColor="#7ee8c0" stopOpacity={0} />
-                            </linearGradient>
-                        </defs>
-
-                        <CartesianGrid strokeDasharray="3 3" />
-                        <XAxis dataKey="month" />
-                        <YAxis tickFormatter={(v) => `${v / 1000}k`} />
-                        <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
-
-                        <Area
-                            type="monotone"
-                            dataKey="value"
-                            stroke="#7ee8c0"
-                            fill="url(#colorValue)"
-                        />
-                    </AreaChart>
-                </ResponsiveContainer>
-
-                {hoveredData && (
-                    <div className="mt-2 text-center text-sm">
-                        <span className="text-muted-foreground">{hoveredData.month}</span>{" "}
-                        <span className="font-semibold">
-                            ${hoveredData.value.toLocaleString()}
+            {hasData ? (
+                <div className="flex-1 flex flex-col justify-between">
+                    {/* Revenue */}
+                    <div className="mt-3">
+                        <span className="text-xl font-semibold">
+                            ${totalRevenue.toLocaleString()}
                         </span>
+                        <span className="ml-2 text-sm text-muted-foreground">Revenue</span>
                     </div>
-                )}
-            </div>
 
-            {/* Month Buttons */}
-            <div className="mt-3 flex flex-wrap justify-center gap-2">
-                {chartData.map((item) => (
-                    <span
-                        key={item.month}
-                        className={`px-3 py-1 rounded-full text-xs ${item.highlight
-                                ? "bg-yellow-100 text-yellow-800"
-                                : "bg-muted text-muted-foreground"
-                            }`}
-                    >
-                        {item.month}
-                    </span>
-                ))}
-            </div>
+                    {/* Chart */}
+                    <div className="mt-4 flex-1 flex flex-col">
+                        <ResponsiveContainer width="100%" height={200}>
+                            <AreaChart
+                                data={chartData}
+                                onMouseMove={handleTooltip}
+                                onMouseLeave={() => setHoveredData(null)}
+                            >
+                                <defs>
+                                    <linearGradient id="colorValue" x1="0" y1="0" x2="0" y2="1">
+                                        <stop offset="5%" stopColor="#7ee8c0" stopOpacity={0.4} />
+                                        <stop offset="95%" stopColor="#7ee8c0" stopOpacity={0} />
+                                    </linearGradient>
+                                </defs>
+
+                                <CartesianGrid strokeDasharray="3 3" />
+                                <XAxis dataKey="month" />
+                                <YAxis tickFormatter={(v) => `${v / 1000}k`} />
+                                <Tooltip formatter={(v: number) => `$${v.toLocaleString()}`} />
+
+                                <Area
+                                    type="monotone"
+                                    dataKey="value"
+                                    stroke="#7ee8c0"
+                                    fill="url(#colorValue)"
+                                />
+                            </AreaChart>
+                        </ResponsiveContainer>
+
+                        {hoveredData && (
+                            <div className="mt-2 text-center text-sm">
+                                <span className="text-muted-foreground">{hoveredData.month}</span>{" "}
+                                <span className="font-semibold">
+                                    ${hoveredData.value.toLocaleString()}
+                                </span>
+                            </div>
+                        )}
+                    </div>
+
+                    {/* Month Buttons */}
+                    <div className="mt-3 flex flex-wrap justify-center gap-2">
+                        {chartData.map((item) => (
+                            <span
+                                key={item.month}
+                                className={`px-3 py-1 rounded-full text-xs ${item.highlight
+                                        ? "bg-yellow-100 text-yellow-800"
+                                        : "bg-muted text-muted-foreground"
+                                    }`}
+                            >
+                                {item.month}
+                            </span>
+                        ))}
+                    </div>
+                </div>
+            ) : (
+                <div className="flex-1 flex flex-col items-center justify-center text-center text-gray-500 py-10">
+                    <BarChart3 className="w-10 h-10 mb-3 text-gray-300" />
+                    <p className="text-sm font-medium text-gray-900">No sales data</p>
+                    <p className="text-xs text-gray-500">You don't have any sales data to show yet.</p>
+                </div>
+            )}
         </div>
     )
 }
