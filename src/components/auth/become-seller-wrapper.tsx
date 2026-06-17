@@ -59,7 +59,7 @@ const BecomeSellerWrapper: React.FC<BecomeSellerWrapperProps> = ({
               />
             </div>
             <div>
-              <h3 className="font-bold text-gray-800">Support U.S. takes</h3>
+              <h3 className="font-bold text-gray-800">Support U.S. Tax</h3>
               <p className="text-sm text-gray-500 font-medium">24/7 U.S. support</p>
             </div>
           </div>
