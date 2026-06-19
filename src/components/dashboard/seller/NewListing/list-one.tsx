@@ -153,16 +153,6 @@ export default function ListOne({ data, onChange, onNext }: StepOneProps) {
 
   return (
     <div className="max-w-3xl mx-auto">
-      <div className="flex justify-end items-center mb-8">
-        <button
-          onClick={handleContinue}
-          className="group px-6 py-2.5 flex items-center gap-2 bg-primary text-white rounded-full font-semibold shadow-md hover:shadow-lg transition-all"
-        >
-          Continue
-          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-        </button>
-      </div>
-
       <div className="bg-[#0000000F] rounded-xl p-8 space-y-6">
         <h1 className="text-xl font-bold text-gray-900">
           Pick the category that best fits your product
@@ -231,6 +221,17 @@ export default function ListOne({ data, onChange, onNext }: StepOneProps) {
             </p>
           )}
         </div>
+      </div>
+
+      {/* Bottom Navigation Buttons */}
+      <div className="flex justify-end items-center mt-8">
+        <button
+          onClick={handleContinue}
+          className="group px-6 py-2.5 flex items-center gap-2 bg-primary text-white rounded-full font-semibold shadow-md hover:shadow-lg transition-all"
+        >
+          Continue
+          <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+        </button>
       </div>
     </div>
   )

@@ -447,7 +447,7 @@ export default function ManageInventory() {
                             </div>
                           )}
                           <div className="flex-1 min-w-0">
-                            <Link href={`/best_deal/${item._id}`} className="text-[13px] text-black truncate">{getSlicedTitle(item.title, 42)}</Link>
+                            <Link href={`/best_deal/${item._id}`} target="_blank" rel="noopener noreferrer" className="text-[13px] text-black truncate">{getSlicedTitle(item.title, 42)}</Link>
                           </div>
                         </div>
                       </td>
@@ -495,6 +495,7 @@ export default function ManageInventory() {
                             Edit
                           </button>
                           <Link href={`/best_deal/${item._id}`}
+                            target="_blank" rel="noopener noreferrer"
                             className="inline-flex items-center gap-1 text-[13px] text-black hover:text-black"
                           >
                             <Eye className="h-3.5 w-3.5 text-gray-600" />
@@ -596,6 +597,7 @@ export default function ManageInventory() {
                       </button>
                       <Link
                         href={`/best_deal/${item._id}`}
+                        target="_blank" rel="noopener noreferrer"
                         className="flex-1 flex items-center justify-center gap-2 px-3 py-2 bg-red-500 hover:bg-red-600 rounded-lg transition-colors text-xs font-medium text-white"
                       >
                         <View className="h-4 w-4" />

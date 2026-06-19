@@ -138,7 +138,7 @@ export default function DashboardLayout({
                     }}
                 />
             </head>
-            <body className={`${karla.className} antialiased bg-gray-50 min-h-screen`}>
+            <body suppressHydrationWarning className={`${karla.className} antialiased bg-gray-50 min-h-screen`}>
                 <noscript>
                     <iframe
                         src="https://www.googletagmanager.com/ns.html?id=GTM-WMBQ7V9Q"

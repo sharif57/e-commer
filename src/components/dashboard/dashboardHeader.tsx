@@ -107,7 +107,7 @@ export default function DashboardHeader({
 
         {/* Right */}
         <div className="flex items-center gap-3">
-          <Button
+          {/* <Button
             variant="ghost"
             size="icon"
             className={`relative ${isNotificationPanelOpen ? "bg-gray-100" : ""}`}
@@ -116,7 +116,7 @@ export default function DashboardHeader({
             title={isNotificationPanelOpen ? "Close notifications panel" : "Open notifications panel"}
           >
             <Bell className="w-5 h-5" />
-          </Button>
+          </Button> */}
 
           <Link href="/wise-list"
             className="p-2 hover:bg-gray-100 rounded-md transition-colors"

@@ -190,7 +190,7 @@ export default function HeaderSeller({
 
         {/* Profile/Notification Section - Optional */}
         <div className="hidden md:flex items-center gap-2 shrink-0">
-          <Button
+          {/* <Button
             variant="ghost"
             size="icon"
             className={`h-9 w-9 ${isNotificationPanelOpen ? "bg-muted" : ""}`}
@@ -202,7 +202,7 @@ export default function HeaderSeller({
             <span className="sr-only">
               {isNotificationPanelOpen ? "Close notifications panel" : "Open notifications panel"}
             </span>
-          </Button>
+          </Button> */}
           {/* <Button variant="ghost" size="icon" className="h-9 w-9 relative">
             <div className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
               3
