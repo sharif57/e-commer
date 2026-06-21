@@ -23,7 +23,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script
+        {/* <script
           dangerouslySetInnerHTML={{
             __html: `
               const originalError = console.error;
@@ -35,7 +35,7 @@ export default function RootLayout({
               };
             `,
           }}
-        />
+        /> */}
       </head>
       <body
         className={`${inter.className} antialiased bg-[#F8F8F8]`}

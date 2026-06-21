@@ -27,7 +27,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <script
+        {/* <script
           dangerouslySetInnerHTML={{
             __html: `
               const originalError = console.error;
@@ -39,7 +39,7 @@ export default function RootLayout({
               };
             `,
           }}
-        />
+        /> */}
         <Script
           id="gtm-script"
           strategy="afterInteractive"

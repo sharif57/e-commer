@@ -124,7 +124,7 @@ export default function DashboardLayout({
     return (
         <html lang="en" suppressHydrationWarning>
             <head>
-                <script
+                {/* <script
                     dangerouslySetInnerHTML={{
                         __html: `
                             const originalError = console.error;
@@ -136,7 +136,7 @@ export default function DashboardLayout({
                             };
                         `,
                     }}
-                />
+                /> */}
                 <Script
                     id="gtm-script"
                     strategy="afterInteractive"
