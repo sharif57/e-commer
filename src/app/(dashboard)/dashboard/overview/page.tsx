@@ -391,7 +391,7 @@ export default function DashboardOverview() {
                                 </div>
                             ) : (
                                 sellerProducts?.data?.result?.map((item: any) => (
-                                    <div key={item._id} className="flex items-start gap-3">
+                                    <Link href={`/best_deal/${item?._id}`} key={item._id} className="flex items-start gap-3">
                                         {/* Image */}
                                         <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                                             <Image
@@ -426,7 +426,7 @@ export default function DashboardOverview() {
                                                 {item.inStock ? "In stock" : "Out of stock"}
                                             </p>
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))
                             )}
                         </div>
