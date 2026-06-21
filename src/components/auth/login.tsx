@@ -194,8 +194,6 @@ export default function SignInForm() {
                 <GoogleLogin
                     onSuccess={handleGoogleSuccess}
                     onError={handleGoogleError}
-                    useOneTap
-
                     shape="pill"
                     theme="outline"
                     size="large"

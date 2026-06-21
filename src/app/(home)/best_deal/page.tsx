@@ -107,13 +107,12 @@ export default function ProductGrid() {
             <ProductCardSkeleton key={i} />
           ))
           : products?.slice(0, 10).map((product) => (
-            <Link href={`/best_deal/${product._id}`} key={product._id}>
               <ProductCard
+                key={product._id}
                 product={product}
                 isWishlisted={wishlist.has(product._id)}
                 onWishlistToggle={() => toggleWishlist(product._id)}
               />
-            </Link>
           ))}
       </div>
 

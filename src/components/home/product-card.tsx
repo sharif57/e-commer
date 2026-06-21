@@ -35,7 +35,7 @@ export default function ProductCard({ product, isWishlisted, onWishlistToggle }:
     }
 
     return (
-        <Link href={`best_deal/${product?._id}`}>
+        <Link href={`/best_deal/${product?._id}`}>
             <div className="group flex flex-col bg-card  overflow-hidden cursor-pointer transition-shadow duration-300">
                 {/* Image Container */}
                 <div className="relative w-full aspect-square bg-muted overflow-hidden">

@@ -22,6 +22,21 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+      <head>
+        <script
+          dangerouslySetInnerHTML={{
+            __html: `
+              const originalError = console.error;
+              console.error = function(...args) {
+                if (typeof args[0] === 'string' && (args[0].includes('Hydration') || args[0].includes('Minified React error #418') || args[0].includes('Minified React error #423'))) {
+                  return;
+                }
+                originalError.apply(console, args);
+              };
+            `,
+          }}
+        />
+      </head>
       <body
         className={`${inter.className} antialiased bg-[#F8F8F8]`}
         suppressHydrationWarning
