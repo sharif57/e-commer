@@ -184,7 +184,12 @@ export default function ProductPage() {
             await processOrder(deliveryAddress);
         } catch (error: any) {
             console.error('Failed to process order:', error)
-            const errorMessage = error?.data?.message || error?.message || 'Failed to process order. Please try again.'
+            let errorMessage = error?.data?.message || error?.message || 'Failed to process order. Please try again.'
+
+            if (errorMessage?.toLowerCase?.().includes("permission to access this api") || errorMessage?.toLowerCase?.().includes("you don't have permission")) {
+                errorMessage = "The buyer is unable to purchase this product."
+            }
+
             toast.error(errorMessage)
         }
     }
@@ -281,7 +286,12 @@ export default function ProductPage() {
             }
         } catch (error: any) {
             console.error('Failed to process order:', error)
-            const errorMessage = error?.data?.message || error?.message || 'Failed to process order. Please try again.'
+            let errorMessage = error?.data?.message || error?.message || 'Failed to process order. Please try again.'
+
+            if (errorMessage?.toLowerCase?.().includes("permission to access this api") || errorMessage?.toLowerCase?.().includes("you don't have permission")) {
+                errorMessage = "The buyer is unable to purchase this product."
+            }
+
             toast.error(errorMessage)
         }
     }
@@ -314,7 +324,12 @@ export default function ProductPage() {
 
         } catch (error: any) {
             console.error("Failed during confirm changes flow:", error);
-            const errorMessage = error?.data?.message || error?.message || "Something went wrong. Please try again.";
+            let errorMessage = error?.data?.message || error?.message || "Something went wrong. Please try again.";
+
+            if (errorMessage?.toLowerCase?.().includes("permission to access this api") || errorMessage?.toLowerCase?.().includes("you don't have permission")) {
+                errorMessage = "The buyer is unable to purchase this product."
+            }
+
             toast.error(errorMessage);
         }
     };
