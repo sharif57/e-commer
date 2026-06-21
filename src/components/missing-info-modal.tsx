@@ -166,39 +166,44 @@ export default function MissingInfoModal({
 
     if (!isOpen) return null
 
+    const inputBaseClass = "w-full h-11 px-4 text-sm rounded-xl border transition-all duration-200 outline-none bg-white placeholder:text-gray-400"
+    const inputNormalClass = "border-black hover:border-black focus:border-primary focus:ring-4 focus:ring-primary/10"
+    const inputErrorClass = "border-red-500 focus:border-red-500 focus:ring-4 focus:ring-red-500/10"
+    const inputDisabledClass = "bg-gray-50 border-black text-gray-500 cursor-not-allowed"
+
     return (
         <>
             {/* Backdrop */}
-            <div className="fixed inset-0 bg-black/40 z-40" onClick={onClose} aria-hidden="true" />
+            <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity" onClick={onClose} aria-hidden="true" />
 
             {/* Modal */}
-            <div className="fixed inset-0 z-50 flex items-center justify-center p-2 ">
-                <div className="bg-[#f3f3f3] rounded-2xl shadow-xl w-full max-w-[390px] max-h-[95vh] overflow-y-auto border border-[#dddddd]">
+            <div className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6">
+                <div className="bg-white rounded-2xl shadow-2xl w-full max-w-[520px] max-h-[90vh] overflow-y-auto scrollbar-hide flex flex-col relative">
                     {/* Header */}
-                    <div className="flex items-start justify-between px-8 pt-8 pb-4">
+                    <div className="flex items-start justify-between px-6 pt-6 pb-5 border-b border-gray-100 sticky top-0 bg-white/80 backdrop-blur-md z-10">
                         <div>
-                            <h2 className="text-2xl leading-[46px] font-semibold text-[#000000]">Delivery address</h2>
-                            <p className="text-[12px] font-normal text-[#000000CC] mt-1 max-w-[320px]">
-                                Submit the valid information to make sure your shipping address is correct to delivery your products.
+                            <h2 className="text-xl font-bold text-gray-900">Delivery Address</h2>
+                            <p className="text-sm text-gray-500 mt-1.5 leading-relaxed">
+                                Please provide your valid shipping address to ensure accurate delivery.
                             </p>
                         </div>
                         <button
                             onClick={onClose}
-                            className="text-[#1b1b1b] hover:text-black transition-colors flex-shrink-0 ml-4"
+                            className="p-2 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full transition-all flex-shrink-0 ml-4"
                             aria-label="Close modal"
                         >
-                            <X size={20} strokeWidth={2.3} />
+                            <X size={20} strokeWidth={2.5} />
                         </button>
                     </div>
 
                     {/* Form Content */}
-                    <div className="px-8 pb-6 space-y-7">
+                    <div className="px-6 py-6 space-y-8">
                         {/* Your Basic Details Section */}
-                        <div>
-                            <h3 className="text-[14px]  font-semibold text-[#000000] tracking-[0.02em] mb-4">YOUR BASIC DETAILS</h3>
+                        <div className="space-y-4">
+                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Your Basic Details</h3>
                             <div className="grid grid-cols-2 gap-4">
-                                <div>
-                                    <label htmlFor="firstName" className="block text-[13px] leading-none font-medium text-[#000000] mb-2">
+                                <div className="space-y-1.5">
+                                    <label htmlFor="firstName" className="block text-sm font-medium text-gray-700">
                                         First Name {missingFields.includes("firstName") && <span className="text-red-500">*</span>}
                                     </label>
                                     <input
@@ -207,14 +212,13 @@ export default function MissingInfoModal({
                                         name="firstName"
                                         value={formData.firstName}
                                         onChange={handleChange}
-                                        className={`w-full h-[32px] px-3 text-sm rounded-[10px] border bg-white focus:outline-none focus:ring-2 focus:border-transparent ${errors.firstName ? "border-red-500 focus:ring-red-500" : "border-[#565656] focus:ring-green-700"
-                                            }`}
-                                        placeholder="First Name"
+                                        className={`${inputBaseClass} ${errors.firstName ? inputErrorClass : inputNormalClass}`}
+                                        placeholder="John"
                                     />
                                     {errors.firstName && <p className="text-red-500 text-xs mt-1">{errors.firstName}</p>}
                                 </div>
-                                <div>
-                                    <label htmlFor="lastName" className="block text-[13px] leading-none font-medium text-[#000000] mb-2">
+                                <div className="space-y-1.5">
+                                    <label htmlFor="lastName" className="block text-sm font-medium text-gray-700">
                                         Last Name {missingFields.includes("lastName") && <span className="text-red-500">*</span>}
                                     </label>
                                     <input
@@ -223,23 +227,22 @@ export default function MissingInfoModal({
                                         name="lastName"
                                         value={formData.lastName}
                                         onChange={handleChange}
-                                        className={`w-full h-[32px] px-3 text-sm rounded-[10px] border bg-white focus:outline-none focus:ring-2 focus:border-transparent ${errors.lastName ? "border-red-500 focus:ring-red-500" : "border-[#565656] focus:ring-green-700"
-                                            }`}
-                                        placeholder="Last Name"
+                                        className={`${inputBaseClass} ${errors.lastName ? inputErrorClass : inputNormalClass}`}
+                                        placeholder="Doe"
                                     />
                                     {errors.lastName && <p className="text-red-500 text-xs mt-1">{errors.lastName}</p>}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="h-px bg-[#d8d8d8]" />
+                        <div className="h-px bg-gray-100" />
 
                         {/* Address Section */}
-                        <div>
-                            <h3 className="text-[14px]  font-semibold text-[#000000] tracking-[0.02em] mb-4">ADDRESS</h3>
+                        <div className="space-y-4">
+                            <h3 className="text-xs font-bold text-gray-400 uppercase tracking-wider">Address</h3>
                             <div className="space-y-4">
-                                <div>
-                                    <label htmlFor="streetName" className="block text-[13px] leading-none font-medium text-[#000000] mb-2">
+                                <div className="space-y-1.5">
+                                    <label htmlFor="streetName" className="block text-sm font-medium text-gray-700">
                                         Street Name {missingFields.includes("streetName") && <span className="text-red-500">*</span>}
                                     </label>
                                     <input
@@ -248,15 +251,14 @@ export default function MissingInfoModal({
                                         name="streetName"
                                         value={formData.streetName}
                                         onChange={handleChange}
-                                        className={`w-full h-[32px] px-3 text-sm rounded-[10px] border bg-white focus:outline-none focus:ring-2 focus:border-transparent ${errors.streetName ? "border-red-500 focus:ring-red-500" : "border-[#565656] focus:ring-green-700"
-                                            }`}
-                                        placeholder="Street Name"
+                                        className={`${inputBaseClass} ${errors.streetName ? inputErrorClass : inputNormalClass}`}
+                                        placeholder="123 Main St"
                                     />
                                     {errors.streetName && <p className="text-red-500 text-xs mt-1">{errors.streetName}</p>}
                                 </div>
-                                <div>
-                                    <label htmlFor="area" className="block text-[13px] leading-none font-medium text-[#000000] mb-2">
-                                        Apt (Optional)
+                                <div className="space-y-1.5">
+                                    <label htmlFor="area" className="block text-sm font-medium text-gray-700">
+                                        Apt, Suite, Unit (Optional)
                                     </label>
                                     <input
                                         id="area"
@@ -264,15 +266,14 @@ export default function MissingInfoModal({
                                         name="area"
                                         value={formData.area}
                                         onChange={handleChange}
-                                        className={`w-full h-[32px] px-3 text-sm rounded-[10px] border bg-white focus:outline-none focus:ring-2 focus:border-transparent ${errors.area ? "border-red-500 focus:ring-red-500" : "border-[#565656] focus:ring-green-700"
-                                            }`}
-                                        placeholder="Apt"
+                                        className={`${inputBaseClass} ${errors.area ? inputErrorClass : inputNormalClass}`}
+                                        placeholder="Apt 4B"
                                     />
                                     {errors.area && <p className="text-red-500 text-xs mt-1">{errors.area}</p>}
                                 </div>
                                 <div className="grid grid-cols-2 gap-4">
-                                    <div>
-                                        <label htmlFor="city" className="block text-[13px] leading-none font-medium text-[#000000] mb-2">
+                                    <div className="space-y-1.5">
+                                        <label htmlFor="city" className="block text-sm font-medium text-gray-700">
                                             City {missingFields.includes("city") && <span className="text-red-500">*</span>}
                                         </label>
                                         <input
@@ -281,15 +282,14 @@ export default function MissingInfoModal({
                                             name="city"
                                             value={formData.city}
                                             onChange={handleChange}
-                                            className={`w-full h-[32px] px-3 text-sm rounded-[10px] border bg-white focus:outline-none focus:ring-2 focus:border-transparent ${errors.city ? "border-red-500 focus:ring-red-500" : "border-[#565656] focus:ring-green-700"
-                                                }`}
-                                            placeholder="City"
+                                            className={`${inputBaseClass} ${errors.city ? inputErrorClass : inputNormalClass}`}
+                                            placeholder="New York"
                                         />
                                         {errors.city && <p className="text-red-500 text-xs mt-1">{errors.city}</p>}
                                     </div>
-                                    <div>
-                                        <label htmlFor="zip" className="block text-[13px] leading-none font-medium text-[#000000] mb-2">
-                                            ZIP {missingFields.includes("zip") && <span className="text-red-500">*</span>}
+                                    <div className="space-y-1.5">
+                                        <label htmlFor="zip" className="block text-sm font-medium text-gray-700">
+                                            ZIP Code {missingFields.includes("zip") && <span className="text-red-500">*</span>}
                                         </label>
                                         <input
                                             id="zip"
@@ -297,16 +297,15 @@ export default function MissingInfoModal({
                                             name="zip"
                                             value={formData.zip}
                                             onChange={handleChange}
-                                            className={`w-full h-[32px] px-3 text-sm rounded-[10px] border bg-white focus:outline-none focus:ring-2 focus:border-transparent ${errors.zip ? "border-red-500 focus:ring-red-500" : "border-[#565656] focus:ring-green-700"
-                                                }`}
-                                            placeholder="ZIP"
+                                            className={`${inputBaseClass} ${errors.zip ? inputErrorClass : inputNormalClass}`}
+                                            placeholder="10001"
                                         />
                                         {errors.zip && <p className="text-red-500 text-xs mt-1">{errors.zip}</p>}
                                     </div>
                                 </div>
 
-                                <div>
-                                    <label htmlFor="state" className="block text-[13px] leading-none font-medium text-[#000000] mb-2">
+                                <div className="space-y-1.5">
+                                    <label htmlFor="state" className="block text-sm font-medium text-gray-700">
                                         State
                                     </label>
                                     <input
@@ -315,47 +314,49 @@ export default function MissingInfoModal({
                                         name="state"
                                         value={formData.state}
                                         onChange={handleChange}
-                                        className="w-full h-[32px] px-3 text-sm rounded-[10px] border border-[#565656] bg-white focus:outline-none focus:ring-2 focus:ring-green-700"
-                                        placeholder="State"
+                                        className={`${inputBaseClass} ${inputNormalClass}`}
+                                        placeholder="NY"
                                     />
                                 </div>
 
-                                <div>
-                                    <label htmlFor="country" className="block text-[13px] leading-none font-medium text-[#000000] mb-2">
+                                <div className="space-y-1.5">
+                                    <label htmlFor="country" className="block text-sm font-medium text-gray-700">
                                         Country {missingFields.includes("country") && <span className="text-red-500">*</span>}
                                     </label>
-                                    <div className={`w-full h-[32px] px-3 rounded-[10px] border flex items-center justify-between bg-[#e8e8e8] ${errors.country ? "border-red-500" : "border-transparent"}`}>
+                                    <div className={`w-full h-11 px-4 rounded-xl border flex items-center justify-between bg-gray-50 ${errors.country ? "border-red-500" : "border-black"}`}>
                                         <input
                                             id="country"
                                             type="text"
                                             name="country"
                                             value={deliveryCountryValue}
                                             readOnly
-                                            className="w-full text-sm leading-none text-[#666666] bg-transparent focus:outline-none"
+                                            className="w-full text-sm text-gray-500 bg-transparent focus:outline-none cursor-not-allowed"
                                         />
-                                        <Lock size={16} className="text-[#777777] flex-shrink-0" />
+                                        <Lock size={16} className="text-gray-400 flex-shrink-0 ml-2" />
                                     </div>
                                     {errors.country && <p className="text-red-500 text-xs mt-1">{errors.country}</p>}
                                 </div>
                             </div>
                         </div>
 
-                        <div className="h-px bg-[#d8d8d8]" />
+                        <div className="h-px bg-gray-100" />
 
                         {/* Billing Address */}
                         <div>
                             <div
-                                className="flex items-center justify-between mb-4 cursor-pointer select-none"
+                                className="flex items-center justify-between mb-4 cursor-pointer select-none group"
                                 onClick={() => setIsBillingOpen(!isBillingOpen)}
                             >
-                                <h3 className="text-2xl leading-[46px] font-semibold text-[#000000] capitalize">Billing address</h3>
-                                <ChevronUp size={20} className={`text-[#555555] transition-transform duration-200 ${isBillingOpen ? "" : "rotate-180"}`} />
+                                <h3 className="text-lg font-bold text-gray-900 group-hover:text-primary transition-colors">Billing Address</h3>
+                                <div className={`p-1.5 rounded-full transition-colors ${isBillingOpen ? 'bg-gray-100' : 'bg-transparent group-hover:bg-gray-50'}`}>
+                                    <ChevronUp size={20} className={`text-gray-500 transition-transform duration-300 ${isBillingOpen ? "" : "rotate-180"}`} />
+                                </div>
                             </div>
 
                             {isBillingOpen && (
-                                <div className="space-y-4">
-                                    <div>
-                                        <label htmlFor="billingStreetName" className="block text-[13px] leading-none font-medium text-[#000000] mb-2">
+                                <div className="space-y-4 animate-in slide-in-from-top-2 fade-in duration-200">
+                                    <div className="space-y-1.5">
+                                        <label htmlFor="billingStreetName" className="block text-sm font-medium text-gray-700">
                                             Street Name
                                         </label>
                                         <input
@@ -365,15 +366,15 @@ export default function MissingInfoModal({
                                             value={computedBilling.streetName}
                                             onChange={handleBillingChange}
                                             disabled={billingSameAsDelivery}
-                                            className={`w-full h-[32px] px-3 text-sm rounded-[10px] border bg-white focus:outline-none focus:ring-2 focus:border-transparent disabled:bg-[#efefef] disabled:text-[#6d6d6d] ${errors.billingStreetName ? "border-red-500 focus:ring-red-500" : "border-[#565656] focus:ring-green-700"}`}
-                                            placeholder="Street Name"
+                                            className={`${inputBaseClass} ${billingSameAsDelivery ? inputDisabledClass : errors.billingStreetName ? inputErrorClass : inputNormalClass}`}
+                                            placeholder="123 Main St"
                                         />
                                         {errors.billingStreetName && <p className="text-red-500 text-xs mt-1">{errors.billingStreetName}</p>}
                                     </div>
 
-                                    <div>
-                                        <label htmlFor="billingArea" className="block text-[13px] leading-none font-medium text-[#000000] mb-2">
-                                            Apt (Optional)
+                                    <div className="space-y-1.5">
+                                        <label htmlFor="billingArea" className="block text-sm font-medium text-gray-700">
+                                            Apt, Suite, Unit (Optional)
                                         </label>
                                         <input
                                             id="billingArea"
@@ -382,14 +383,14 @@ export default function MissingInfoModal({
                                             value={computedBilling.area}
                                             onChange={handleBillingChange}
                                             disabled={billingSameAsDelivery}
-                                            className="w-full h-[32px] px-3 text-sm rounded-[10px] border border-[#565656] bg-white focus:outline-none focus:ring-2 focus:ring-green-700 disabled:bg-[#efefef] disabled:text-[#6d6d6d]"
-                                            placeholder="Apt"
+                                            className={`${inputBaseClass} ${billingSameAsDelivery ? inputDisabledClass : inputNormalClass}`}
+                                            placeholder="Apt 4B"
                                         />
                                     </div>
 
                                     <div className="grid grid-cols-2 gap-4">
-                                        <div>
-                                            <label htmlFor="billingCity" className="block text-[13px] leading-none font-medium text-[#000000] mb-2">
+                                        <div className="space-y-1.5">
+                                            <label htmlFor="billingCity" className="block text-sm font-medium text-gray-700">
                                                 City
                                             </label>
                                             <input
@@ -399,14 +400,14 @@ export default function MissingInfoModal({
                                                 value={computedBilling.city}
                                                 onChange={handleBillingChange}
                                                 disabled={billingSameAsDelivery}
-                                                className={`w-full h-[32px] px-3 text-sm rounded-[10px] border bg-white focus:outline-none focus:ring-2 focus:border-transparent disabled:bg-[#efefef] disabled:text-[#6d6d6d] ${errors.billingCity ? "border-red-500 focus:ring-red-500" : "border-[#565656] focus:ring-green-700"}`}
-                                                placeholder="City"
+                                                className={`${inputBaseClass} ${billingSameAsDelivery ? inputDisabledClass : errors.billingCity ? inputErrorClass : inputNormalClass}`}
+                                                placeholder="New York"
                                             />
                                             {errors.billingCity && <p className="text-red-500 text-xs mt-1">{errors.billingCity}</p>}
                                         </div>
-                                        <div>
-                                            <label htmlFor="billingZip" className="block text-[13px] leading-none font-medium text-[#000000] mb-2">
-                                                ZIP
+                                        <div className="space-y-1.5">
+                                            <label htmlFor="billingZip" className="block text-sm font-medium text-gray-700">
+                                                ZIP Code
                                             </label>
                                             <input
                                                 id="billingZip"
@@ -415,15 +416,15 @@ export default function MissingInfoModal({
                                                 value={computedBilling.zip}
                                                 onChange={handleBillingChange}
                                                 disabled={billingSameAsDelivery}
-                                                className={`w-full h-[32px] px-3 text-sm rounded-[10px] border bg-white focus:outline-none focus:ring-2 focus:border-transparent disabled:bg-[#efefef] disabled:text-[#6d6d6d] ${errors.billingZip ? "border-red-500 focus:ring-red-500" : "border-[#565656] focus:ring-green-700"}`}
-                                                placeholder="ZIP"
+                                                className={`${inputBaseClass} ${billingSameAsDelivery ? inputDisabledClass : errors.billingZip ? inputErrorClass : inputNormalClass}`}
+                                                placeholder="10001"
                                             />
                                             {errors.billingZip && <p className="text-red-500 text-xs mt-1">{errors.billingZip}</p>}
                                         </div>
                                     </div>
 
-                                    <div>
-                                        <label htmlFor="billingState" className="block text-[13px] leading-none font-medium text-[#000000] mb-2">
+                                    <div className="space-y-1.5">
+                                        <label htmlFor="billingState" className="block text-sm font-medium text-gray-700">
                                             State
                                         </label>
                                         <input
@@ -433,38 +434,45 @@ export default function MissingInfoModal({
                                             value={computedBilling.state}
                                             onChange={handleBillingChange}
                                             disabled={billingSameAsDelivery}
-                                            className="w-full h-[32px] px-3 text-sm rounded-[10px] border border-[#565656] bg-white focus:outline-none focus:ring-2 focus:ring-green-700 disabled:bg-[#efefef] disabled:text-[#6d6d6d]"
-                                            placeholder="State"
+                                            className={`${inputBaseClass} ${billingSameAsDelivery ? inputDisabledClass : inputNormalClass}`}
+                                            placeholder="NY"
                                         />
                                     </div>
 
-                                    <div>
-                                        <label htmlFor="billingCountry" className="block text-[13px] leading-none font-medium text-[#000000] mb-2">
+                                    <div className="space-y-1.5">
+                                        <label htmlFor="billingCountry" className="block text-sm font-medium text-gray-700">
                                             Country
                                         </label>
-                                        <div className={`w-full h-[32px] px-3 rounded-[10px] border flex items-center justify-between bg-[#e8e8e8] ${errors.billingCountry ? "border-red-500" : "border-transparent"}`}>
+                                        <div className={`w-full h-11 px-4 rounded-xl border flex items-center justify-between bg-gray-50 ${errors.billingCountry ? "border-red-500" : "border-black"}`}>
                                             <input
                                                 id="billingCountry"
                                                 type="text"
                                                 name="country"
                                                 value={computedBilling.country?.trim() ? computedBilling.country : "United State"}
                                                 readOnly
-                                                className="w-full text-sm leading-none text-[#666666] bg-transparent focus:outline-none"
+                                                className="w-full text-sm text-gray-500 bg-transparent focus:outline-none cursor-not-allowed"
                                             />
-                                            <Lock size={16} className="text-[#777777] flex-shrink-0" />
+                                            <Lock size={16} className="text-gray-400 flex-shrink-0 ml-2" />
                                         </div>
                                         {errors.billingCountry && <p className="text-red-500 text-xs mt-1">{errors.billingCountry}</p>}
                                         {errors.billingAddress && <p className="text-red-500 text-xs mt-1">{errors.billingAddress}</p>}
                                     </div>
 
-                                    <label className="flex items-center gap-3 pt-1 cursor-pointer select-none">
-                                        <input
-                                            type="checkbox"
-                                            checked={billingSameAsDelivery}
-                                            onChange={(e) => setBillingSameAsDelivery(e.target.checked)}
-                                            className="h-4 w-4 rounded border-[#8a8a8a] text-green-700 focus:ring-green-700"
-                                        />
-                                        <span className="text-sm leading-none font-medium text-[#1d1d1d]">Billing address same as delivery address</span>
+                                    <label className="flex items-center gap-3 pt-2 cursor-pointer select-none group">
+                                        <div className="relative flex items-center">
+                                            <input
+                                                type="checkbox"
+                                                checked={billingSameAsDelivery}
+                                                onChange={(e) => setBillingSameAsDelivery(e.target.checked)}
+                                                className="peer h-5 w-5 cursor-pointer appearance-none rounded-md border border-gray-300 bg-white transition-all checked:border-primary checked:bg-primary hover:border-primary focus:outline-none focus:ring-4 focus:ring-primary/20"
+                                            />
+                                            <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-white opacity-0 transition-opacity peer-checked:opacity-100">
+                                                <svg xmlns="http://www.w3.org/2000/svg" className="h-3.5 w-3.5" viewBox="0 0 20 20" fill="currentColor" stroke="currentColor" strokeWidth="2">
+                                                    <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
+                                                </svg>
+                                            </div>
+                                        </div>
+                                        <span className="text-sm font-medium text-gray-700 group-hover:text-gray-900 transition-colors">Billing address same as delivery address</span>
                                     </label>
                                 </div>
                             )}
@@ -472,12 +480,12 @@ export default function MissingInfoModal({
                     </div>
 
                     {/* Footer Actions */}
-                    <div className="px-8 pb-8">
+                    <div className="px-6 pb-6 pt-4 sticky bottom-0 bg-white border-t border-gray-100">
                         <button
                             onClick={handleConfirm}
-                            className="w-full h-[32px] bg-[#2f8c59] hover:bg-[#267349] text-white text-[14px] leading-[24px] font-medium rounded-[10px] transition-colors"
+                            className="w-full h-12 bg-primary hover:bg-primary/90 text-white text-sm font-semibold rounded-xl shadow-sm shadow-primary/20 transition-all active:scale-[0.98] flex items-center justify-center gap-2"
                         >
-                            Confirm changes
+                            Confirm Address Details
                         </button>
                     </div>
                 </div>

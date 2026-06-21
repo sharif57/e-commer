@@ -138,6 +138,7 @@ export default function Footer() {
               width={200}
               height={200}
               className=" w-10 h-5 object-cover"
+              suppressHydrationWarning
             />
             <span>United States</span>
             <span className="text-slate-500">|</span>
