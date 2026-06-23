@@ -423,6 +423,7 @@ export default function ManageInventory() {
                   <th className="px-3 py-2.5 text-left text-[11px] font-medium text-black whitespace-nowrap">Price (USD)</th>
                   <th className="px-3 py-2.5 text-left text-[11px] font-medium text-black whitespace-nowrap">In Stock</th>
                   <th className="px-3 py-2.5 text-left text-[11px] font-medium text-black whitespace-nowrap">Ratings</th>
+                  <th className="px-3 py-2.5 text-left text-[11px] font-medium text-black whitespace-nowrap">View</th>
                   <th className="px-3 py-2.5 text-left text-[11px] font-medium text-black whitespace-nowrap">Action</th>
                 </tr>
               </thead>
@@ -434,17 +435,21 @@ export default function ManageInventory() {
                       <td className="px-3 py-2.5">
                         <div className="flex items-center gap-2.5 min-w-[300px] max-w-[360px]">
                           {item.image && item.image.length > 0 ? (
-                            <Image
-                              src={item.image[0]}
-                              alt={item.title}
-                              height={100}
-                              width={100}
-                              className="h-5 w-5 object-cover rounded bg-gray-100"
-                            />
+                            <Link href={`/best_deal/${item._id}`} target="_blank" rel="noopener noreferrer" className="shrink-0">
+                              <Image
+                                src={item.image[0]}
+                                alt={item.title}
+                                height={100}
+                                width={100}
+                                className="h-5 w-5 object-cover rounded bg-gray-100"
+                              />
+                            </Link>
                           ) : (
-                            <div className="h-5 w-5 bg-gray-200 rounded flex items-center justify-center">
-                              <span className="text-[9px] text-gray-500">-</span>
-                            </div>
+                            <Link href={`/best_deal/${item._id}`} target="_blank" rel="noopener noreferrer" className="shrink-0">
+                              <div className="h-5 w-5 bg-gray-200 rounded flex items-center justify-center">
+                                <span className="text-[9px] text-gray-500">-</span>
+                              </div>
+                            </Link>
                           )}
                           <div className="flex-1 min-w-0">
                             <Link href={`/best_deal/${item._id}`} target="_blank" rel="noopener noreferrer" className="text-[13px] text-black truncate">{getSlicedTitle(item.title, 42)}</Link>
@@ -486,6 +491,16 @@ export default function ManageInventory() {
                       </td>
                       <td className="px-3 py-2.5">
                         <div className="flex items-center gap-1.5 whitespace-nowrap">
+                          <Link href={`/best_deal/${item._id}`}
+                            target="_blank" rel="noopener noreferrer"
+                            className="inline-flex items-center gap-1 text-[13px] text-black hover:text-black"
+                          >
+                            <Eye className="h-3.5 w-3.5 text-gray-600" />
+                          </Link>
+                        </div>
+                      </td>
+                      <td className="px-3 py-2.5">
+                        <div className="flex items-center gap-1.5 whitespace-nowrap">
                           <button
                             onClick={() => handleEdit(item)}
                             className="inline-flex items-center gap-1 text-[13px] text-black hover:text-black"
@@ -494,12 +509,7 @@ export default function ManageInventory() {
                             <Edit className="h-3.5 w-3.5 text-gray-600" />
                             Edit
                           </button>
-                          <Link href={`/best_deal/${item._id}`}
-                            target="_blank" rel="noopener noreferrer"
-                            className="inline-flex items-center gap-1 text-[13px] text-black hover:text-black"
-                          >
-                            <Eye className="h-3.5 w-3.5 text-gray-600" />
-                          </Link>
+
                           <button
                             onClick={() => handleDeleteClick(item._id)}
                             className="p-0.5 hover:bg-red-100 rounded transition-colors"
@@ -534,15 +544,19 @@ export default function ManageInventory() {
                   <Card key={item._id} className="p-4 border border-gray-200">
                     <div className="flex gap-3 mb-3">
                       {item.image && item.image.length > 0 ? (
-                        <img
-                          src={item.image[0]}
-                          alt={item.title}
-                          className="h-16 w-16 object-cover rounded bg-gray-100 flex-shrink-0"
-                        />
+                        <Link href={`/best_deal/${item._id}`} target="_blank" rel="noopener noreferrer" className="shrink-0">
+                          <img
+                            src={item.image[0]}
+                            alt={item.title}
+                            className="h-16 w-16 object-cover rounded bg-gray-100 flex-shrink-0"
+                          />
+                        </Link>
                       ) : (
-                        <div className="h-16 w-16 bg-gray-200 rounded flex items-center justify-center flex-shrink-0">
-                          <span className="text-xs text-gray-500">No image</span>
-                        </div>
+                        <Link href={`/best_deal/${item._id}`} target="_blank" rel="noopener noreferrer" className="shrink-0">
+                          <div className="h-16 w-16 bg-gray-200 rounded flex items-center justify-center flex-shrink-0">
+                            <span className="text-xs text-gray-500">No image</span>
+                          </div>
+                        </Link>
                       )}
                       <div className="flex-1 min-w-0">
                         <p className="text-xs font-semibold text-gray-600 uppercase">SKU: {item.sku}</p>

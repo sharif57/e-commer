@@ -59,9 +59,9 @@ export default function OrderDetails() {
                     reqQty: orderData.quantity,
                     status: orderData.deliveryStatus || "pending",
                     qtyUpdated: "",
-                    carrier: "",
-                    trackingNo: "",
-                    trackingLink: "",
+                    carrier: orderData.carrier || "",
+                    trackingNo: orderData.trackingNo || "",
+                    trackingLink: orderData.trackingUrl || "",
                 }
             ])
         }
@@ -254,7 +254,9 @@ export default function OrderDetails() {
                                         </td>
                                         <td className="p-3">
                                             <a
-                                                href="#"
+                                                href={`/best_deal/${item.productId}`}
+                                                target="_blank"
+                                                rel="noopener noreferrer"
                                                 className="text-xs text-blue-600 hover:underline whitespace-nowrap"
                                             >
                                                 {item.item.slice(0, 20)}....
@@ -303,6 +305,7 @@ export default function OrderDetails() {
                                                 onValueChange={(value) =>
                                                     updateOrderItem(item.id, "carrier", value)
                                                 }
+                                                disabled={!!orderData?.carrier}
                                             >
                                                 <SelectTrigger className="w-[120px] h-8 text-xs">
                                                     <SelectValue placeholder="Select carrier" />
@@ -317,7 +320,7 @@ export default function OrderDetails() {
                                         </td>
                                         <td className="p-3">
                                             <Input
-                                                type="number"
+                                                type="text"
                                                 value={item.trackingNo}
 
                                                 onChange={(e) =>
@@ -325,27 +328,42 @@ export default function OrderDetails() {
                                                 }
                                                 className="w-[100px] h-8 text-xs"
                                                 placeholder=""
+                                                disabled={!!orderData?.trackingNo}
                                             />
                                         </td>
                                         <td className="p-3">
-                                            <Input
-                                                type="url"
-                                                value={item.trackingLink}
-                                                onChange={(e) =>
-                                                    updateOrderItem(item.id, "trackingLink", e.target.value)
-                                                }
-                                                className="w-[100px] h-8 text-xs"
-                                                placeholder=""
-                                            />
+                                            {orderData?.trackingUrl ? (
+                                                <a
+                                                    href={orderData.trackingUrl.startsWith('http') ? orderData.trackingUrl : `https://${orderData.trackingUrl}`}
+                                                    target="_blank"
+                                                    rel="noopener noreferrer"
+                                                    className="text-xs text-blue-600 hover:underline truncate inline-block max-w-[100px]"
+                                                    title={orderData.trackingUrl}
+                                                >
+                                                    View Tracking
+                                                </a>
+                                            ) : (
+                                                <Input
+                                                    type="url"
+                                                    value={item.trackingLink}
+                                                    onChange={(e) =>
+                                                        updateOrderItem(item.id, "trackingLink", e.target.value)
+                                                    }
+                                                    className="w-[100px] h-8 text-xs"
+                                                    placeholder=""
+                                                />
+                                            )}
                                         </td>
                                         <td className="p-3">
-                                            <Button
-                                                size="sm"
-                                                className="h-8 px-3 text-xs bg-primary text-white whitespace-nowrap"
-                                                onClick={() => handleConfirmShipment(item)}
-                                            >
-                                                Confirm shipment
-                                            </Button>
+                                            {(!orderData?.trackingNo || !orderData?.carrier || !orderData?.trackingUrl) && (
+                                                <Button
+                                                    size="sm"
+                                                    className="h-8 px-3 text-xs bg-primary text-white whitespace-nowrap"
+                                                    onClick={() => handleConfirmShipment(item)}
+                                                >
+                                                    Confirm shipment
+                                                </Button>
+                                            )}
                                         </td>
                                     </tr>
                                 ))}

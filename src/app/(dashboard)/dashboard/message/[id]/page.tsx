@@ -8,7 +8,7 @@ import { X, Plus, Send, Loader2 } from 'lucide-react'
 import { useGetUsersQuery } from '@/redux/feature/userSlice'
 import { getSocket } from '@/lib/socket'
 import { toast } from 'sonner'
-import { useCreateInboxMutation } from '@/redux/feature/socket/messageSlice'
+import { useCreateInboxMutation, useGetInboxMessagesQuery } from '@/redux/feature/socket/messageSlice'
 
 interface ChatMessage {
     id: string
@@ -17,11 +17,19 @@ interface ChatMessage {
     timestamp: Date
 }
 
+// "ভাই, আমাদের ইনবক্স ক্রিয়েট করার লজিকে ভুল আছে। User A যখন User B কে মেসেজ দেয়, তখন Inbox-1 তৈরি হচ্ছে। কিন্তু User B যখন রিপ্লাই দিচ্ছে, তখন ব্যাকএন্ড চেক করছে না যে এদের মধ্যে আগে থেকেই কোনো ইনবক্স আছে কিনা, বরং সে নতুন করে Inbox-2 তৈরি করে সেখানে রিপ্লাই সেভ করছে! এর ফলে একই চ্যাটের মেসেজ দুইটা আলাদা ইনবক্সে ভাগ হয়ে যাচ্ছে। দয়া করে লজিকটা এমনভাবে ফিক্স করুন যাতে সেন্ডার বা রিসিভার যে-ই মেসেজ দিক না কেন, ডাটাবেসে যেন সব মেসেজ একই Inbox ID এর আন্ডারে সেভ হয়।"
+
+
+
 export default function MessageDetailsPage() {
     const params = useParams<{ id: string }>()
     const searchParams = useSearchParams()
     const router = useRouter()
     const inboxId = params?.id ?? ''
+
+    const { data: userData } = useGetUsersQuery(undefined);
+    const currentUserId = userData?.data?._id || '';
+
     // http://localhost:3000/dashboard/message/6991929b08040e40065d390c?senderId=6932a3d77d740510efe6d778&
     const senderId = searchParams?.get('senderId') || ''
     console.log(senderId, 'sendewr')
@@ -35,6 +43,11 @@ export default function MessageDetailsPage() {
     const [activeInboxId, setActiveInboxId] = useState(inboxId)
 
     const [createInbox] = useCreateInboxMutation()
+    const [cacheBuster, setCacheBuster] = useState(Date.now())
+    const { data: messagesData, isLoading: isMessagesLoading, refetch: refetchMessages } = useGetInboxMessagesQuery(activeInboxId ? `${activeInboxId}?_t=${cacheBuster}` : '', {
+        skip: !activeInboxId
+    })
+
     const [replyText, setReplyText] = useState('')
     const [attachedFiles, setAttachedFiles] = useState<string[]>([])
     const [isSending, setIsSending] = useState(false)
@@ -87,10 +100,27 @@ export default function MessageDetailsPage() {
         }
     }, [receiverId, senderId, inboxId, createInbox, router, searchParams])
 
+    // Listen to messagesData changes from RTK Query
+    useEffect(() => {
+        if (messagesData?.success && messagesData?.data?.result) {
+            const messageList = messagesData.data.result
+            const loadedMessages: ChatMessage[] = messageList.map((msg: any) => ({
+                id: msg._id || `msg-${Date.now()}-${Math.random()}`,
+                text: msg.message || '',
+                senderId: msg.senderId || '',
+                timestamp: msg.createdAt ? new Date(msg.createdAt) : new Date(),
+            }))
+            loadedMessages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
+            setMessages(loadedMessages)
+        } else if (messagesData && !messagesData?.data?.result?.length) {
+            setMessages([])
+        }
+    }, [messagesData])
+
     // Socket initialization and message loading
     useEffect(() => {
-        if (!activeInboxId || !senderId) {
-            console.log('❌ Missing inboxId or senderId:', { inboxId: activeInboxId, senderId })
+        if (!activeInboxId || !currentUserId) {
+            console.log('❌ Missing inboxId or currentUserId:', { inboxId: activeInboxId, currentUserId })
             return
         }
 
@@ -102,20 +132,17 @@ export default function MessageDetailsPage() {
             return
         }
 
-        // Connect socket
-        if (!socket.connected) {
-            console.log('🔌 Connecting socket...')
-            socket.connect()
+        const joinInbox = () => {
+            console.log('🚪 Joining inbox room:', activeInboxId)
+            socket.emit('join-inbox', activeInboxId)
         }
 
         // Connection handlers
         const handleConnect = () => {
-            console.log(' Socket connected:', socket.id)
+            console.log('🔗 Socket connected:', socket.id)
             setIsConnected(true)
             joinInbox()
-
-            // Load initial messages via HTTP
-            loadMessages()
+            refetchMessages()
         }
 
         const handleDisconnect = () => {
@@ -123,27 +150,23 @@ export default function MessageDetailsPage() {
             setIsConnected(false)
         }
 
-        const handleConnectError = (error: any) => {
-            console.error('❌ Socket connection error:', error)
+        const handleConnectError = (err: any) => {
+            console.error('⚠️ Socket connect_error:', err.message)
             setIsConnected(false)
-            toast.error('Connection error. Please refresh.')
-        }
-
-        const joinInbox = () => {
-            socket.emit('join-inbox', activeInboxId)
         }
 
         // Message receive handler
-        const receiveEvent = `receive-message:${activeInboxId}`
         const handleReceiveMessage = (data: any) => {
-            console.log(`📩 [${receiveEvent}] Message received:=============`, data, receiveEvent)
+            console.log(`📩 Message received:=============`, data)
 
             if (!data) {
                 console.warn('⚠️ Empty message data received')
                 return
             }
 
-            if (data.inboxId && data.inboxId !== activeInboxId) {
+            // We must allow messages from the current receiver even if inboxId differs
+            // because the backend creates different inboxes for Sender->Receiver vs Receiver->Sender.
+            if (data.senderId !== receiverId && data.senderId !== currentUserId) {
                 return
             }
 
@@ -162,7 +185,7 @@ export default function MessageDetailsPage() {
                     return prev
                 }
 
-                if (newMessage.senderId === senderId) {
+                if (newMessage.senderId === currentUserId) {
                     const optimisticIndex = prev.findIndex(
                         (msg) =>
                             msg.id.startsWith('temp-') &&
@@ -184,77 +207,58 @@ export default function MessageDetailsPage() {
             })
         }
 
-        // Load messages from API
-        const loadMessages = async () => {
-            console.log('📥 Loading messages for inbox:', activeInboxId)
-            setIsLoadingMessages(true)
-
-            try {
-                const response = await fetch(
-                    `https://api.modvora.com/api/v1/message/get-message/${activeInboxId}`,
-                    {
-                        headers: {
-                            'Authorization': `Bearer ${localStorage.getItem('accessToken')}`,
-                        },
-                    }
-                )
-
-                const result = await response.json()
-                console.log(' API Response:', result)
-
-                if (result.success && result.data?.result) {
-                    const messageList = result.data.result
-                    console.log('📨 Messages loaded:', messageList.length)
-
-                    const loadedMessages: ChatMessage[] = messageList.map((msg: any) => ({
-                        id: msg._id || `msg-${Date.now()}-${Math.random()}`,
-                        text: msg.message || '',
-                        senderId: msg.senderId || '',
-                        timestamp: msg.createdAt ? new Date(msg.createdAt) : new Date(),
-                    }))
-
-                    // Sort by timestamp (oldest first)
-                    loadedMessages.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime())
-
-                    setMessages(loadedMessages)
-                    console.log(' Messages set to state:', loadedMessages.length)
-                } else {
-                    console.log('ℹ No messages in response')
-                    setMessages([])
-                }
-            } catch (error) {
-                console.error('❌ Error loading messages:', error)
-                toast.error('Failed to load messages')
-            } finally {
-                setIsLoadingMessages(false)
-            }
-        }
-
         // Register event listeners
         socket.on('connect', handleConnect)
         socket.on('disconnect', handleDisconnect)
         socket.on('connect_error', handleConnectError)
-        socket.on(receiveEvent, handleReceiveMessage)
 
-        console.log(`👂 Listening to event: ${receiveEvent}`)
+        // Use onAny to catch receive-message events with mismatched inboxIds
+        const handleAnyEvent = (eventName: string, ...args: any[]) => {
+            if (eventName.startsWith('receive-message')) {
+                const data = args[0]
+                if (data && (data.senderId === receiverId || data.senderId === currentUserId)) {
+                    handleReceiveMessage(data)
+                }
+            }
+        }
+        socket.onAny(handleAnyEvent)
+
+        // Fallback: If the backend only sends a notification to the receiver, we should reload messages
+        const handleNotification = (data: any) => {
+            console.log(`🔔 Notification received, reloading messages...`)
+            setTimeout(() => {
+                setCacheBuster(Date.now())
+            }, 1500)
+        }
+
+        if (currentUserId) {
+            socket.on(`get-notification::${currentUserId}`, handleNotification)
+            console.log(`👂 Listening to notifications for: ${currentUserId}`)
+        }
+
+        console.log(`👂 Listening to receive-message events for: ${activeInboxId}`)
 
         // If already connected, load messages immediately
         if (socket.connected) {
             handleConnect()
-            joinInbox()
         }
 
         // Cleanup
         return () => {
-            console.log(`🧹 Cleaning up socket listeners for: ${receiveEvent}`)
+            console.log(`🧹 Cleaning up socket listeners for: ${activeInboxId}`)
             socket.off('connect', handleConnect)
             socket.off('disconnect', handleDisconnect)
             socket.off('connect_error', handleConnectError)
-            socket.off(receiveEvent, handleReceiveMessage)
-        }
-    }, [activeInboxId])
+            socket.offAny(handleAnyEvent)
 
-    const handleSendMessage = () => {
+            if (currentUserId) {
+                // @ts-ignore
+                socket.off(`get-notification::${currentUserId}`)
+            }
+        }
+    }, [activeInboxId, currentUserId])
+
+    const handleSendMessage = async () => {
         if (!replyText.trim()) {
             console.warn('Empty message, not sending')
             return
@@ -282,9 +286,10 @@ export default function MessageDetailsPage() {
         }
 
         const payload = {
-            senderId: senderId,
+            senderId: currentUserId,
+            receiverId: receiverId,
             message: replyText.trim(),
-            inboxId: inboxId,
+            inboxId: activeInboxId,
         }
 
         console.log('Sending message via socket:', payload)
@@ -299,7 +304,7 @@ export default function MessageDetailsPage() {
             const optimisticMessage: ChatMessage = {
                 id: `temp-${Date.now()}`,
                 text: replyText.trim(),
-                senderId: senderId,
+                senderId: currentUserId,
                 timestamp: new Date(),
             }
 
@@ -372,7 +377,7 @@ export default function MessageDetailsPage() {
                 {/* Messages Container */}
                 <div className="flex-1 overflow-y-auto bg-gray-50">
                     <div className="mx-auto p-4 sm:p-6 space-y-4 sm:space-y-6">
-                        {isLoadingMessages ? (
+                        {isMessagesLoading ? (
                             <div className="flex items-center justify-center h-full py-12">
                                 <Loader2 className="h-6 w-6 animate-spin text-blue-500" />
                                 <span className="ml-2 text-gray-500">Loading messages...</span>
@@ -383,7 +388,7 @@ export default function MessageDetailsPage() {
                             </div>
                         ) : (
                             messages.map((message) => {
-                                const isCurrentUser = message.senderId === senderId
+                                const isCurrentUser = message.senderId === currentUserId
                                 return (
                                     <div
                                         key={message.id}
@@ -458,7 +463,7 @@ export default function MessageDetailsPage() {
                                     onChange={(e) => setReplyText(e.target.value)}
                                     onKeyPress={handleKeyPress}
                                     placeholder="Write your message..."
-                                    disabled={!isConnected || isSending}
+                                    disabled={!isConnected || isSending || !currentUserId}
                                     className="peer border border-gray-300 dark:bg-slate-900 dark:placeholder:text-slate-500 
                                         dark:text-[#abc2d3] dark:border-slate-600 rounded-lg outline-none 
                                         pl-4 pr-12 py-3 w-full focus:border-blue-500 transition-colors duration-300
@@ -467,7 +472,7 @@ export default function MessageDetailsPage() {
 
                                 <button
                                     onClick={handleSendMessage}
-                                    disabled={!replyText.trim() || !isConnected || isSending}
+                                    disabled={!replyText.trim() || !isConnected || isSending || !currentUserId}
                                     className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1 
                                         text-blue-600 font-medium disabled:opacity-40 disabled:cursor-not-allowed"
                                 >

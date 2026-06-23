@@ -303,7 +303,7 @@ export default function OrderHistory() {
                                     )}
 
                                     {/* Product Info */}
-                                    <div className="mb-4 flex gap-4">
+                                    <Link href={`/best_deal/${order.productId?._id}`} target="_blank" className="mb-4 flex gap-4">
                                         <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
                                             <img
                                                 src={order.productId.image[0] || "/images/products.jpg"}
@@ -323,7 +323,7 @@ export default function OrderHistory() {
                                             <p className="text-xs text-gray-500">{order.streetName}, {order.area}, {order.city}</p>
                                             <p className="text-[13px] font-medium text-[#171717] mt-2">Order total ${(order.price * order.quantity).toFixed(2)}</p>
                                         </div>
-                                    </div>
+                                    </Link>
 
                                     {/* Note Section */}
                                     {/* <div className=" pt-4 mt-4">

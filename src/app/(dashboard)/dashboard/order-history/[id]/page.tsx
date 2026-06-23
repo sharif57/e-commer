@@ -6,7 +6,9 @@ import { OrderItem } from '@/components/dashboard/buyer/order-item'
 import { OrderTimeline } from '@/components/dashboard/buyer/order-timeline'
 import { Badge } from '@/components/ui/badge'
 import { Button } from '@/components/ui/button'
-import { useGetSingleProductSellerQuery, useOrderConfirmationMutation } from '@/redux/feature/seller/productSellerSlice'
+import { Input } from '@/components/ui/input'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select'
+import { useGetSingleProductSellerQuery, useOrderConfirmationMutation, useDeliveryTrackMutation } from '@/redux/feature/seller/productSellerSlice'
 import { Printer, Download } from 'lucide-react'
 import { useParams } from 'next/navigation'
 import { useEffect, useRef, useState } from 'react'
@@ -29,7 +31,11 @@ export default function OrderDetailsPage() {
     const { data } = useGetSingleProductSellerQuery(id as string);
     const orderData = data?.data;
     const [orderConfirmation, { isLoading: isUpdatingStatus }] = useOrderConfirmationMutation();
+    const [deliveryTrack, { isLoading: isUpdatingTracking }] = useDeliveryTrackMutation();
     const [selectedStatus, setSelectedStatus] = useState<string>('placed')
+    const [trackingNo, setTrackingNo] = useState<string>('')
+    const [carrier, setCarrier] = useState<string>('')
+    const [trackingUrl, setTrackingUrl] = useState<string>('')
     const [statusMessage, setStatusMessage] = useState<string | null>(null)
     const [statusError, setStatusError] = useState<string | null>(null)
 
@@ -56,7 +62,16 @@ export default function OrderDetailsPage() {
         if (orderData?.deliveryStatus) {
             setSelectedStatus(orderData.deliveryStatus)
         }
-    }, [orderData?.deliveryStatus])
+        if (orderData?.trackingNo) {
+            setTrackingNo(orderData.trackingNo)
+        }
+        if (orderData?.carrier) {
+            setCarrier(orderData.carrier)
+        }
+        if (orderData?.trackingUrl) {
+            setTrackingUrl(orderData.trackingUrl)
+        }
+    }, [orderData?.deliveryStatus, orderData?.trackingNo, orderData?.carrier, orderData?.trackingUrl])
 
     if (!orderData) {
         return <div className="flex items-center justify-center min-h-screen">Loading order details...</div>
@@ -102,13 +117,51 @@ export default function OrderDetailsPage() {
 
 
 
-    const handleStatusUpdate = async () => {
+    const handleSaveShippingDetails = async () => {
         if (!id) return
+
+        if (!trackingNo || !carrier || !trackingUrl) {
+            toast.error('Please provide Carrier, Tracking Number, and Tracking URL')
+            setStatusError('All shipping details are required to save tracking info')
+            return
+        }
 
         setStatusMessage(null)
         setStatusError(null)
 
         try {
+            const res = await deliveryTrack({
+                id: id as string,
+                body: { trackingNo, carrier, trackingUrl }
+            }).unwrap()
+            toast.success(res?.data?.message || 'Tracking details saved successfully')
+            setStatusMessage(res?.data?.message || 'Tracking details saved')
+        } catch (error: any) {
+            toast.error(error?.data?.message || 'Failed to save tracking details')
+            setStatusError(error?.data?.message || 'Failed to save tracking details')
+        }
+    }
+
+    const handleStatusUpdate = async () => {
+        if (!id) return
+
+        if ((selectedStatus === 'in_transit' || selectedStatus === 'delivered') && (!trackingNo || !carrier || !trackingUrl)) {
+            toast.error('Please provide Carrier, Tracking Number, and Tracking URL before updating status')
+            setStatusError('All shipping details are required to update status')
+            return
+        }
+
+        setStatusMessage(null)
+        setStatusError(null)
+
+        try {
+            if (trackingNo) {
+                await deliveryTrack({
+                    id: id as string,
+                    body: { trackingNo, carrier, trackingUrl }
+                }).unwrap()
+            }
+
             const res = await orderConfirmation({
                 orderId: id as string,
                 data: { deliveryStatus: selectedStatus }
@@ -181,12 +234,81 @@ export default function OrderDetailsPage() {
                             </div>
                             <div className="pt-4 flex flex-col gap-4">
 
+                                <div className="flex flex-col gap-3">
+                                    <h4 className="text-sm font-semibold text-foreground">Shipping Details</h4>
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                                        <div className="space-y-1">
+                                            <label className="text-xs text-muted-foreground">Carrier</label>
+                                            <Select
+                                                value={carrier}
+                                                onValueChange={(value) => setCarrier(value)}
+                                                disabled={!!orderData?.carrier}
+                                            >
+                                                <SelectTrigger className="w-full bg-[#F1F1F1] border-[#000000]">
+                                                    <SelectValue placeholder="Select carrier" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="fedex">FedEx</SelectItem>
+                                                    <SelectItem value="ups">UPS</SelectItem>
+                                                    <SelectItem value="usps">USPS</SelectItem>
+                                                    <SelectItem value="dhl">DHL</SelectItem>
+                                                    <SelectItem value="pathao">Pathao</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-xs text-muted-foreground">Tracking Number</label>
+                                            <Input
+                                                placeholder="Enter tracking number"
+                                                value={trackingNo}
+                                                onChange={(e) => setTrackingNo(e.target.value)}
+                                                disabled={!!orderData?.trackingNo}
+                                                className="bg-[#F1F1F1] border-[#000000]"
+                                            />
+                                        </div>
+                                        <div className="space-y-1">
+                                            <label className="text-xs text-muted-foreground">Tracking URL</label>
+                                            <div className="flex gap-2">
+                                                {orderData?.trackingUrl ? (
+                                                    <a
+                                                        href={orderData.trackingUrl.startsWith('http') ? orderData.trackingUrl : `https://${orderData.trackingUrl}`}
+                                                        target="_blank"
+                                                        rel="noopener noreferrer"
+                                                        className="bg-[#F1F1F1] border border-[#000000] flex-1 h-10 rounded-md px-3 py-2 text-sm text-blue-600 hover:underline truncate flex items-center cursor-pointer"
+                                                        title={orderData.trackingUrl}
+                                                    >
+                                                        {orderData.trackingUrl}
+                                                    </a>
+                                                ) : (
+                                                    <Input
+                                                        type="url"
+                                                        placeholder="https://..."
+                                                        value={trackingUrl}
+                                                        onChange={(e) => setTrackingUrl(e.target.value)}
+                                                        className="bg-[#F1F1F1] border-[#000000] flex-1"
+                                                    />
+                                                )}
+                                                {(!orderData?.trackingNo || !orderData?.carrier || !orderData?.trackingUrl) && (
+                                                    <Button
+                                                        onClick={handleSaveShippingDetails}
+                                                        disabled={isUpdatingTracking || !trackingNo || !carrier || !trackingUrl}
+                                                        className="bg-[#F2CB05] text-[#171717] hover:bg-[#F2CB05]/90 shrink-0 text-xs px-4 h-[42px]"
+                                                    >
+                                                        {isUpdatingTracking ? 'Saving...' : 'Save'}
+                                                    </Button>
+                                                )}
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
                                 {/* Update Status Button */}
                                 <div className="flex flex-col sm:flex-row gap-3 sm:items-center">
                                     <select
                                         value={currentDeliveryStatus}
                                         onChange={(event) => setSelectedStatus(event.target.value)}
-                                        className="w-full bg-[#F1F1F1] pr-24 px-4 py-2 border border-[#000000] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        disabled={orderData?.deliveryStatus === 'placed' && (!orderData?.trackingNo || !orderData?.carrier || !orderData?.trackingUrl)}
+                                        className="w-full bg-[#F1F1F1] pr-24 px-4 py-2 border border-[#000000] rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50"
                                     >
                                         {statusOptions.map((option) => (
                                             <option key={option.value} value={option.value}>
@@ -196,10 +318,10 @@ export default function OrderDetailsPage() {
                                     </select>
                                     <Button
                                         onClick={handleStatusUpdate}
-                                        disabled={isUpdatingStatus}
+                                        disabled={isUpdatingStatus || isUpdatingTracking || (orderData?.deliveryStatus === 'placed' && (!orderData?.trackingNo || !orderData?.carrier || !orderData?.trackingUrl))}
                                         className="bg-[#F2CB05] text-[#171717] hover:bg-[#F2CB05]/90 shrink-0"
                                     >
-                                        {isUpdatingStatus ? 'Updating...' : 'Update Status'}
+                                        {isUpdatingStatus || isUpdatingTracking ? 'Updating...' : 'Update Status'}
                                     </Button>
                                 </div>
                                 {statusMessage && (
