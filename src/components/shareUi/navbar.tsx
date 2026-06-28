@@ -54,6 +54,7 @@ export default function Navbar() {
 
   const [deliveryLocation, setDeliveryLocation] = useState<LocationData | null>(null);
   const [isLocationModalOpen, setIsLocationModalOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -125,10 +126,12 @@ export default function Navbar() {
 
     // Initial load for delivery location
     const savedLocation = localStorage.getItem("deliveryLocation");
-    if (savedLocation) {
+    if (savedLocation && savedLocation !== "undefined" && savedLocation !== "null") {
       try {
         setDeliveryLocation(JSON.parse(savedLocation));
-      } catch (e) { }
+      } catch (e) {
+        localStorage.removeItem("deliveryLocation");
+      }
     } else {
       // First time automatic user location set
       if (typeof navigator !== 'undefined' && navigator.geolocation) {
@@ -136,47 +139,17 @@ export default function Navbar() {
           async (position) => {
             try {
               const { latitude, longitude } = position.coords;
-              const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
-              if (!apiKey) return;
-
-              const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`);
+              const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`);
               const data = await response.json();
 
-              if (data.status === 'OK' && data.results.length > 0) {
-                let city = '';
-                let country = '';
-                let state = '';
+              if (data && data.address) {
+                const city = data.address.city || data.address.town || data.address.village || data.address.municipality || data.address.county || data.address.state || 'Unknown';
+                const country = data.address.country || 'Unknown';
 
-                for (const result of data.results) {
-                  if (!result.address_components) continue;
-                  for (const component of result.address_components) {
-                    if (!city && (component.types.includes('locality') || component.types.includes('postal_town'))) {
-                      city = component.long_name;
-                    }
-                    if (!country && component.types.includes('country')) {
-                      country = component.short_name;
-                    }
-                    if (!state && component.types.includes('administrative_area_level_1')) {
-                      state = component.short_name;
-                    }
-                  }
-                }
-
-                if (!city) {
-                  for (const result of data.results) {
-                    if (!result.address_components) continue;
-                    for (const component of result.address_components) {
-                      if (!city && (component.types.includes('administrative_area_level_2') || component.types.includes('neighborhood') || component.types.includes('sublocality'))) {
-                        city = component.long_name;
-                      }
-                    }
-                  }
-                }
-
-                if (city || country || state) {
+                if (city !== 'Unknown' || country !== 'Unknown') {
                   const loc = {
-                    city: city || state || 'Unknown',
-                    country: country || 'Unknown'
+                    city: city,
+                    country: country
                   };
                   setDeliveryLocation(loc);
                   localStorage.setItem("deliveryLocation", JSON.stringify(loc));
@@ -200,6 +173,10 @@ export default function Navbar() {
       window.removeEventListener('focus', updateCartFromStorage);
       window.removeEventListener('focus', updateWishlistFromStorage);
     };
+  }, []);
+
+  useEffect(() => {
+    setIsMounted(true);
   }, []);
 
   const handleLogout = async () => {
@@ -278,7 +255,7 @@ export default function Navbar() {
                 <div className="flex flex-col justify-end">
                   <span className="text-[10px] sm:text-[13px] text-gray-800 leading-[1.1] sm:leading-[1.2]">Deliver to</span>
                   <span className="text-[11px] sm:text-[15px] font-bold text-black leading-[1.1] sm:leading-[1.2] whitespace-nowrap">
-                    {deliveryLocation ? `${deliveryLocation.city}, ${deliveryLocation.country}` : "Select your address"}
+                    {isMounted && deliveryLocation ? `${deliveryLocation.city}, ${deliveryLocation.country}` : "Select your address"}
                   </span>
                 </div>
               </div>

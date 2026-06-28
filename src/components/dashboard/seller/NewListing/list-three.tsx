@@ -23,7 +23,6 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
 
     const measurements = ["S", "M", "L", "XL", "XXL"]
     const selectedSizes = Array.isArray(data.size) ? data.size : []
-    const colors = Array.isArray(data.color) ? data.color : []
     const isEmpty = (value: any) => value === undefined || value === null || String(value).trim() === ""
 
     const validateStep = () => {
@@ -31,7 +30,6 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
 
         if (isEmpty(data.title)) newErrors.title = "Product title is required"
         if (!selectedSizes.length) newErrors.size = "At least one product size is required"
-        if (!colors.length) newErrors.color = "At least one product color is required"
         if (isEmpty(data.brand)) newErrors.brand = "Brand is required"
         if (isEmpty(data.fabric)) newErrors.fabric = "Fabric type is required"
         if (isEmpty(data.care)) newErrors.care = "Care instructions are required"
@@ -51,17 +49,6 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
         if (validateStep()) {
             onNext()
         }
-    }
-
-    const handleAddColor = () => {
-        if (colorInput.trim() !== "" && !colors.includes(colorInput.trim())) {
-            onChange({ color: [...colors, colorInput.trim()] })
-            setColorInput("")
-        }
-    }
-
-    const handleRemoveColor = (colorToRemove: string) => {
-        onChange({ color: colors.filter((c: string) => c !== colorToRemove) })
     }
 
     const handleToggleSize = (size: string) => {
@@ -129,42 +116,7 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
                     {errors.size && <p className="text-red-500 text-xs mt-1">{errors.size}</p>}
                 </div>
 
-                {/* Colors */}
-                <div>
-                    <div className="flex items-center justify-between mb-2">
-                        <label className="block text-sm font-medium text-gray-900">Available Product Colors</label>
 
-                        <div className="flex items-center gap-2 text-[#29845A] font-medium cursor-pointer" onClick={handleAddColor}>
-                            <Plus size={16} />
-                            <p>Add Color</p>
-                        </div>
-                    </div>
-
-                    <input
-                        type="text"
-                        placeholder="E.g. Red"
-                        value={colorInput}
-                        onChange={(e) => setColorInput(e.target.value)}
-                        onKeyPress={(e) => e.key === "Enter" && handleAddColor()}
-                        className="w-full px-2 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500"
-                    />
-
-                    {/* Color Badges */}
-                    <div className="flex flex-wrap gap-2 mt-3">
-                        {colors.map((c: string, i: number) => (
-                            <Badge key={i} className="bg-[#F2C94C] text-gray-900 font-semibold text-sm relative group">
-                                {c}
-                                <button
-                                    onClick={() => handleRemoveColor(c)}
-                                    className="ml-2 text-gray-700 hover:text-red-600"
-                                >
-                                    ×
-                                </button>
-                            </Badge>
-                        ))}
-                    </div>
-                    {errors.color && <p className="text-red-500 text-xs mt-1">{errors.color}</p>}
-                </div>
 
                 {/* Brand */}
                 <div>

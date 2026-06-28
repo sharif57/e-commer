@@ -13,7 +13,8 @@ interface Product {
     rating: number
     reviews: number
     stock: number
-    image: string[]
+    image?: string[]
+    variants?: { color: string; images: string[] }[]
 }
 
 interface ProductCardProps {
@@ -40,7 +41,7 @@ export default function ProductCard({ product, isWishlisted, onWishlistToggle }:
                 {/* Image Container */}
                 <div className="relative w-full aspect-square bg-muted overflow-hidden">
                     <Image
-                        src={product?.image[0] || "/placeholder.svg"}
+                        src={product?.variants?.[0]?.images?.[0] || product?.image?.[0] || "/placeholder.svg"}
                         alt={product?.title}
                         fill
                         className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"

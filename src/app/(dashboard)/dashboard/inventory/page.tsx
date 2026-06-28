@@ -27,7 +27,8 @@ interface InventoryItem {
     _id?: string
     title: string
   }
-  image: string[]
+  image?: string[]
+  variants?: { color: string; images: string[] }[]
   stock?: number
   inStock: boolean
   status: string
@@ -60,9 +61,8 @@ export default function ManageInventory() {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [selectedProductIdForDelete, setSelectedProductIdForDelete] = useState<string | null>(null)
   const [editFormData, setEditFormData] = useState<any>({})
-  const [newImages, setNewImages] = useState<File[]>([])
-  const [existingImages, setExistingImages] = useState<string[]>([])
-  const [imagePreviews, setImagePreviews] = useState<string[]>([])
+  const [editVariants, setEditVariants] = useState<{ color: string, existingImages: string[], newFiles: File[], newPreviews: string[] }[]>([])
+  const [newVariantColor, setNewVariantColor] = useState("")
   const [stockUpdatingId, setStockUpdatingId] = useState<string | null>(null)
   const [stockOverrides, setStockOverrides] = useState<Record<string, number>>({})
 
@@ -139,14 +139,37 @@ export default function ManageInventory() {
         origin: product.origin || "",
         careInsturction: product.careInsturction || "",
         frbricType: product.frbricType || "",
-        color: product.color,
+        color: product?.variants?.map((v:any) => v.color) || product.color || [],
         stock: typeof product.stock === "number" ? product.stock : (product.inStock ? 1 : 0),
         inStock: product.inStock,
         status: product.status
       });
-      setExistingImages(product.image || []);
-      setNewImages([]);
-      setImagePreviews([]);
+      
+      const initialVariants = product?.variants?.length 
+        ? product.variants.map((v: any) => ({
+            color: v.color,
+            existingImages: v.images || [],
+            newFiles: [],
+            newPreviews: []
+          }))
+        : (product?.color || []).map((c: string) => ({
+            color: c,
+            existingImages: [],
+            newFiles: [],
+            newPreviews: []
+          }));
+
+      if (initialVariants.length === 0 && product?.image?.length) {
+        initialVariants.push({
+          color: "Default",
+          existingImages: product.image,
+          newFiles: [],
+          newPreviews: []
+        });
+      }
+
+      setEditVariants(initialVariants);
+      setNewVariantColor("");
       setIsEditModalOpen(true);
     }
   }
@@ -169,27 +192,62 @@ export default function ManageInventory() {
     }
   }
 
-  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleVariantImageChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
-    setNewImages(prev => [...prev, ...files]);
-
-    // Create previews
-    files.forEach(file => {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        setImagePreviews(prev => [...prev, reader.result as string]);
-      };
-      reader.readAsDataURL(file);
+    if (files.length === 0) return;
+    
+    setEditVariants(prev => {
+      const newVariants = [...prev];
+      const variant = { ...newVariants[index] };
+      
+      variant.newFiles = [...variant.newFiles, ...files];
+      
+      // Create previews
+      const newPreviews = [...variant.newPreviews];
+      files.forEach(file => {
+        newPreviews.push(URL.createObjectURL(file));
+      });
+      variant.newPreviews = newPreviews;
+      
+      newVariants[index] = variant;
+      return newVariants;
     });
   };
 
-  const removeExistingImage = (index: number) => {
-    setExistingImages(prev => prev.filter((_, i) => i !== index));
+  const removeVariantExistingImage = (variantIndex: number, imageIndex: number) => {
+    setEditVariants(prev => {
+      const newVariants = [...prev];
+      newVariants[variantIndex] = {
+        ...newVariants[variantIndex],
+        existingImages: newVariants[variantIndex].existingImages.filter((_, i) => i !== imageIndex)
+      };
+      return newVariants;
+    });
   };
 
-  const removeNewImage = (index: number) => {
-    setNewImages(prev => prev.filter((_, i) => i !== index));
-    setImagePreviews(prev => prev.filter((_, i) => i !== index));
+  const removeVariantNewImage = (variantIndex: number, fileIndex: number) => {
+    setEditVariants(prev => {
+      const newVariants = [...prev];
+      const variant = { ...newVariants[variantIndex] };
+      
+      variant.newFiles = variant.newFiles.filter((_, i) => i !== fileIndex);
+      URL.revokeObjectURL(variant.newPreviews[fileIndex]);
+      variant.newPreviews = variant.newPreviews.filter((_, i) => i !== fileIndex);
+      
+      newVariants[variantIndex] = variant;
+      return newVariants;
+    });
+  };
+
+  const addEditVariant = () => {
+    if (newVariantColor.trim() && !editVariants.some(v => v.color.toLowerCase() === newVariantColor.trim().toLowerCase())) {
+      setEditVariants(prev => [...prev, { color: newVariantColor.trim(), existingImages: [], newFiles: [], newPreviews: [] }]);
+      setNewVariantColor("");
+    }
+  };
+
+  const removeEditVariant = (index: number) => {
+    setEditVariants(prev => prev.filter((_, i) => i !== index));
   };
 
   const handleFormChange = (field: string, value: any) => {
@@ -257,12 +315,16 @@ export default function ManageInventory() {
         origin: editFormData.origin,
         careInsturction: editFormData.careInsturction,
         frbricType: editFormData.frbricType,
-        color: editFormData.color,
+        color: editVariants.map(v => v.color),
+        colors: editVariants.map(v => v.color),
+        variants: editVariants.map(v => ({
+            color: v.color,
+            images: v.existingImages
+        })),
         stock: Number(editFormData.stock),
         inStock: editFormData.inStock,
         status: editFormData.status,
         size: editFormData.size,
-        image: existingImages,
       };
 
       if (!Number.isNaN(shippingCost)) {
@@ -277,11 +339,13 @@ export default function ManageInventory() {
       formData.append('data', JSON.stringify(payload))
 
       // Add new images
-      newImages.forEach((file) => {
-        formData.append('images', file);
+      editVariants.forEach((variant) => {
+        variant.newFiles.forEach((file) => {
+          formData.append(variant.color, file);
+        });
       });
 
-      await updateProduct({ productId: selectedProduct._id, data: formData, image: newImages }).unwrap();
+      await updateProduct({ productId: selectedProduct._id, data: formData }).unwrap();
 
       setIsEditModalOpen(false);
       alert('Product updated successfully!');
@@ -434,10 +498,10 @@ export default function ManageInventory() {
                       <td className="px-3 py-2.5 text-sm text-black whitespace-nowrap">{String((currentPage - 1) * 10 + index + 1).padStart(2, "0")}</td>
                       <td className="px-3 py-2.5">
                         <div className="flex items-center gap-2.5 min-w-[300px] max-w-[360px]">
-                          {item.image && item.image.length > 0 ? (
+                          {(item?.variants?.length || (item.image && item.image.length > 0)) ? (
                             <Link href={`/best_deal/${item._id}`} target="_blank" rel="noopener noreferrer" className="shrink-0">
                               <Image
-                                src={item.image[0]}
+                                src={item?.variants?.[0]?.images?.[0] || item.image?.[0] || "/placeholder.svg"}
                                 alt={item.title}
                                 height={100}
                                 width={100}
@@ -543,10 +607,10 @@ export default function ManageInventory() {
                 {filteredProducts?.map((item: InventoryItem) => (
                   <Card key={item._id} className="p-4 border border-gray-200">
                     <div className="flex gap-3 mb-3">
-                      {item.image && item.image.length > 0 ? (
+                      {(item?.variants?.length || (item.image && item.image.length > 0)) ? (
                         <Link href={`/best_deal/${item._id}`} target="_blank" rel="noopener noreferrer" className="shrink-0">
                           <img
-                            src={item.image[0]}
+                            src={item?.variants?.[0]?.images?.[0] || item.image?.[0] || "/placeholder.svg"}
                             alt={item.title}
                             className="h-16 w-16 object-cover rounded bg-gray-100 flex-shrink-0"
                           />
@@ -731,42 +795,74 @@ export default function ManageInventory() {
             </DialogHeader>
 
             <div className="space-y-4 py-4">
-              {/* Images Section */}
-              <div className="space-y-2">
-                <Label>Product Images</Label>
-                <div className="grid grid-cols-4 gap-4">
-                  {/* Existing Images */}
-                  {existingImages.map((img, index) => (
-                    <div key={`existing-${index}`} className="relative group">
-                      <img src={img} alt="Product" className="w-full h-24 object-cover rounded border" />
-                      <button
-                        onClick={() => removeExistingImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
+              {/* Color Variants Section */}
+              <div className="space-y-4 border-b pb-6">
+                <div className="flex items-center justify-between">
+                  <Label className="text-lg">Color Variants & Images</Label>
+                  <div className="flex gap-2">
+                    <Input 
+                      placeholder="Add new color..." 
+                      value={newVariantColor}
+                      onChange={(e) => setNewVariantColor(e.target.value)}
+                      className="w-40"
+                    />
+                    <Button type="button" onClick={addEditVariant} variant="outline">
+                      <Plus className="h-4 w-4 mr-1" /> Add
+                    </Button>
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  {editVariants.map((variant, variantIndex) => (
+                    <div key={variantIndex} className="border border-gray-200 rounded-lg p-4 bg-gray-50 space-y-3">
+                      <div className="flex justify-between items-center">
+                        <h4 className="font-semibold text-base capitalize flex items-center gap-2">
+                          <span className="w-3 h-3 border border-gray-300 rounded-full inline-block" style={{ backgroundColor: variant.color.toLowerCase() }}></span>
+                          {variant.color}
+                        </h4>
+                        <button onClick={() => removeEditVariant(variantIndex)} className="text-sm font-medium text-red-500 hover:text-red-700">
+                          Remove Color
+                        </button>
+                      </div>
+
+                      <div className="grid grid-cols-4 sm:grid-cols-6 gap-3 pt-2">
+                        {variant.existingImages.map((img, imgIndex) => (
+                          <div key={`existing-${imgIndex}`} className="relative group">
+                            <img src={img} alt="Product" className="w-full aspect-square object-cover rounded border border-gray-200 bg-white" />
+                            <button
+                              onClick={() => removeVariantExistingImage(variantIndex, imgIndex)}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+                        
+                        {variant.newPreviews.map((preview, previewIndex) => (
+                          <div key={`new-${previewIndex}`} className="relative group">
+                            <img src={preview} alt="Preview" className="w-full aspect-square object-cover rounded border border-blue-200 bg-blue-50" />
+                            <button
+                              onClick={() => removeVariantNewImage(variantIndex, previewIndex)}
+                              className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                            >
+                              <X className="h-3 w-3" />
+                            </button>
+                          </div>
+                        ))}
+
+                        <label className="border-2 border-dashed border-gray-300 rounded flex flex-col items-center justify-center cursor-pointer hover:border-blue-400 hover:bg-blue-50 bg-white aspect-square transition-colors">
+                          <Upload className="h-5 w-5 mb-1 text-gray-400" />
+                          <span className="text-[10px] text-gray-500 font-medium">Add Photo</span>
+                          <input type="file" multiple accept="image/*" onChange={(e) => handleVariantImageChange(variantIndex, e)} className="hidden" />
+                        </label>
+                      </div>
                     </div>
                   ))}
-                  {/* New Images Preview */}
-                  {imagePreviews.map((preview, index) => (
-                    <div key={`new-${index}`} className="relative group">
-                      <img src={preview} alt="Preview" className="w-full h-24 object-cover rounded border" />
-                      <button
-                        onClick={() => removeNewImage(index)}
-                        className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
-                      >
-                        <X className="h-4 w-4" />
-                      </button>
+                  {editVariants.length === 0 && (
+                    <div className="text-center p-6 border-2 border-dashed rounded-lg text-gray-500">
+                      No color variants added. Add a color to upload images.
                     </div>
-                  ))}
-                  {/* Upload Button */}
-                  <label className="border-2 border-dashed rounded flex items-center justify-center cursor-pointer hover:border-yellow-400 h-24">
-                    <div className="text-center">
-                      <Upload className="h-6 w-6 mx-auto text-gray-400" />
-                      <span className="text-xs text-gray-500">Add Image</span>
-                    </div>
-                    <input type="file" multiple accept="image/*" onChange={handleImageChange} className="hidden" />
-                  </label>
+                  )}
                 </div>
               </div>
 
@@ -824,17 +920,6 @@ export default function ManageInventory() {
                     value={editFormData.size?.join(', ') || ''}
                     onChange={(e) => handleArrayChange('size', e.target.value)}
                     placeholder="S, M, L, XL"
-                  />
-                </div>
-
-                {/* Colors */}
-                <div className="space-y-2">
-                  <Label htmlFor="color">Colors (comma separated)*</Label>
-                  <Input
-                    id="color"
-                    value={editFormData.color?.join(', ') || ''}
-                    onChange={(e) => handleArrayChange('color', e.target.value)}
-                    placeholder="black, white, yellow"
                   />
                 </div>
 

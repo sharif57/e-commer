@@ -7,7 +7,8 @@ import Image from "next/image"
 
 interface Product {
   _id: string
-  image: string
+  image?: string[]
+  variants?: { color: string; images: string[] }[]
   title: string
   price: number
   rating: number
@@ -29,7 +30,7 @@ export default function ProductCard({ product, isFavorite, sellerId, onToggleFav
       {/* Image Container */}
       <div className="relative bg-gray-100 dark:bg-slate-700 aspect-square overflow-hidden group">
         <Image
-          src={product.image[0] || "/placeholder.svg"}
+          src={product?.variants?.[0]?.images?.[0] || product?.image?.[0] || "/placeholder.svg"}
           alt={product.title}
           fill
           className="w-full h-full rounded-lg object-cover group-hover:scale-110 transition-transform duration-300"

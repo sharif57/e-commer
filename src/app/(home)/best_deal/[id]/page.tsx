@@ -56,7 +56,9 @@ export default function ProductPage() {
 
     const product = data?.data;
     const sizes = product?.size
-    const images = product?.image || []
+    const images = product?.variants?.length 
+        ? product.variants.flatMap((v: any) => v.images || [])
+        : (product?.image || [])
     const reviewList = reviewData?.data?.result || []
     const totalReviews = reviewData?.data?.meta?.total || reviewList.length || 0
     const averageReviewRating = reviewList.length
@@ -86,10 +88,29 @@ export default function ProductPage() {
     }, [sizes, selectedSize])
 
     useEffect(() => {
-        if (!selectedColor && product?.color?.length > 0) {
-            setSelectedColor(product.color[0])
+        const availableColors = product?.variants?.map((v: any) => v.color) || product?.color || []
+        if (!selectedColor && availableColors.length > 0) {
+            setSelectedColor(availableColors[0])
         }
-    }, [product?.color, selectedColor])
+    }, [product?.variants, product?.color, selectedColor])
+
+    const handleColorClick = (color: string) => {
+        setSelectedColor(color)
+        
+        // Find where this color's images start in the flattened array
+        if (product?.variants?.length) {
+            let imageIndex = 0;
+            for (let i = 0; i < product.variants.length; i++) {
+                if (product.variants[i].color === color) {
+                    if (product.variants[i].images?.length > 0) {
+                        setMainImage(imageIndex);
+                    }
+                    break;
+                }
+                imageIndex += (product.variants[i].images?.length || 0);
+            }
+        }
+    }
 
     useEffect(() => {
         if (mainImage > images.length - 1) {
@@ -116,11 +137,14 @@ export default function ProductPage() {
             toast.error("Product not loaded yet")
             return
         }
+        const selectedVariant = product?.variants?.find((v: any) => v.color === selectedColor)
+        const cartImage = selectedVariant?.images?.[0] || product?.variants?.[0]?.images?.[0] || product.image?.[0] || "/placeholder.svg"
+
         const cartItem = {
             id: product._id,
             title: product.title,
             price: product.price,
-            image: product.image?.[0] || "/placeholder.svg",
+            image: cartImage,
             quantity: quantity,
             selectedSize: selectedSize,
             selectedColor: selectedColor,
@@ -667,10 +691,10 @@ export default function ProductPage() {
                                     <div>
                                         <label className="block text-sm font-semibold text-black mb-3">Color</label>
                                         <div className="flex gap-3 flex-wrap">
-                                            {product?.color?.map((color: string) => (
+                                            {(product?.variants?.map((v: any) => v.color) || product?.color || [])?.map((color: string) => (
                                                 <button
                                                     key={color}
-                                                    onClick={() => setSelectedColor(color)}
+                                                    onClick={() => handleColorClick(color)}
                                                     className={`px-6 py-2.5 rounded-lg border-2 font-medium text-sm capitalize transition-all ${selectedColor === color
                                                         ? "border-[#29845A] bg-[#29845A] text-white"
                                                         : "border-gray-300 text-gray-700 hover:border-gray-400"

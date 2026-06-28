@@ -20,47 +20,18 @@ export default function LocationModal({ isOpen, onClose, onLocationSelect }: Loc
 
   if (!isOpen) return null;
 
-  const extractLocationFromGeocode = (results: any[]): LocationData | null => {
-    if (!results || results.length === 0) return null;
+  // Helper to extract city and country from Nominatim address object
+  const extractLocationFromAddress = (address: any): LocationData | null => {
+    if (!address) return null;
     
-    let city = '';
-    let country = '';
-    let state = '';
+    const city = address.city || address.town || address.village || address.municipality || address.county || address.state || 'Unknown';
+    const country = address.country || 'Unknown';
     
-    // Search through all results to find the most accurate city/country
-    for (const result of results) {
-      if (!result.address_components) continue;
-      
-      for (const component of result.address_components) {
-        if (!city && (component.types.includes('locality') || component.types.includes('postal_town'))) {
-          city = component.long_name;
-        }
-        if (!country && component.types.includes('country')) {
-          country = component.short_name;
-        }
-        if (!state && component.types.includes('administrative_area_level_1')) {
-          state = component.short_name;
-        }
-      }
-    }
-    
-    // Fallback if exact city not found
-    if (!city) {
-      for (const result of results) {
-        if (!result.address_components) continue;
-        for (const component of result.address_components) {
-          if (!city && (component.types.includes('administrative_area_level_2') || component.types.includes('neighborhood') || component.types.includes('sublocality'))) {
-            city = component.long_name;
-          }
-        }
-      }
-    }
-
-    if (!city && !country) return null;
+    if (city === 'Unknown' && country === 'Unknown') return null;
 
     return {
-      city: city || state || 'Unknown',
-      country: country || 'Unknown'
+      city: city,
+      country: country
     };
   };
 
@@ -70,14 +41,11 @@ export default function LocationModal({ isOpen, onClose, onLocationSelect }: Loc
 
     setIsLoading(true);
     try {
-      const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
-      if (!apiKey) throw new Error("Google Maps API key is missing from environment variables.");
-
-      const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?components=postal_code:${zipCode}&key=${apiKey}`);
+      const response = await fetch(`https://nominatim.openstreetmap.org/search?postalcode=${zipCode}&format=json&addressdetails=1`);
       const data = await response.json();
 
-      if (data.status === 'OK' && data.results.length > 0) {
-        const loc = extractLocationFromGeocode(data.results);
+      if (data && data.length > 0) {
+        const loc = extractLocationFromAddress(data[0].address);
         if (loc) {
           loc.zip = zipCode;
           onLocationSelect(loc);
@@ -108,14 +76,12 @@ export default function LocationModal({ isOpen, onClose, onLocationSelect }: Loc
       async (position) => {
         try {
           const { latitude, longitude } = position.coords;
-          const apiKey = process.env.NEXT_PUBLIC_GOOGLE_API_KEY;
-          if (!apiKey) throw new Error("Google Maps API key is missing from environment variables.");
 
-          const response = await fetch(`https://maps.googleapis.com/maps/api/geocode/json?latlng=${latitude},${longitude}&key=${apiKey}`);
+          const response = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${latitude}&lon=${longitude}&format=json&addressdetails=1`);
           const data = await response.json();
 
-          if (data.status === 'OK' && data.results.length > 0) {
-            const loc = extractLocationFromGeocode(data.results);
+          if (data && data.address) {
+            const loc = extractLocationFromAddress(data.address);
             if (loc) {
               onLocationSelect(loc);
               onClose();

@@ -115,26 +115,43 @@ export default function ListFive({ data, onChangeStep, onNext }: any) {
                 : Array.isArray(data.colors) && data.colors.length > 0
                     ? data.colors
                     : []
-            if (colors.length > 0) payload.color = colors
+            
+            // Set both color and colors for backend compatibility
+            if (colors.length > 0) {
+                payload.color = colors
+                payload.colors = colors
+            }
 
-            // Collect images as array
-            const images: File[] = []
-            if (Array.isArray(data.files) && data.files.length > 0) {
-                data.files.forEach((f: any) => {
-                    if (f?.file instanceof File) {
-                        images.push(f.file)
-                    }
-                })
+            // Explicitly set variants based on data.variants
+            if (Array.isArray(data.variants) && data.variants.length > 0) {
+                payload.variants = data.variants.map((v: any) => ({ color: v.color, images: [] }))
+            } else if (colors.length > 0) {
+                payload.variants = colors.map((c: string) => ({ color: c, images: [] }))
+            } else {
+                payload.variants = [{ color: "Default", images: [] }]
             }
 
             // Create FormData
             const formData = new FormData()
             formData.append('data', JSON.stringify(payload))
 
-            // Append all images
-            if (images.length > 0) {
-                images.forEach((img) => {
-                    formData.append('image', img)
+            // Append images color by color using variants
+            if (Array.isArray(data.variants) && data.variants.length > 0) {
+                data.variants.forEach((variant: any) => {
+                    if (Array.isArray(variant.files)) {
+                        variant.files.forEach((f: any) => {
+                            if (f?.file instanceof File) {
+                                formData.append(variant.color, f.file)
+                            }
+                        })
+                    }
+                })
+            } else if (Array.isArray(data.files) && data.files.length > 0) {
+                // Fallback if no variants exist
+                data.files.forEach((f: any) => {
+                    if (f?.file instanceof File) {
+                        formData.append('image', f.file)
+                    }
                 })
             }
 
@@ -238,26 +255,42 @@ export default function ListFive({ data, onChangeStep, onNext }: any) {
                 : Array.isArray(data.colors) && data.colors.length > 0
                     ? data.colors
                     : []
-            if (colors.length > 0) payload.color = colors
+            // Set both color and colors for backend compatibility
+            if (colors.length > 0) {
+                payload.color = colors
+                payload.colors = colors
+            }
 
-            // Collect images as array
-            const images: File[] = []
-            if (Array.isArray(data.files) && data.files.length > 0) {
-                data.files.forEach((f: any) => {
-                    if (f?.file instanceof File) {
-                        images.push(f.file)
-                    }
-                })
+            // Explicitly set variants based on data.variants
+            if (Array.isArray(data.variants) && data.variants.length > 0) {
+                payload.variants = data.variants.map((v: any) => ({ color: v.color, images: [] }))
+            } else if (colors.length > 0) {
+                payload.variants = colors.map((c: string) => ({ color: c, images: [] }))
+            } else {
+                payload.variants = [{ color: "Default", images: [] }]
             }
 
             // Create FormData
             const formData = new FormData()
             formData.append('data', JSON.stringify(payload))
 
-            // Append all images
-            if (images.length > 0) {
-                images.forEach((img) => {
-                    formData.append('image', img)
+            // Append images color by color using variants
+            if (Array.isArray(data.variants) && data.variants.length > 0) {
+                data.variants.forEach((variant: any) => {
+                    if (Array.isArray(variant.files)) {
+                        variant.files.forEach((f: any) => {
+                            if (f?.file instanceof File) {
+                                formData.append(variant.color, f.file)
+                            }
+                        })
+                    }
+                })
+            } else if (Array.isArray(data.files) && data.files.length > 0) {
+                // Fallback if no variants exist
+                data.files.forEach((f: any) => {
+                    if (f?.file instanceof File) {
+                        formData.append('image', f.file)
+                    }
                 })
             }
 

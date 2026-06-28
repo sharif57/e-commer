@@ -82,7 +82,7 @@ export default function WishList() {
                       {/* Image Container */}
                       <div className="relative w-full aspect-square bg-muted overflow-hidden">
                         <Image
-                          src={product?.image?.[0] || "/placeholder.svg"}
+                          src={product?.variants?.[0]?.images?.[0] || product?.image?.[0] || "/placeholder.svg"}
                           alt={product?.title || "Product"}
                           fill
                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
