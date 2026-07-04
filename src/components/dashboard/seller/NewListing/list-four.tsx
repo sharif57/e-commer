@@ -23,9 +23,11 @@ export default function ListFour({ data, onChange, onNext, onPrevious }: StepThr
     const validateStep = () => {
         const newErrors: Record<string, string> = {}
 
-        if (isEmpty(data.deliveryInside)) newErrors.deliveryInside = "Delivery charge is required"
-        if (isEmpty(data.deliveryOutside)) newErrors.deliveryOutside = "Delivery charge is required"
-        if (isEmpty(data.shippingCost)) newErrors.shippingCost = "Shipping cost is required"
+        if (!freeDelivery) {
+            if (isEmpty(data.deliveryInside)) newErrors.deliveryInside = "Delivery charge is required"
+            if (isEmpty(data.deliveryOutside)) newErrors.deliveryOutside = "Delivery charge is required"
+            if (isEmpty(data.shippingCost)) newErrors.shippingCost = "Shipping cost is required"
+        }
         if (isEmpty(data.carrier)) newErrors.carrier = "Carrier is required"
 
         setErrors(newErrors)
@@ -50,14 +52,15 @@ export default function ListFour({ data, onChange, onNext, onPrevious }: StepThr
                 {/* Delivery Inside DC */}
                 <div>
                     <label className="block text-sm font-medium text-gray-900 mb-2">
-                        Delivery Charge in Washington, D.C.
+                        Delivery Charge in united states
                     </label>
                     <input
                         type="number"
                         placeholder="$"
                         value={data.deliveryInside || ""}
                         onChange={(e) => onChange({ deliveryInside: e.target.value, shippingCost: toNumberOrEmpty(e.target.value) })}
-                        className="w-full px-2 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500"
+                        disabled={freeDelivery}
+                        className="w-full px-2 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
                     />
                     {errors.deliveryInside && <p className="text-red-500 text-xs mt-1">{errors.deliveryInside}</p>}
                 </div>
@@ -65,14 +68,15 @@ export default function ListFour({ data, onChange, onNext, onPrevious }: StepThr
                 {/* Delivery Outside DC */}
                 <div>
                     <label className="block text-sm font-medium text-gray-900 mb-2">
-                        Delivery Charge out of Washington, D.C.
+                        Delivery Charge out of United States
                     </label>
                     <input
                         type="number"
                         placeholder="$"
                         value={data.deliveryOutside || ""}
                         onChange={(e) => onChange({ deliveryOutside: e.target.value })}
-                        className="w-full px-2 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500"
+                        disabled={freeDelivery}
+                        className="w-full px-2 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
                     />
                     {errors.deliveryOutside && <p className="text-red-500 text-xs mt-1">{errors.deliveryOutside}</p>}
                 </div>
@@ -80,12 +84,28 @@ export default function ListFour({ data, onChange, onNext, onPrevious }: StepThr
                 {/* Free Delivery Switch */}
                 <div className="bg-white p-2 rounded-lg">
                     <div className="flex justify-between items-center">
-                        <h3 className="text-sm font-medium">I won’t charge delivery fee for this product</h3>
+                        <h3 className="text-sm font-medium">Free Shipping This Product </h3>
                         <Switch
                             checked={freeDelivery}
                             onCheckedChange={(checked) => {
                                 setFreeDelivery(checked)
-                                onChange({ freeDelivery: checked })
+                                if (checked) {
+                                    onChange({
+                                        freeDelivery: checked,
+                                        deliveryInside: "",
+                                        deliveryOutside: "",
+                                        shippingCost: ""
+                                    })
+                                    setErrors((prev) => {
+                                        const nextErrors = { ...prev }
+                                        delete nextErrors.deliveryInside
+                                        delete nextErrors.deliveryOutside
+                                        delete nextErrors.shippingCost
+                                        return nextErrors
+                                    })
+                                } else {
+                                    onChange({ freeDelivery: checked })
+                                }
                             }}
                         />
                     </div>
@@ -99,7 +119,8 @@ export default function ListFour({ data, onChange, onNext, onPrevious }: StepThr
                         placeholder="$"
                         value={data.shippingCost ?? ""}
                         onChange={(e) => onChange({ shippingCost: toNumberOrEmpty(e.target.value) })}
-                        className="w-full px-2 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500"
+                        disabled={freeDelivery}
+                        className="w-full px-2 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500 disabled:bg-gray-100 disabled:cursor-not-allowed disabled:opacity-50"
                     />
                     {errors.shippingCost && <p className="text-red-500 text-xs mt-1">{errors.shippingCost}</p>}
                 </div>
@@ -112,10 +133,17 @@ export default function ListFour({ data, onChange, onNext, onPrevious }: StepThr
                         onChange={(e) => onChange({ carrier: e.target.value })}
                         className="w-full px-4 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-primary"
                     >
+                        {/* USPS 
+DHL
+Fedex 
+UPS
+Car/Person/Delivery */}
                         <option value="">Select…</option>
-                        <option value="Pathao">Pathao</option>
+                        <option value="USPS">USPS</option>
+                        <option value="DHL">DHL</option>
                         <option value="FedEx">FedEx</option>
-                        <option value="No Carrier">No Carrier</option>
+                        <option value="UPS">UPS</option>
+                        <option value="Car/Person/Delivery">Car/Person/Delivery</option>
                     </select>
                     {errors.carrier && <p className="text-red-500 text-xs mt-1">{errors.carrier}</p>}
 

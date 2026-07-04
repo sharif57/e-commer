@@ -500,7 +500,7 @@ export default function ListFive({ data, onChangeStep, onNext }: any) {
                             <div>
                                 <p className="text-gray-600">Delivery Charge</p>
                                 <p className="font-medium">
-                                    {deliveryInside === "0" || deliveryInside === 0 ? "Free Delivery" : deliveryInside ? `${deliveryInside} USD` : "Not set"}
+                                    {data.freeDelivery || deliveryInside === "0" || deliveryInside === 0 ? "Free Delivery" : deliveryInside ? `${deliveryInside} USD` : "Not set"}
                                 </p>
                             </div>
 

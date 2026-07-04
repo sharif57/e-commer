@@ -93,6 +93,19 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
                     {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title}</p>}
                 </div>
 
+
+                {/* Description */}
+                <div>
+                    <label className="block text-sm font-medium text-gray-900 mb-2">Description</label>
+                    <Textarea
+                        placeholder="Write your product description"
+                        value={data.description}
+                        onChange={(e) => onChange({ description: e.target.value })}
+                        className="w-full px-2 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500"
+                    />
+                    {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
+                </div>
+
                 {/* Product Size (Multiple Selection) */}
                 <div>
                     <label className="block text-sm font-medium text-gray-900 mb-2">Product Size (Select Multiple)</label>
@@ -240,17 +253,6 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
                     {errors.price && <p className="text-red-500 text-xs mt-1">{errors.price}</p>}
                 </div>
 
-                {/* Description */}
-                <div>
-                    <label className="block text-sm font-medium text-gray-900 mb-2">Description</label>
-                    <Textarea
-                        placeholder="Write your product description"
-                        value={data.description}
-                        onChange={(e) => onChange({ description: e.target.value })}
-                        className="w-full px-2 py-2 border border-[#171717] rounded-md focus:ring-2 focus:ring-teal-500"
-                    />
-                    {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description}</p>}
-                </div>
 
                 {/* Return Policy Switch */}
                 <div className="bg-white p-2 rounded-lg">

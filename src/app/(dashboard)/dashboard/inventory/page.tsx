@@ -321,6 +321,7 @@ export default function ManageInventory() {
             color: v.color,
             images: v.existingImages
         })),
+        image: editVariants.flatMap(v => v.existingImages),
         stock: Number(editFormData.stock),
         inStock: editFormData.inStock,
         status: editFormData.status,

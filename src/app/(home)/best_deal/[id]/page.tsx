@@ -56,9 +56,18 @@ export default function ProductPage() {
 
     const product = data?.data;
     const sizes = product?.size
-    const images = product?.variants?.length 
+    const images = product?.variants?.length
         ? product.variants.flatMap((v: any) => v.images || [])
         : (product?.image || [])
+    const uniqueColors = (() => {
+        const variantColors = product?.variants?.map((v: any) => v.color).filter(Boolean) || [];
+        const colorArray = Array.isArray(product?.color)
+            ? product.color
+            : typeof product?.color === "string"
+                ? [product.color]
+                : [];
+        return Array.from(new Set([...variantColors, ...colorArray]));
+    })();
     const reviewList = reviewData?.data?.result || []
     const totalReviews = reviewData?.data?.meta?.total || reviewList.length || 0
     const averageReviewRating = reviewList.length
@@ -88,15 +97,14 @@ export default function ProductPage() {
     }, [sizes, selectedSize])
 
     useEffect(() => {
-        const availableColors = product?.variants?.map((v: any) => v.color) || product?.color || []
-        if (!selectedColor && availableColors.length > 0) {
-            setSelectedColor(availableColors[0])
+        if (!selectedColor && uniqueColors.length > 0) {
+            setSelectedColor(uniqueColors[0])
         }
-    }, [product?.variants, product?.color, selectedColor])
+    }, [uniqueColors, selectedColor])
 
     const handleColorClick = (color: string) => {
         setSelectedColor(color)
-        
+
         // Find where this color's images start in the flattened array
         if (product?.variants?.length) {
             let imageIndex = 0;
@@ -108,6 +116,24 @@ export default function ProductPage() {
                     break;
                 }
                 imageIndex += (product.variants[i].images?.length || 0);
+            }
+        }
+    }
+
+    const handleThumbnailClick = (idx: number) => {
+        setMainImage(idx);
+        setIsZoomActive(false);
+
+        // Find the color this image belongs to
+        if (product?.variants?.length) {
+            let currentIndex = 0;
+            for (let i = 0; i < product.variants.length; i++) {
+                const variantImagesCount = product.variants[i].images?.length || 0;
+                if (idx >= currentIndex && idx < currentIndex + variantImagesCount) {
+                    setSelectedColor(product.variants[i].color);
+                    break;
+                }
+                currentIndex += variantImagesCount;
             }
         }
     }
@@ -633,13 +659,10 @@ export default function ProductPage() {
 
                                 {/* Thumbnails */}
                                 <div className="grid grid-cols-4 gap-3">
-                                    {product?.image?.map((thumb: any, idx: number) => (
+                                    {images?.map((thumb: any, idx: number) => (
                                         <button
                                             key={idx}
-                                            onClick={() => {
-                                                setMainImage(idx)
-                                                setIsZoomActive(false)
-                                            }}
+                                            onClick={() => handleThumbnailClick(idx)}
                                             className={`relative rounded-lg overflow-hidden aspect-square border-2 transition-all ${mainImage === idx ? "border-amber-500" : "border-gray-200 hover:border-gray-300"
                                                 }`}
                                         >
@@ -691,18 +714,30 @@ export default function ProductPage() {
                                     <div>
                                         <label className="block text-sm font-semibold text-black mb-3">Color</label>
                                         <div className="flex gap-3 flex-wrap">
-                                            {(product?.variants?.map((v: any) => v.color) || product?.color || [])?.map((color: string) => (
-                                                <button
-                                                    key={color}
-                                                    onClick={() => handleColorClick(color)}
-                                                    className={`px-6 py-2.5 rounded-lg border-2 font-medium text-sm capitalize transition-all ${selectedColor === color
-                                                        ? "border-[#29845A] bg-[#29845A] text-white"
-                                                        : "border-gray-300 text-gray-700 hover:border-gray-400"
-                                                        }`}
-                                                >
-                                                    {color}
-                                                </button>
-                                            ))}
+                                            {uniqueColors?.map((color: string) => {
+                                                const variant = product?.variants?.find((v: any) => v.color === color);
+                                                const variantImage = variant?.images?.[0] || product?.image?.[0] || "/placeholder.svg";
+                                                return (
+                                                    <button
+                                                        key={color}
+                                                        onClick={() => handleColorClick(color)}
+                                                        className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 font-medium text-sm capitalize transition-all ${selectedColor === color
+                                                            ? "border-[#29845A] bg-teal-50/50 text-[#29845A] ring-1 ring-[#29845A]"
+                                                            : "border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                                                            }`}
+                                                    >
+                                                        <span className="text-xs font-semibold">{color}</span>
+                                                        <div className="relative w-16 h-20 rounded overflow-hidden bg-gray-100 border border-gray-200 shadow-sm">
+                                                            <Image
+                                                                src={variantImage}
+                                                                alt={color}
+                                                                fill
+                                                                className="object-cover w-full h-full"
+                                                            />
+                                                        </div>
+                                                    </button>
+                                                );
+                                            })}
                                         </div>
                                     </div>
                                     {/* Size Selection */}
