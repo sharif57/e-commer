@@ -64,6 +64,10 @@ export default function TrackOrderPage() {
         return <div className="flex items-center justify-center min-h-screen">Loading order details...</div>
     }
 
+    const product = orderData.productId;
+    const matchedVariant = product?.variants?.find((v: any) => v.color?.toLowerCase() === orderData.color?.toLowerCase());
+    const productImage = matchedVariant?.images?.[0] || product?.variants?.[0]?.images?.[0] || product?.image?.[0] || "/images/products.jpg";
+
     // Helper function to get timeline steps based on deliveryStatus
     const getTimelineSteps = (status: string) => {
         const steps = [
@@ -201,9 +205,9 @@ export default function TrackOrderPage() {
                         <div className="space-y-4">
                             <div className='flex items-center justify-between'>
                                 <OrderItem
-                                    image={orderData.productId.image[0] || "/images/products.jpg"}
-                                    title={orderData.productId.title}
-                                    price={orderData.productId.price}
+                                    image={productImage}
+                                    title={orderData.productId?.title || ''}
+                                    price={orderData.productId?.price || 0}
                                     quantity={orderData.quantity}
                                 />
                                 {/* <Button

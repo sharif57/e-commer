@@ -27,6 +27,7 @@ interface Order {
         title: string
         brand: string
         image: string[]
+        variants?: any[]
     }
     userId: {
         firstName: string
@@ -204,6 +205,9 @@ export default function OrderHistory() {
                     ) : (
                         filteredOrders.map((order) => {
                             const timelineSteps = getTimelineSteps(order.deliveryStatus)
+                            const product = order.productId;
+                            const matchedVariant = product?.variants?.find((v: any) => v.color?.toLowerCase() === order.color?.toLowerCase());
+                            const productImage = matchedVariant?.images?.[0] || product?.variants?.[0]?.images?.[0] || product?.image?.[0] || "/images/products.jpg";
                             return (
                                 <Card
                                     key={order._id}
@@ -306,7 +310,7 @@ export default function OrderHistory() {
                                     <Link href={`/best_deal/${order.productId?._id}`} target="_blank" className="mb-4 flex gap-4">
                                         <div className="relative w-24 h-24 sm:w-32 sm:h-32 flex-shrink-0">
                                             <img
-                                                src={order.productId.image[0] || "/images/products.jpg"}
+                                                src={productImage}
                                                 alt={order.productId.title}
                                                 className="w-full h-full object-cover rounded-lg border border-border"
                                             />

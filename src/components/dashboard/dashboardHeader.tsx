@@ -14,6 +14,7 @@ import {
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "../ui/select";
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useGetUsersQuery } from "@/redux/feature/userSlice";
 import { useGetCategoriesQuery } from "@/redux/feature/buyer/categorySlice";
 
@@ -30,31 +31,43 @@ export default function DashboardHeader({
 }: DashboardHeaderProps) {
   const [searchTerm, setSearchTerm] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("all");
+  const router = useRouter();
 
   const { data } = useGetUsersQuery(undefined);
 
   const { data: categories } = useGetCategoriesQuery({ limit: 100 });
 
-  const categoriesList = categories?.data
+  const categoriesList = categories?.data;
+  
   const onCategoryChange = (category: string) => {
     setSelectedCategory(category);
   };
 
-
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    const params = new URLSearchParams();
+    if (searchTerm && searchTerm.trim().length > 0) {
+      params.set("searchTerm", searchTerm.trim());
+    }
+    if (selectedCategory && selectedCategory !== "all") {
+      params.set("category", selectedCategory);
+    }
+    router.push(`/category${params.toString() ? `?${params.toString()}` : ""}`);
+  };
 
   return (
-    <header className="sticky top-0 z-30 ">
+    <header className="sticky top-0 z-30 bg-white border-b border-gray-200">
       <div className="flex items-center justify-between px-4 py-4">
         {/* Left */}
         <div className="flex items-center gap-4">
-          <Button variant="ghost" size="icon" onClick={onMenuClick} className="lg:hidden">
-            <Menu className="w-5 h-5" />
+          <Button variant="ghost" size="icon" onClick={onMenuClick} className="lg:hidden text-black hover:bg-gray-100 hover:text-black">
+            <Menu className="w-5 h-5 text-black" />
           </Button>
         </div>
 
 
         {/* Search - Desktop */}
-        <div className="hidden md:flex items-center flex-1 mx-8">
+        <form onSubmit={handleSearch} className="hidden md:flex items-center flex-1 mx-8">
 
           <div className="flex flex-1">
 
@@ -102,7 +115,7 @@ export default function DashboardHeader({
 
           </div>
 
-        </div>
+        </form>
 
 
         {/* Right */}
@@ -151,7 +164,21 @@ export default function DashboardHeader({
           </DropdownMenu>
         </div>
       </div>
-      <nav className="w-full ">
+      {/* Mobile Search */}
+      <form onSubmit={handleSearch} className="md:hidden px-4 pb-3">
+        <div className="relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
+          <Input 
+            placeholder="Search..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10 bg-gray-50 border border-gray-300 rounded-md focus-visible:ring-1 focus-visible:ring-primary focus-visible:border-primary" 
+          />
+        </div>
+      </form>
+
+      {/* Category Navigation */}
+      <nav className="w-full border-t border-gray-100 md:border-t-0">
         <div className=" px-4 ">
           <div className="flex items-center gap-2 sm:gap-4 overflow-x-auto py-3 scrollbar-hide">
             <Link href="/category" className="text-sm font-medium text-gray-700 whitespace-nowrap">
@@ -171,14 +198,6 @@ export default function DashboardHeader({
           </div>
         </div>
       </nav>
-
-      {/* Mobile Search */}
-      <div className="md:hidden px-4 pb-4">
-        <div className="relative">
-          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-500" />
-          <Input placeholder="Search..." className="pl-10 bg-gray-50" />
-        </div>
-      </div>
       <style jsx>{`
         .scrollbar-hide::-webkit-scrollbar {
           display: none;

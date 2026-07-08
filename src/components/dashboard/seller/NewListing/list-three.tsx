@@ -1,5 +1,3 @@
-
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client"
 
 import { useState } from "react"
@@ -8,6 +6,7 @@ import { Switch } from "@/components/ui/switch"
 import { Textarea } from "@/components/ui/textarea"
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
+import ListTwo from "./list-two"
 
 interface StepThreeProps {
     data: any
@@ -40,6 +39,16 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
         if (isEmpty(data.price)) newErrors.price = "Price is required"
         if (isEmpty(data.description)) newErrors.description = "Description is required"
         if (!returnEnabled) newErrors.return = "7 days return policy is required"
+
+        // Validate Image Variants
+        if (!data.variants || data.variants.length === 0) {
+            newErrors.variants = "Please add at least one color variant and upload files."
+        } else {
+            const emptyVariant = data.variants.find((v: any) => !v.files || v.files.length === 0)
+            if (emptyVariant) {
+                newErrors.variants = `Please upload at least one file for the color: ${emptyVariant.color}`
+            }
+        }
 
         setErrors(newErrors)
         return Object.keys(newErrors).length === 0
@@ -261,6 +270,13 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
                         <Switch checked={returnEnabled} onCheckedChange={handleReturnToggle} />
                     </div>
                     {errors.return && <p className="text-red-500 text-xs mt-1">{errors.return}</p>}
+                </div>
+
+                {/* Images Upload */}
+                <div className="pt-6 border-t border-gray-200">
+                    <label className="block text-sm font-semibold text-gray-900 mb-4">Color Variants & Images</label>
+                    <ListTwo data={data} onChange={onChange} hideButtons={true} />
+                    {errors.variants && <p className="text-red-500 text-xs mt-1">{errors.variants}</p>}
                 </div>
             </div>
 

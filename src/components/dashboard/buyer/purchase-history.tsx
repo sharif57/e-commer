@@ -33,9 +33,14 @@ interface OrderItem {
   price: number;
   deliveryStatus: "placed" | "processing" | "shipped" | "delivered" | "cancelled";
   createdAt: string;
+  color?: string;
   productId: {
     title: string;
-    image: string[];
+    image?: string[];
+    variants?: Array<{
+      color?: string;
+      images?: string[];
+    }>;
   };
 }
 
@@ -147,7 +152,15 @@ export default function PurchaseHistory() {
                     : "delivered"
                 }
                 deliveryDate={formatDate(order?.createdAt)}
-                productImage={order?.productId?.image?.[0]}
+                productImage={
+                  (() => {
+                    const color = order?.color;
+                    const product = order?.productId;
+                    if (!product) return "/placeholder.svg";
+                    const matchedVariant = product.variants?.find((v: any) => v.color?.toLowerCase() === color?.toLowerCase());
+                    return matchedVariant?.images?.[0] || product.variants?.[0]?.images?.[0] || product.image?.[0] || "/placeholder.svg";
+                  })()
+                }
                 productQuantity={order?.quantity}
                 orderTotal={order?.price * order?.quantity}
               />

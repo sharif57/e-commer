@@ -34,6 +34,7 @@ export default function DashboardOverview() {
     }
 
     const { data: msg, isLoading } = useGetRecentMessageQuery(undefined);
+    console.log(msg, 'msg========')
     const { data: sellerWalletData } = useSellerWalletDataQuery(timeRange);
     const { data: pendingOrdersData } = useTotalPendingOrdersQuery(undefined);
     const { data: todaySalesData } = useTodaySalesQuery(undefined);
@@ -150,7 +151,7 @@ export default function DashboardOverview() {
 
     const { data: sellerProducts, isLoading: sellerProductsLoading } =
         useGetSellerProductsQuery(queryParams)
-
+    console.log(sellerProducts, 'seller product========')
 
 
     return (
@@ -158,7 +159,7 @@ export default function DashboardOverview() {
             {/* Header */}
             <div className="flex items-center justify-between">
                 <h1 className="text-2xl font-semibold text-gray-900">Overview</h1>
-                <Select value={timeRange} onValueChange={setTimeRange}>
+                {/* <Select value={timeRange} onValueChange={setTimeRange}>
                     <SelectTrigger className="w-32">
                         <SelectValue />
                     </SelectTrigger>
@@ -167,7 +168,7 @@ export default function DashboardOverview() {
                         <SelectItem value="weekly">Weekly</SelectItem>
                         <SelectItem value="monthly">Monthly</SelectItem>
                     </SelectContent>
-                </Select>
+                </Select> */}
             </div>
 
             {/* Stats Cards */}
@@ -395,7 +396,7 @@ export default function DashboardOverview() {
                                         {/* Image */}
                                         <div className="relative w-10 h-10 rounded-lg overflow-hidden bg-gray-100 flex-shrink-0">
                                             <Image
-                                                src={item.image?.[0] || "/placeholder.svg"}
+                                                src={item?.variants?.[0]?.images?.[0] || item.image?.[0] || "/placeholder.svg"}
                                                 alt={item.title}
                                                 fill
                                                 className="object-cover"

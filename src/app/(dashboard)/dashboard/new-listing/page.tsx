@@ -13,10 +13,9 @@ import { useState } from "react"
 
 const steps = [
   { number: 1, title: "Product Category & Subcategory" },
-  { number: 2, title: "Upload Images" },
-  { number: 3, title: "Product Details" },
-  { number: 4, title: "Delivery Options" },
-  { number: 5, title: "Review & Publish" },
+  { number: 2, title: "Product Details & Images" },
+  { number: 3, title: "Delivery Options" },
+  { number: 4, title: "Review & Publish" },
 ]
 
 export default function SellerDashboardNewListing() {
@@ -77,7 +76,7 @@ export default function SellerDashboardNewListing() {
         )
       case 2:
         return (
-          <ListTwo
+          <ListThree
             data={formData}
             onChange={handleFormDataChange}
             onNext={handleNext}
@@ -86,15 +85,6 @@ export default function SellerDashboardNewListing() {
         )
       case 3:
         return (
-          <ListThree
-            data={formData}
-            onChange={handleFormDataChange}
-            onNext={handleNext}
-            onPrevious={handlePrevious}
-          />
-        )
-      case 4:
-        return (
           <ListFour
             data={formData}
             onChange={handleFormDataChange}
@@ -102,7 +92,7 @@ export default function SellerDashboardNewListing() {
             onPrevious={handlePrevious}
           />
         )
-      case 5:
+      case 4:
         return (
           <ListFive
             data={formData}

@@ -133,8 +133,8 @@ export default function HeaderSeller({
           </nav>
         </div>
 
-        {/* Right section - Search */}
-        <form onSubmit={handleSearch} className="relative w-full max-w-sm shrink-0">
+        {/* Right section - Search (Visible on desktop only) */}
+        <form onSubmit={handleSearch} className="hidden md:block relative w-full max-w-sm shrink-0">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
           <Input
             type="search"
@@ -160,7 +160,7 @@ export default function HeaderSeller({
                         className="flex items-center gap-3 px-4 py-2"
                         onClick={() => { setIsSearchDropdownOpen(false); setSearchValue(''); }}
                       >
-                        <img src={product?.image?.[0]} alt={product.title} className="w-10 h-10 object-cover rounded" />
+                        <img src={product?.variants?.[0]?.images?.[0] || product.image?.[0] || "/placeholder.svg"} alt={product.title} className="w-10 h-10 object-cover rounded" />
                         <div className="flex flex-col">
                           <span className="text-sm font-medium text-gray-900 line-clamp-1">{product.title}</span>
                           <span className="text-xs text-primary font-bold">${product.price.toFixed(2)}</span>
@@ -190,7 +190,7 @@ export default function HeaderSeller({
 
         {/* Profile/Notification Section - Optional */}
         <div className="hidden md:flex items-center gap-2 shrink-0">
-          {/* <Button
+          <Button
             variant="ghost"
             size="icon"
             className={`h-9 w-9 ${isNotificationPanelOpen ? "bg-muted" : ""}`}
@@ -202,15 +202,62 @@ export default function HeaderSeller({
             <span className="sr-only">
               {isNotificationPanelOpen ? "Close notifications panel" : "Open notifications panel"}
             </span>
-          </Button> */}
-          {/* <Button variant="ghost" size="icon" className="h-9 w-9 relative">
-            <div className="absolute -top-1 -right-1 h-4 w-4 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-              3
-            </div>
-            <User className="h-5 w-5" />
-            <span className="sr-only">Profile</span>
-          </Button> */}
+          </Button>
         </div>
+      </div>
+
+      {/* Mobile Search Row (Visible on mobile only) */}
+      <div className="md:hidden px-4 pb-3">
+        <form onSubmit={handleSearch} className="relative w-full">
+          <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+          <Input
+            type="search"
+            placeholder="Search products, orders, customers..."
+            value={searchValue}
+            onChange={(e) => setSearchValue(e.target.value)}
+            className="h-9 w-full pl-9 pr-4 bg-muted/50 border-[#171717] focus-visible:ring-2 focus-visible:ring-primary/20"
+          />
+
+          {isSearchDropdownOpen && debouncedSearchTerm && (
+            <div className="absolute top-full left-0 w-full mt-1 bg-white border border-gray-200 shadow-xl rounded-md z-[100] max-h-[300px] overflow-y-auto">
+              {isSearching ? (
+                <div className="p-4 text-center text-sm text-gray-500">Searching...</div>
+              ) : searchProducts.length > 0 ? (
+                <ul className="py-2">
+                  {searchProducts.map((product: any) => (
+                    <li key={product._id} className="border-b border-gray-100 hover:bg-gray-50">
+                      <Link
+                        href={`/best_deal/${product._id}`}
+                        className="flex items-center gap-3 px-4 py-2"
+                        onClick={() => { setIsSearchDropdownOpen(false); setSearchValue(''); }}
+                      >
+                        <img src={product?.variants?.[0]?.images?.[0] || product.image?.[0] || "/placeholder.svg"} alt={product.title} className="w-10 h-10 object-cover rounded" />
+                        <div className="flex flex-col">
+                          <span className="text-sm font-medium text-gray-900 line-clamp-1">{product.title}</span>
+                          <span className="text-xs text-primary font-bold">${product.price.toFixed(2)}</span>
+                        </div>
+                      </Link>
+                    </li>
+                  ))}
+                  <div className="px-4 py-2 mt-2 border-t border-gray-100">
+                    <button
+                      type="button"
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handleSearch(e as unknown as React.FormEvent);
+                      }}
+                      className="w-full py-2 text-sm font-medium text-white bg-primary rounded-md hover:bg-primary/90 transition-colors flex justify-center items-center"
+                    >
+                      Show all results
+                    </button>
+                  </div>
+                </ul>
+              ) : (
+                <div className="p-4 text-center text-sm text-gray-500">No products found</div>
+              )}
+            </div>
+          )}
+        </form>
       </div>
 
       {/* Mobile breadcrumb - dynamic */}

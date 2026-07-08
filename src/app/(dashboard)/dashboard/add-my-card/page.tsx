@@ -8,6 +8,14 @@ import ReactSelect, { SingleValue } from "react-select";
 import { Country } from "country-state-city";
 import Stripe from "@/components/icon/stripe";
 import Mastercard from "@/components/icon/masterCard";
+import { toast } from "sonner";
+import { Loader2 } from "lucide-react";
+import {
+    useAddBankCardMutation,
+    useGetMyCardQuery,
+    useConnectCardMutation,
+    useDeleteBankCardMutation,
+} from "@/redux/feature/bankSlice";
 
 interface CardData {
     cardNumber: string;
@@ -16,14 +24,6 @@ interface CardData {
     nameOnCard: string;
     country: string;
     zipCode: string;
-}
-
-interface SavedCard {
-    id: string;
-    type: string;
-    lastFour: string;
-    status: "connected" | "disconnected";
-    icon: React.ReactNode;
 }
 
 interface CountryOption {
@@ -42,24 +42,26 @@ export default function MyCardAdd() {
         zipCode: "",
     });
 
-    const [savedCards, setSavedCards] = useState<SavedCard[]>([
-        {
-            id: "1",
-            type: "Mastercard",
-            lastFour: "25645",
-            status: "connected",
-            icon: (
-                <div className="flex items-center justify-center w-8 h-8 rounded bg-red-500">
-                    <span className="text-white font-bold text-xs">MC</span>
-                </div>
-            ),
-        },
-    ]);
+    const { data: cardData, isLoading: isCardsLoading } = useGetMyCardQuery(undefined);
+    const [addBankCard, { isLoading: isAddingCard }] = useAddBankCardMutation();
+    const [connectCard, { isLoading: isConnectingCard }] = useConnectCardMutation();
+    const [deleteBankCard, { isLoading: isDeletingCard }] = useDeleteBankCardMutation();
+
+    const savedCards = cardData?.data || [];
 
     const countryOptions = React.useMemo<CountryOption[]>(
         () => Country.getAllCountries().map((country) => ({ value: country.isoCode, label: country.name })),
         []
     );
+
+    const getCardType = (cardNumber: string) => {
+        if (!cardNumber) return "Credit Card";
+        const cleanNum = cardNumber.replace(/\s/g, "");
+        if (cleanNum.startsWith("4")) return "Visa";
+        if (cleanNum.startsWith("5")) return "Mastercard";
+        if (cleanNum.startsWith("3")) return "Amex";
+        return "Credit Card";
+    };
 
     const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
         const { name, value } = e.target;
@@ -92,7 +94,7 @@ export default function MyCardAdd() {
         }));
     };
 
-    const handleAddCard = () => {
+    const handleAddCard = async () => {
         if (
             formData.cardNumber &&
             formData.expiryDate &&
@@ -101,45 +103,56 @@ export default function MyCardAdd() {
             formData.country &&
             formData.zipCode
         ) {
-            const lastFour = formData.cardNumber.slice(-4).trim();
-            setSavedCards([
-                ...savedCards,
-                {
-                    id: Math.random().toString(),
-                    type: "Mastercard",
-                    lastFour: lastFour,
-                    status: "connected",
-                    icon: (
-                        <div className="flex items-center justify-center w-8 h-8 rounded bg-red-500">
-                            <span className="text-white font-bold text-xs">MC</span>
-                        </div>
-                    ),
-                },
-            ]);
+            try {
+                const cleanCardNumber = formData.cardNumber.replace(/\s/g, "");
+                const cardPayload = {
+                    cardNumber: cleanCardNumber,
+                    expiryDate: formData.expiryDate,
+                    cvc: formData.cvc,
+                    name: formData.nameOnCard,
+                    country: formData.country,
+                    zipCode: formData.zipCode,
+                };
+                const res = await addBankCard(cardPayload).unwrap();
+                toast.success(res?.message || "Card added successfully");
 
-            setFormData({
-                cardNumber: "",
-                expiryDate: "",
-                cvc: "",
-                nameOnCard: "",
-                country: "United States",
-                zipCode: "",
-            });
-            setIsModalOpen(false);
+                setFormData({
+                    cardNumber: "",
+                    expiryDate: "",
+                    cvc: "",
+                    nameOnCard: "",
+                    country: "United States",
+                    zipCode: "",
+                });
+                setIsModalOpen(false);
+            } catch (err: any) {
+                toast.error(err?.data?.message || "Failed to add card");
+            }
+        } else {
+            toast.error("Please fill all required fields");
         }
     };
 
-    const handleToggleStatus = (cardId: string) => {
-        setSavedCards(
-            savedCards.map((card) =>
-                card.id === cardId
-                    ? {
-                        ...card,
-                        status: card.status === "connected" ? "disconnected" : "connected",
-                    }
-                    : card
-            )
-        );
+    const handleToggleStatus = async (cardId: string, currentStatus: string) => {
+        const nextStatus = currentStatus === "connected" ? "disconnected" : "connected";
+        try {
+            const res = await connectCard({
+                id: cardId,
+                data: { status: nextStatus },
+            }).unwrap();
+            toast.success(res?.message || `Card status updated to ${nextStatus}`);
+        } catch (err: any) {
+            toast.error(err?.data?.message || "Failed to update card status");
+        }
+    };
+
+    const handleDeleteCard = async (cardId: string) => {
+        try {
+            const res = await deleteBankCard(cardId).unwrap();
+            toast.success(res?.message || "Card deleted successfully");
+        } catch (err: any) {
+            toast.error(err?.data?.message || "Failed to delete card");
+        }
     };
 
     return (
@@ -170,39 +183,64 @@ export default function MyCardAdd() {
 
                     {/* Cards List */}
                     <div className="p-6 sm:p-8 space-y-4">
-                        {savedCards.map((card) => (
-                            <div key={card.id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 bg-[#1C1C1C0F] rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors">
-                                {/* Card Info */}
-                                <div className="flex items-start gap-4 min-w-0" >
-                                    <div className="size-[50px] flex-shrink-0 mt-2">
-                                        <Mastercard />
-                                    </div>
-                                    <div className="min-w-0">
-                                        <h3 className="text-base sm:text-lg font-medium text-gray-900">{card.type}</h3>
-                                        <p className="text-sm text-gray-600">Account ending in •••••••• {card.lastFour}</p>
-                                    </div>
-                                </div>
-
-                                {/* Actions */}
-                                <div className="flex items-center gap-3 w-full sm:w-auto">
-                                    <span
-                                        className={`px-3 py-2 rounded-md text-sm font-medium flex-1 sm:flex-none text-center transition-colors ${card.status === "connected"
-                                            ? "bg-green-100 text-green-700"
-                                            : "bg-gray-200 text-gray-700"
-                                            }`}
-                                    >
-                                        {card.status === "connected" ? "Connected" : "Disconnected"}
-                                    </span>
-                                    <Button
-                                        onClick={() => handleToggleStatus(card.id)}
-                                        variant="outline"
-                                        className="text-red-600 border-red-200 hover:bg-red-50 text-sm"
-                                    >
-                                        {card.status === "connected" ? "Disconnect" : "Connect"}
-                                    </Button>
-                                </div>
+                        {isCardsLoading ? (
+                            <div className="flex items-center justify-center py-10">
+                                <Loader2 className="w-8 h-8 animate-spin text-primary" />
+                                <span className="ml-2 text-gray-600">Loading cards...</span>
                             </div>
-                        ))}
+                        ) : savedCards.length === 0 ? (
+                            <div className="text-center py-10 text-gray-500">
+                                No cards added yet.
+                            </div>
+                        ) : (
+                            savedCards.map((card: any) => {
+                                const cardType = getCardType(card.cardNumber);
+                                const lastFour = card.cardNumber?.slice(-4) || "";
+                                return (
+                                    <div key={card._id} className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 p-4 bg-[#1C1C1C0F] rounded-lg border border-gray-100 hover:bg-gray-100 transition-colors">
+                                        {/* Card Info */}
+                                        <div className="flex items-start gap-4 min-w-0">
+                                            <div className="size-[50px] flex-shrink-0 mt-2">
+                                                <Mastercard />
+                                            </div>
+                                            <div className="min-w-0">
+                                                <h3 className="text-base sm:text-lg font-medium text-gray-900">{cardType}</h3>
+                                                <p className="text-sm text-gray-600">Account ending in •••••••• {lastFour}</p>
+                                                <p className="text-xs text-gray-500 mt-1">Cardholder: {card.name}</p>
+                                            </div>
+                                        </div>
+
+                                        {/* Actions */}
+                                        <div className="flex items-center gap-3 w-full sm:w-auto">
+                                            <span
+                                                className={`px-3 py-2 rounded-md text-sm font-medium flex-1 sm:flex-none text-center transition-colors ${card.status === "connected"
+                                                    ? "bg-green-100 text-green-700"
+                                                    : "bg-gray-200 text-gray-700"
+                                                    }`}
+                                            >
+                                                {card.status === "connected" ? "Connected" : "Disconnected"}
+                                            </span>
+                                            <Button
+                                                onClick={() => handleToggleStatus(card._id, card.status)}
+                                                variant="outline"
+                                                className="border-gray-200 text-sm hover:bg-gray-50"
+                                                disabled={isConnectingCard}
+                                            >
+                                                {card.status === "connected" ? "Disconnect" : "Connect"}
+                                            </Button>
+                                            <Button
+                                                onClick={() => handleDeleteCard(card._id)}
+                                                variant="destructive"
+                                                className="text-white text-sm"
+                                                disabled={isDeletingCard}
+                                            >
+                                                Delete
+                                            </Button>
+                                        </div>
+                                    </div>
+                                );
+                            })
+                        )}
                     </div>
 
                     {/* Add New Card Button */}
@@ -228,13 +266,6 @@ export default function MyCardAdd() {
                                 Add your card information to ensure it&#39;s your details here.
                             </p>
                         </div>
-                        {/* <button
-                            onClick={() => setIsModalOpen(false)}
-                            className="absolute right-0 top-0 text-gray-400 hover:text-gray-600 transition-colors"
-                            aria-label="Close modal"
-                        >
-                            <X size={24} />
-                        </button> */}
                     </DialogHeader>
 
                     {/* Form */}
@@ -340,8 +371,10 @@ export default function MyCardAdd() {
                         {/* Add Card Button */}
                         <Button
                             onClick={handleAddCard}
-                            className="w-full py-3 sm:py-4 mt-6 bg-primary hover:bg-green-700 text-white font-semibold rounded-md transition-colors text-base"
+                            disabled={isAddingCard}
+                            className="w-full py-3 sm:py-4 mt-6 bg-primary hover:bg-green-700 text-white font-semibold rounded-md transition-colors text-base flex items-center justify-center gap-2"
                         >
+                            {isAddingCard && <Loader2 className="w-5 h-5 animate-spin" />}
                             Add my card
                         </Button>
                     </div>

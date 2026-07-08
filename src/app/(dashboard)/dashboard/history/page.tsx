@@ -20,9 +20,11 @@ function OrderPage() {
 
         const orderData = data.data;
         const product = orderData.productId;
+        const matchedVariant = product?.variants?.find((v: any) => v.color?.toLowerCase() === orderData.color?.toLowerCase());
+        const productImage = matchedVariant?.images?.[0] || product?.variants?.[0]?.images?.[0] || product?.image?.[0] || '';
 
         // Prefer shippingCost from order; fallback to product shipping config.
-        const deliveryFee = Number(orderData.shippingCost ?? product.shippingCost ?? 0);
+        const deliveryFee = Number(orderData.shippingCost ?? product?.shippingCost ?? 0);
 
         const subtotal = orderData.price * orderData.quantity;
         const tax = subtotal * 0.02; // 2% tax
@@ -56,9 +58,9 @@ function OrderPage() {
             timelineSteps,
             items: [
                 {
-                    id: product._id,
-                    image: product.image[0] || '',
-                    title: product.title,
+                    id: product?._id || '',
+                    image: productImage,
+                    title: product?.title || '',
                     price: orderData.price,
                     quantity: orderData.quantity,
                 },
@@ -81,15 +83,15 @@ function OrderPage() {
             },
             barcode: orderData.orderId,
             productDetails: {
-                brand: product.brand,
-                sku: product.sku,
-                carrier: product.carrier,
+                brand: product?.brand,
+                sku: product?.sku,
+                carrier: product?.carrier,
                 size: orderData.size,
                 color: orderData.color,
-                category: product.categoryId,
+                category: product?.categoryId,
                 paymentStatus: orderData.paymentStatus,
-                returnPolicy: product.return,
-                description: product.des,
+                returnPolicy: product?.return,
+                description: product?.des,
             },
         };
     };

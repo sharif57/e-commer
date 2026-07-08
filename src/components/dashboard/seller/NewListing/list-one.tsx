@@ -163,13 +163,16 @@ export default function ListOne({ data, onChange, onNext }: StepOneProps) {
           <label className="block text-sm font-medium mb-2">Category</label>
           <select
             value={selectedCategoryId}
-            onChange={(e) =>
+            onChange={(e) => {
+              const selectedCat = categories.find((cat: any) => cat._id === e.target.value);
               onChange({
                 categoryId: e.target.value,
                 businessType: e.target.value,
+                categoryName: selectedCat ? selectedCat.title : "",
                 subCategoryId: "",
-              })
-            }
+                subCategoryName: "",
+              });
+            }}
             disabled={categoryLoading}
             className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-primary"
           >
@@ -196,9 +199,13 @@ export default function ListOne({ data, onChange, onNext }: StepOneProps) {
           </label>
           <select
             value={data.subCategoryId || ""}
-            onChange={(e) =>
-              onChange({ subCategoryId: e.target.value })
-            }
+            onChange={(e) => {
+              const selectedSub = subCategories.find((sub: any) => sub._id === e.target.value);
+              onChange({ 
+                subCategoryId: e.target.value,
+                subCategoryName: selectedSub ? selectedSub.title : "",
+              });
+            }}
             disabled={!selectedCategoryId || subCategoryLoading}
             className="w-full px-4 py-2 border rounded-md focus:ring-2 focus:ring-primary"
           >

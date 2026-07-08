@@ -7,8 +7,11 @@ import { Button } from '@/components/ui/button';
 import Breadcrumb from '@/components/Breadcrumb';
 import { useGetUsersQuery, useUpdateUserMutation } from '@/redux/feature/userSlice';
 import { toast } from 'sonner';
+import { useRouter } from 'next/navigation';
 
 export default function Update() {
+
+    const router = useRouter();
     const { data } = useGetUsersQuery(undefined);
 
     const [formData, setFormData] = useState({
@@ -76,6 +79,8 @@ export default function Update() {
             const res = await updateUser(formDataToSend).unwrap();
             toast.success(res?.message || "Profile updated successfully");
             console.log("Profile updated:", res?.data);
+            router.push("/dashboard/my-account");
+            router.refresh();
 
         } catch (error: any) {
             toast.error(error?.data?.message || "Failed to update profile");

@@ -4,7 +4,6 @@
 "use client"
 
 import { useState } from "react"
-import { ChevronDown, ChevronUp } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { useCreateProductDraftMutation, useCreateProductMutation } from "@/redux/feature/seller/productSellerSlice"
 import { toast } from "sonner"
@@ -12,7 +11,6 @@ import { useRouter } from "next/navigation"
 
 export default function ListFive({ data, onChangeStep, onNext }: any) {
     const router = useRouter();
-    const [showMore, setShowMore] = useState(false)
     const [isPublishing, setIsPublishing] = useState(false)
     const [isDraftSaving, setIsDraftSaving] = useState(false)
 
@@ -345,35 +343,77 @@ export default function ListFive({ data, onChangeStep, onNext }: any) {
                     </button>
                 </div>
 
-                {/* ---------- COVER IMAGE SECTION ---------- */}
-                <div className="flex justify-between items-start mb-8">
-                    <div>
-                        <h2 className="font-semibold text-sm mb-3">Cover Image</h2>
+                {/* ---------- COVER & VARIANTS GALLERY SECTION ---------- */}
+                <div className="flex justify-between items-start mb-8 border-b pb-6">
+                    <div className="flex-1 space-y-6">
+                        <div>
+                            <h2 className="font-semibold text-sm mb-3">Cover Image</h2>
+                            <div className="w-28 h-32 rounded-md overflow-hidden border border-gray-300 bg-gray-100 shadow-sm">
+                                {data.files && data.files.length > 0 ? (
+                                    (() => {
+                                        const coverFile = data.files.find((f: any) => f.id === data.coverPhoto) || data.files[0]
+                                        const imageUrl = coverFile?.preview || (coverFile?.file instanceof File ? URL.createObjectURL(coverFile.file) : null)
 
-                        <div className="w-28 h-32 rounded-md overflow-hidden border border-gray-300 bg-gray-100">
-                            {data.files && data.files.length > 0 ? (
-                                (() => {
-                                    const coverFile = data.files.find((f: any) => f.id === data.coverPhoto) || data.files[0]
-                                    const imageUrl = coverFile?.preview || (coverFile?.file instanceof File ? URL.createObjectURL(coverFile.file) : null)
+                                        return imageUrl ? (
+                                            <img
+                                                src={imageUrl}
+                                                alt="Cover Photo"
+                                                className="object-cover w-full h-full"
+                                            />
+                                        ) : (
+                                            <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">No image</div>
+                                        )
+                                    })()
+                                ) : (
+                                    <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">No image selected</div>
+                                )}
+                            </div>
+                        </div>
 
-                                    return imageUrl ? (
-                                        <img
-                                            src={imageUrl}
-                                            alt="Cover Photo"
-                                            className="object-cover w-full h-full"
-                                        />
-                                    ) : (
-                                        <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">No image</div>
-                                    )
-                                })()
-                            ) : (
-                                <div className="w-full h-full flex items-center justify-center text-gray-400 text-xs">No image selected</div>
-                            )}
+                        <div>
+                            <h2 className="font-semibold text-sm mb-3">Color Variants & Uploaded Images</h2>
+                            <div className="space-y-4">
+                                {data.variants && data.variants.length > 0 ? (
+                                    data.variants.map((variant: any, index: number) => (
+                                        <div key={index} className="p-3 bg-white rounded-lg border border-gray-200">
+                                            <div className="flex items-center gap-2 mb-2">
+                                                <span className="w-3.5 h-3.5 rounded-full border border-gray-300 shrink-0" style={{ backgroundColor: variant.color.toLowerCase() }}></span>
+                                                <span className="text-sm font-semibold text-gray-800 capitalize">{variant.color}</span>
+                                            </div>
+                                            <div className="flex flex-wrap gap-2">
+                                                {variant.files && variant.files.length > 0 ? (
+                                                    variant.files.map((file: any) => {
+                                                        const imgUrl = file.preview || (file.file instanceof File ? URL.createObjectURL(file.file) : null)
+                                                        return imgUrl ? (
+                                                            <div key={file.id} className="relative w-16 h-20 rounded border border-gray-200 overflow-hidden bg-gray-50 shadow-sm">
+                                                                <img
+                                                                    src={imgUrl}
+                                                                    alt={file.name}
+                                                                    className="object-cover w-full h-full"
+                                                                />
+                                                                {data.coverPhoto === file.id && (
+                                                                    <span className="absolute bottom-0 left-0 right-0 bg-primary text-[8px] text-white font-bold text-center py-0.5 uppercase">
+                                                                        Cover
+                                                                    </span>
+                                                                )}
+                                                            </div>
+                                                        ) : null
+                                                    })
+                                                ) : (
+                                                    <p className="text-gray-400 text-xs">No images uploaded for this color.</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    ))
+                                ) : (
+                                    <p className="text-gray-500 text-xs">No color variants added.</p>
+                                )}
+                            </div>
                         </div>
                     </div>
 
                     <button
-                        className="text-blue-600 font-medium text-sm"
+                        className="text-blue-600 font-medium text-sm shrink-0 ml-4"
                         onClick={() => onChangeStep(2)}
                     >
                         Change
@@ -402,90 +442,78 @@ export default function ListFive({ data, onChangeStep, onNext }: any) {
                                 <p className="font-medium">In 7 Days Return</p>
                             </div>
 
-                            {/* Show more toggle */}
-                            <button
-                                className="flex items-center gap-1 text-blue-600 text-sm mt-1"
-                                onClick={() => setShowMore(!showMore)}
-                            >
-                                {showMore ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
-                                {showMore ? "Show less" : "Show more"}
-                            </button>
+                            <div className="space-y-2 pt-3">
+                                <div>
+                                    <p className="text-gray-600">Price</p>
+                                    <p className="font-medium">${data.price}</p>
+                                </div>
 
-                            {/* Hidden Details */}
-                            {showMore && (
-                                <div className="space-y-2 pt-3 animate-fadeIn">
-                                    <div>
-                                        <p className="text-gray-600">Price</p>
-                                        <p className="font-medium">${data.price}</p>
-                                    </div>
+                                <div>
+                                    <p className="text-gray-600">SKU</p>
+                                    <p className="font-medium">{data.sku || "N/A"}</p>
+                                </div>
 
-                                    <div>
-                                        <p className="text-gray-600">SKU</p>
-                                        <p className="font-medium">{data.sku || "N/A"}</p>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-gray-600">Color</p>
-                                        <div className="flex flex-wrap gap-2 mt-1">
-                                            {Array.isArray(data.color) && data.color.length > 0 ? (
-                                                data.color.map((c: string, idx: number) => (
-                                                    <span key={idx} className="px-3 py-1 bg-gray-200 rounded-full text-xs font-medium capitalize">
-                                                        {c}
-                                                    </span>
-                                                ))
-                                            ) : (
-                                                <p className="text-gray-500 text-xs">No colors selected</p>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-gray-600">Size</p>
-                                        <div className="flex flex-wrap gap-2 mt-1">
-                                            {Array.isArray(data.size) && data.size.length > 0 ? (
-                                                data.size.map((s: string, idx: number) => (
-                                                    <span key={idx} className="px-3 py-1 bg-gray-200 rounded-full text-xs font-medium">
-                                                        {s}
-                                                    </span>
-                                                ))
-                                            ) : (
-                                                <p className="text-gray-500 text-xs">No sizes selected</p>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-gray-600">Fabric</p>
-                                        <p className="font-medium">{data.fabric || data.frbricType || "N/A"}</p>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-gray-600">Origin</p>
-                                        <p className="font-medium">{data.origin || "N/A"}</p>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-gray-600">Care Instructions</p>
-                                        <p className="font-medium">{data.care || data.careInsturction || "N/A"}</p>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-gray-600">Closure Type</p>
-                                        <p className="font-medium">{data.closure || data.closureType || "N/A"}</p>
-                                    </div>
-
-                                    <div>
-                                        <p className="text-gray-600">Description</p>
-                                        <p className="font-medium max-w-sm">{data.description || data.des || "N/A"}</p>
+                                <div>
+                                    <p className="text-gray-600">Color</p>
+                                    <div className="flex flex-wrap gap-2 mt-1">
+                                        {Array.isArray(data.color) && data.color.length > 0 ? (
+                                            data.color.map((c: string, idx: number) => (
+                                                <span key={idx} className="px-3 py-1 bg-gray-200 rounded-full text-xs font-medium capitalize">
+                                                    {c}
+                                                </span>
+                                            ))
+                                        ) : (
+                                            <p className="text-gray-500 text-xs">No colors selected</p>
+                                        )}
                                     </div>
                                 </div>
-                            )}
+
+                                <div>
+                                    <p className="text-gray-600">Size</p>
+                                    <div className="flex flex-wrap gap-2 mt-1">
+                                        {Array.isArray(data.size) && data.size.length > 0 ? (
+                                            data.size.map((s: string, idx: number) => (
+                                                <span key={idx} className="px-3 py-1 bg-gray-200 rounded-full text-xs font-medium">
+                                                    {s}
+                                                </span>
+                                            ))
+                                        ) : (
+                                            <p className="text-gray-500 text-xs">No sizes selected</p>
+                                        )}
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p className="text-gray-600">Fabric</p>
+                                    <p className="font-medium">{data.fabric || data.frbricType || "N/A"}</p>
+                                </div>
+
+                                <div>
+                                    <p className="text-gray-600">Origin</p>
+                                    <p className="font-medium">{data.origin || "N/A"}</p>
+                                </div>
+
+                                <div>
+                                    <p className="text-gray-600">Care Instructions</p>
+                                    <p className="font-medium">{data.care || data.careInsturction || "N/A"}</p>
+                                </div>
+
+                                <div>
+                                    <p className="text-gray-600">Closure Type</p>
+                                    <p className="font-medium">{data.closure || data.closureType || "N/A"}</p>
+                                </div>
+
+                                <div>
+                                    <p className="text-gray-600">Description</p>
+                                    <p className="font-medium max-w-sm">{data.description || data.des || "N/A"}</p>
+                                </div>
+                            </div>
                         </div>
                     </div>
 
                     <button
                         className="text-blue-600 font-medium text-sm"
-                        onClick={() => onChangeStep(3)}
+                        onClick={() => onChangeStep(2)}
                     >
                         Change
                     </button>
@@ -513,7 +541,7 @@ export default function ListFive({ data, onChangeStep, onNext }: any) {
 
                     <button
                         className="text-blue-600 font-medium text-sm"
-                        onClick={() => onChangeStep(4)}
+                        onClick={() => onChangeStep(3)}
                     >
                         Change
                     </button>

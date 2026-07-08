@@ -450,6 +450,7 @@ interface OrderItem {
     des?: string
     sellerId?: string
     shippingCost?: number
+    variants?: any[]
   }
 }
 
@@ -590,7 +591,7 @@ export default function CheckoutPage() {
       shippingCost: item.product?.shippingCost || 0,
       color: item.selectedColor || "",
       size: item.selectedSize || "",
-      image: item.image || item.product?.image?.[0] || "",
+      image: item.image || item.product?.variants?.[0]?.images?.[0] || item.product?.image?.[0] || "",
       title: item.title || item.product?.title || "",
       brand: item.product?.brand || "",
       carrier: item.product?.carrier || "",
@@ -772,7 +773,7 @@ export default function CheckoutPage() {
                     <div key={item.id} className="flex gap-4 border-b pb-4 last:border-b-0">
                       <div className="flex-shrink-0">
                         <img
-                          src={item.image || item.product?.image?.[0] || "/placeholder.svg"}
+                          src={item.image || item.product?.variants?.[0]?.images?.[0] || item.product?.image?.[0] || "/placeholder.svg"}
                           alt={item.title || item.product?.title || "Product"}
                           className="w-24 h-32 object-cover rounded-md bg-gray-100"
                         />

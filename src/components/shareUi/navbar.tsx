@@ -6,7 +6,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { Search, Heart, Handbag, ChevronLeft, ChevronRight, ChevronDown } from "lucide-react";
+import { Search, Heart, Handbag, ChevronLeft, ChevronRight, ChevronDown, MapPin } from "lucide-react";
 import Logo from "../icon/logo";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
@@ -249,7 +249,7 @@ export default function Navbar() {
               {/* Delivery Location Widget */}
               <div
                 onClick={() => setIsLocationModalOpen(true)}
-                className="flex items-center gap-1 sm:gap-1.5 cursor-pointer hover:opacity-80 transition-opacity ml-1 sm:ml-2"
+                className="hidden sm:flex items-center gap-1 sm:gap-1.5 cursor-pointer hover:opacity-80 transition-opacity ml-1 sm:ml-2"
               >
                 <ChevronDown className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-gray-400 self-end mb-0.5 shrink-0" strokeWidth={2.5} />
                 <div className="flex flex-col justify-end">
@@ -316,7 +316,7 @@ export default function Navbar() {
                             className="flex items-center gap-3 px-4 py-2"
                             onClick={() => { setIsSearchDropdownOpen(false); setSearchTerm(''); }}
                           >
-                            <img src={product?.image?.[0]} alt={product.title} className="w-10 h-10 object-cover rounded" />
+                            <img src={product?.variants?.[0]?.images?.[0] || product.image?.[0] || "/placeholder.svg"} alt={product.title} className="w-10 h-10 object-cover rounded" />
                             <div className="flex flex-col">
                               <span className="text-sm font-medium text-gray-900 line-clamp-1">{product.title}</span>
                               <span className="text-xs text-primary font-bold">${product.price.toFixed(2)}</span>
@@ -349,7 +349,7 @@ export default function Navbar() {
             <div className="flex items-center gap-2 sm:gap-4 flex-shrink-0">
               {/* Mobile Search Icon */}
               <button
-                className="sm:hidden p-2 hover:bg-gray-100 rounded-md transition-colors"
+                className="hidden sm:hidden p-2 hover:bg-gray-100 rounded-md transition-colors"
                 aria-label="Open search"
               >
                 <Search size={20} className="text-black" />
@@ -436,7 +436,7 @@ export default function Navbar() {
                       <DropdownMenuGroup>
                         <Link href="/dashboard">
                           <DropdownMenuItem className="cursor-pointer">
-                            {profile?.data?.role === 'seller' ? 'Seller Dashboard' : 'Acconunt'}
+                            {profile?.data?.role?.toUpperCase() === 'SELLER' ? 'Dashboard' : 'Account'}
                             <DropdownMenuShortcut>⌘D</DropdownMenuShortcut>
                           </DropdownMenuItem>
                         </Link>
@@ -496,7 +496,7 @@ export default function Navbar() {
                             className="flex items-center gap-3 px-4 py-2"
                             onClick={() => { setIsSearchDropdownOpen(false); setSearchTerm(''); }}
                           >
-                            <img src={product?.image?.[0]} alt={product.title} className="w-10 h-10 object-cover rounded" />
+                            <img src={product?.variants?.[0]?.images?.[0] || product.image?.[0] || "/placeholder.svg"} alt={product.title} className="w-10 h-10 object-cover rounded" />
                             <div className="flex flex-col">
                               <span className="text-sm font-medium text-gray-900 line-clamp-1">{product.title}</span>
                               <span className="text-xs text-primary font-bold">${product.price.toFixed(2)}</span>
@@ -531,6 +531,19 @@ export default function Navbar() {
               <Search size={18} />
             </button>
           </form>
+
+          {/* Mobile Delivery Location Bar */}
+          <div
+            onClick={() => setIsLocationModalOpen(true)}
+            className="sm:hidden flex items-center gap-1.5 px-4 py-2 bg-gray-50 border-t border-b border-gray-100 cursor-pointer text-xs mb-1"
+          >
+            <MapPin className="w-3.5 h-3.5 text-gray-500 shrink-0" />
+            <span className="text-gray-500">Deliver to:</span>
+            <span className="font-semibold text-gray-950 truncate max-w-[200px]">
+              {isMounted && deliveryLocation ? `${deliveryLocation.city}, ${deliveryLocation.country}` : "Select your address"}
+            </span>
+            <ChevronDown className="w-3.5 h-3.5 text-gray-400 ml-auto shrink-0" />
+          </div>
         </div>
       </header>
 
