@@ -251,7 +251,14 @@ export default function ManageInventory() {
   };
 
   const handleFormChange = (field: string, value: any) => {
-    setEditFormData((prev: any) => ({ ...prev, [field]: value }));
+    setEditFormData((prev: any) => {
+      const nextData = { ...prev, [field]: value };
+      if (field === 'stock') {
+        const stockNum = Number(value) || 0;
+        nextData.inStock = stockNum > 0;
+      }
+      return nextData;
+    });
   };
 
   const handleArrayChange = (field: string, value: string) => {
@@ -539,12 +546,11 @@ export default function ManageInventory() {
                         <div className="flex items-center gap-1.5">
                           <span className="font-medium min-w-4 text-center text-black">{getStockValue(item)}</span>
                           <button
-                            onClick={() => handleStockChange(item, 1)}
-                            disabled={stockUpdatingId === item._id}
-                            className="p-0.5 hover:bg-gray-200 rounded disabled:opacity-50"
-                            title="Increase stock"
+                            onClick={() => handleEdit(item)}
+                            className="p-0.5 hover:bg-gray-200 rounded"
+                            title="Edit Stock"
                           >
-                            <Plus className="h-3.5 w-3.5 text-gray-600" />
+                            <Pencil className="h-3.5 w-3.5 text-gray-500" />
                           </button>
                         </div>
                       </td>
@@ -641,21 +647,14 @@ export default function ManageInventory() {
                       </div>
                       <div>
                         <p className="text-gray-600">Stock</p>
-                        <div className="flex items-center gap-1 mt-1">
+                        <div className="flex items-center gap-1.5 mt-1">
+                          <span className="font-semibold min-w-4 text-left">{getStockValue(item)}</span>
                           <button
-                            onClick={() => handleStockChange(item, -1)}
-                            disabled={stockUpdatingId === item._id}
-                            className="p-1 border rounded disabled:opacity-50"
+                            onClick={() => handleEdit(item)}
+                            className="p-0.5 hover:bg-gray-200 rounded animate-none"
+                            title="Edit Stock"
                           >
-                            <Minus className="h-3 w-3" />
-                          </button>
-                          <span className="font-semibold min-w-4 text-center">{getStockValue(item)}</span>
-                          <button
-                            onClick={() => handleStockChange(item, 1)}
-                            disabled={stockUpdatingId === item._id}
-                            className="p-1 border rounded disabled:opacity-50"
-                          >
-                            <Plus className="h-3 w-3" />
+                            <Pencil className="h-3.5 w-3.5 text-gray-500" />
                           </button>
                         </div>
                       </div>
@@ -1010,6 +1009,22 @@ export default function ManageInventory() {
                     value={editFormData.frbricType || ''}
                     onChange={(e) => handleFormChange('frbricType', e.target.value)}
                     placeholder="Fabric type"
+                  />
+                </div>
+
+                {/* Stock Quantity */}
+                <div className="space-y-2">
+                  <Label htmlFor="stock">Stock Quantity</Label>
+                  <Input
+                    id="stock"
+                    type="number"
+                    min="0"
+                    value={editFormData.stock ?? ""}
+                    onChange={(e) => {
+                      const val = e.target.value;
+                      handleFormChange('stock', val === "" ? "" : Math.max(0, parseInt(val) || 0));
+                    }}
+                    placeholder="Stock quantity"
                   />
                 </div>
 

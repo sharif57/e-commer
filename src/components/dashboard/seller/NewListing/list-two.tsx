@@ -6,6 +6,7 @@ import React, { useState, useRef, useCallback, useEffect } from "react"
 import Image from "next/image"
 import { Button } from "@/components/ui/button"
 import { Cloud, Trash2, ArrowLeft, ArrowRight, Plus } from "lucide-react"
+import { Checkbox } from "@/components/ui/checkbox"
 
 interface UploadedFile {
   id: string
@@ -40,6 +41,9 @@ export default function ListTwo({ data, onChange, onNext, onPrevious, hideButton
   const [variants, setVariants] = useState<Variant[]>(data.variants || [])
   const [coverPhoto, setCoverPhoto] = useState<string | null>(data.coverPhoto || null)
   const [newColor, setNewColor] = useState("")
+  const [isNoColor, setIsNoColor] = useState<boolean>(
+    data.isNoColor || (data.variants || []).some((v: any) => v.color.toLowerCase() === "no-color" || v.color.toLowerCase() === "no color")
+  )
 
   useEffect(() => {
     const allFiles = variants.flatMap(v => v.files);
@@ -47,9 +51,21 @@ export default function ListTwo({ data, onChange, onNext, onPrevious, hideButton
       variants,
       files: allFiles,
       coverPhoto,
-      color: variants.map(v => v.color)
+      color: variants.map(v => v.color),
+      isNoColor
     });
-  }, [variants, coverPhoto]);
+  }, [variants, coverPhoto, isNoColor]);
+
+  const handleNoColorChange = (checked: boolean) => {
+    setIsNoColor(checked)
+    if (checked) {
+      const existingNoColor = variants.find(v => v.color.toLowerCase() === "no-color" || v.color.toLowerCase() === "no color")
+      setVariants([existingNoColor || { color: "no-color", files: [] }])
+      setNewColor("")
+    } else {
+      setVariants(variants.filter(v => v.color.toLowerCase() !== "no-color" && v.color.toLowerCase() !== "no color"))
+    }
+  }
 
   const MAX_FILES_PER_VARIANT = 6
   const MAX_FILE_SIZE = 50 * 1024 * 1024 // 50 MB
@@ -120,14 +136,14 @@ export default function ListTwo({ data, onChange, onNext, onPrevious, hideButton
       alert("Please add at least one color variant and upload files.")
       return false
     }
-    
+
     // Check if any variant has 0 files
     const emptyVariant = variants.find(v => v.files.length === 0)
     if (emptyVariant) {
       alert(`Please upload at least one file for the color: ${emptyVariant.color}`)
       return false
     }
-    
+
     return true
   }
 
@@ -136,13 +152,14 @@ export default function ListTwo({ data, onChange, onNext, onPrevious, hideButton
 
     // Calculate generic files array for backwards compatibility with other steps that might expect it, though we rely on variants now
     const allFiles = variants.flatMap(v => v.files);
-    
+
     onChange({
       ...data,
       variants,
       files: allFiles,
       coverPhoto,
-      color: variants.map(v => v.color) // inject color array for other steps
+      color: variants.map(v => v.color), // inject color array for other steps
+      isNoColor
     })
 
     onNext?.()
@@ -187,15 +204,21 @@ export default function ListTwo({ data, onChange, onNext, onPrevious, hideButton
       <div className="mt-4 border border-gray-200 rounded-xl p-4 bg-gray-50">
         <div className="flex justify-between items-center mb-3">
           <div className="flex items-center gap-2">
-            <span className="w-4 h-4 rounded-full" style={{ backgroundColor: variant.color.toLowerCase() }}></span>
+            {variant.color.toLowerCase() === "no-color" || variant.color.toLowerCase() === "no color" ? (
+              <span className="w-4 h-4 rounded-full border border-gray-300 bg-gradient-to-r from-gray-200 via-gray-300 to-gray-400" title="No Color"></span>
+            ) : (
+              <span className="w-4 h-4 rounded-full" style={{ backgroundColor: variant.color.toLowerCase() }}></span>
+            )}
             <h3 className="font-bold text-gray-800 capitalize">{variant.color}</h3>
           </div>
-          <button 
-            onClick={() => removeColorVariant(variant.color)}
-            className="text-red-500 hover:text-red-700 text-sm font-semibold"
-          >
-            Remove Color
-          </button>
+          {!isNoColor && (
+            <button
+              onClick={() => removeColorVariant(variant.color)}
+              className="text-red-500 hover:text-red-700 text-sm font-semibold"
+            >
+              Remove Color
+            </button>
+          )}
         </div>
 
         <div
@@ -203,10 +226,10 @@ export default function ListTwo({ data, onChange, onNext, onPrevious, hideButton
           onDragLeave={handleDragLeave}
           onDragOver={handleDragOver}
           onDrop={handleDrop}
-          className={`border-2 border-dashed rounded-lg p-6 transition cursor-pointer mb-4 ${
-            isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-white hover:bg-gray-50"
-          }`}
+          className={`border-2 border-dashed rounded-lg p-6 transition cursor-pointer mb-4 ${isDragging ? "border-blue-500 bg-blue-50" : "border-gray-300 bg-white hover:bg-gray-50"
+            }`}
         >
+
           <input
             ref={fileInputRef}
             type="file"
@@ -271,22 +294,59 @@ export default function ListTwo({ data, onChange, onNext, onPrevious, hideButton
           </div>
 
           {/* Add Color Section */}
-          <div className="flex items-center gap-3 mb-6 bg-gray-50 p-4 rounded-xl border border-gray-200">
-            <input 
-              type="text" 
-              placeholder="E.g. Red, Blue, XL (if you want size variants instead)" 
-              value={newColor}
-              onChange={(e) => setNewColor(e.target.value)}
-              onKeyPress={(e) => e.key === "Enter" && addColorVariant()}
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"
-            />
-            <button 
-              onClick={addColorVariant}
-              disabled={!newColor.trim()}
-              className="px-4 py-2 bg-gray-900 text-white rounded-lg flex items-center gap-2 font-medium hover:bg-gray-800 disabled:opacity-50"
-            >
-              <Plus className="w-4 h-4" /> Add Color
-            </button>
+          <div className="mb-6 bg-slate-50 p-5 rounded-xl border border-gray-300 space-y-4 shadow-sm">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+              <div>
+                <label className="block text-sm font-semibold text-gray-800">
+                  Color / Variant Name
+                </label>
+                <p className="text-xs text-gray-500">
+                  Add color variants for your product.
+                </p>
+              </div>
+
+              <div className="flex items-center gap-3 cursor-pointer select-none group">
+                <div className="relative flex items-center">
+                  <input
+                    type="checkbox"
+                    id="noProductColor"
+                    checked={isNoColor}
+                    onChange={(e) => handleNoColorChange(e.target.checked)}
+                    className="peer h-6 w-6 cursor-pointer appearance-none rounded-md border-2 border-black bg-white transition-all checked:bg-[#F2C94C] focus:outline-none focus:ring-4 focus:ring-[#F2C94C]/20"
+                  />
+                  <div className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-black opacity-0 transition-opacity peer-checked:opacity-100">
+                    <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" stroke="currentColor" strokeWidth="2.5">
+                      <path fillRule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clipRule="evenodd"></path>
+                    </svg>
+                  </div>
+                </div>
+                <label
+                  htmlFor="noProductColor"
+                  className="text-sm font-semibold text-gray-700 cursor-pointer select-none group-hover:text-gray-900 transition-colors"
+                >
+                  No Product Color
+                </label>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-3">
+              <input
+                type="text"
+                placeholder={isNoColor ? "no-color" : "E.g. Red, Blue, XL (if you want size variants instead)"}
+                value={isNoColor ? "no-color" : newColor}
+                onChange={(e) => setNewColor(e.target.value)}
+                onKeyPress={(e) => e.key === "Enter" && !isNoColor && addColorVariant()}
+                disabled={isNoColor}
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-100 disabled:text-gray-500 bg-white"
+              />
+              <button
+                onClick={addColorVariant}
+                disabled={isNoColor || !newColor.trim()}
+                className="px-4 py-2 bg-gray-900 text-white rounded-lg flex items-center gap-2 font-medium hover:bg-gray-800 disabled:opacity-50"
+              >
+                <Plus className="w-4 h-4" /> Add Color
+              </button>
+            </div>
           </div>
 
           {/* Variants List */}
@@ -294,7 +354,7 @@ export default function ListTwo({ data, onChange, onNext, onPrevious, hideButton
             {variants.map(variant => (
               <FileDropzone key={variant.color} variant={variant} />
             ))}
-            
+
             {variants.length === 0 && (
               <div className="text-center py-10 border-2 border-dashed border-gray-300 rounded-xl">
                 <p className="text-gray-500">No color variants added yet.</p>

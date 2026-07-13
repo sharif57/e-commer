@@ -68,6 +68,7 @@ export default function ProductPage() {
                 : [];
         return Array.from(new Set([...variantColors, ...colorArray]));
     })();
+    const hasValidColors = uniqueColors.length > 0 && !uniqueColors.every(c => c.toLowerCase() === "no-color" || c.toLowerCase() === "no color");
     const reviewList = reviewData?.data?.result || []
     const totalReviews = reviewData?.data?.meta?.total || reviewList.length || 0
     const averageReviewRating = reviewList.length
@@ -711,35 +712,37 @@ export default function ProductPage() {
                                 {/* Customization */}
                                 <div className="space-y-4">
                                     {/* Color Selection */}
-                                    <div>
-                                        <label className="block text-sm font-semibold text-black mb-3">Color</label>
-                                        <div className="flex gap-3 flex-wrap">
-                                            {uniqueColors?.map((color: string) => {
-                                                const variant = product?.variants?.find((v: any) => v.color === color);
-                                                const variantImage = variant?.images?.[0] || product?.image?.[0] || "/placeholder.svg";
-                                                return (
-                                                    <button
-                                                        key={color}
-                                                        onClick={() => handleColorClick(color)}
-                                                        className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 font-medium text-sm capitalize transition-all ${selectedColor === color
-                                                            ? "border-[#29845A] bg-teal-50/50 text-[#29845A] ring-1 ring-[#29845A]"
-                                                            : "border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50"
-                                                            }`}
-                                                    >
-                                                        <span className="text-xs font-semibold">{color}</span>
-                                                        <div className="relative w-16 h-20 rounded overflow-hidden bg-gray-100 border border-gray-200 shadow-sm">
-                                                            <Image
-                                                                src={variantImage}
-                                                                alt={color}
-                                                                fill
-                                                                className="object-cover w-full h-full"
-                                                            />
-                                                        </div>
-                                                    </button>
-                                                );
-                                            })}
+                                    {hasValidColors && (
+                                        <div>
+                                            <label className="block text-sm font-semibold text-black mb-3">Color</label>
+                                            <div className="flex gap-3 flex-wrap">
+                                                {uniqueColors?.map((color: string) => {
+                                                    const variant = product?.variants?.find((v: any) => v.color === color);
+                                                    const variantImage = variant?.images?.[0] || product?.image?.[0] || "/placeholder.svg";
+                                                    return (
+                                                        <button
+                                                            key={color}
+                                                            onClick={() => handleColorClick(color)}
+                                                            className={`flex flex-col items-center gap-1.5 p-2 rounded-lg border-2 font-medium text-sm capitalize transition-all ${selectedColor === color
+                                                                ? "border-[#29845A] bg-teal-50/50 text-[#29845A] ring-1 ring-[#29845A]"
+                                                                : "border-gray-200 text-gray-700 hover:border-gray-300 hover:bg-gray-50"
+                                                                }`}
+                                                        >
+                                                            <span className="text-xs font-semibold">{color}</span>
+                                                            <div className="relative w-16 h-20 rounded overflow-hidden bg-gray-100 border border-gray-200 shadow-sm">
+                                                                <Image
+                                                                    src={variantImage}
+                                                                    alt={color}
+                                                                    fill
+                                                                    className="object-cover w-full h-full"
+                                                                />
+                                                            </div>
+                                                        </button>
+                                                    );
+                                                })}
+                                            </div>
                                         </div>
-                                    </div>
+                                    )}
                                     {/* Size Selection */}
                                     <div>
                                         <label className="block text-sm font-semibold text-black mb-3">Size</label>

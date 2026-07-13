@@ -28,7 +28,7 @@ export const PackageApi = baseApi.injectEndpoints({
                 method: "PATCH",
                 body: data,
             }),
-            invalidatesTags: ["Package"],
+            invalidatesTags: ["Package", "User"],
         }),
 
         // /subscription/my-subscriptions

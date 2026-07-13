@@ -201,9 +201,14 @@ export default function DashboardSidebar({ isOpen, onClose }: DashboardSidebarPr
         <div className="flex flex-col h-full">
           {/* Logo/Brand */}
           <Link href="/" className="p-6 border-b">
+            {/* "firstName": "testing",
+        "lastName": "account", */}
             {
               user?.data?.role === "SELLER" ? (
-                <Image src={user?.data?.image} alt="EQ1 Seller Logo" width={400} height={400} className="object-contain mx-auto w-full size-[60px]" />
+                <>
+                  <Image src={user?.data?.image} alt="EQ1 Seller Logo" width={400} height={400} className="object-contain mx-auto w-full size-[60px]" />
+                  <p className="text-center mt-2">{user?.data?.firstName} {user?.data?.lastName}</p>
+                </>
               ) : (
                 <Logo />
               )
