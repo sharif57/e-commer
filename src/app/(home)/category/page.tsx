@@ -45,7 +45,8 @@ interface Product {
         title: string
     }
     userId: string
-    image: string[]
+    image?: string[]
+    variants?: { color: string; images: string[] }[]
     status: string
     inStock: boolean
     careInsturction: string
@@ -73,7 +74,7 @@ function ProductCard({ product, isWishlisted, onWishlistToggle }: ProductCardPro
             {/* Image Container */}
             <div className="relative w-full aspect-square bg-gray-100 overflow-hidden">
                 <Image
-                    src={product.image?.[0] || "/placeholder.svg"}
+                    src={product.variants?.[0]?.images?.[0] || product.image?.[0] || "/placeholder.svg"}
                     alt={product.title}
                     fill
                     className="object-cover group-hover:scale-105 transition-transform duration-300"

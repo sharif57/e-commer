@@ -283,8 +283,8 @@ export default function AccountPage() {
                             {/* Status Badges */}
                             <div className="flex flex-wrap gap-2 justify-center mb-6">
                                 <span className={`inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-medium ${user?.role === 'BUYER'
-                                        ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
-                                        : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
+                                    ? 'bg-blue-100 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400'
+                                    : 'bg-purple-100 text-purple-700 dark:bg-purple-900/30 dark:text-purple-400'
                                     }`}>
                                     <User className="w-3.5 h-3.5" />
                                     {user?.role || 'User'}
@@ -385,7 +385,7 @@ export default function AccountPage() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                 <div className="space-y-1">
                                     <label className="text-xs font-medium text-muted-foreground uppercase tracking-wide">
-                                        Street Address
+                                        Extra street Address
                                     </label>
                                     <p className="text-sm sm:text-base text-foreground">
                                         {user?.address || 'Not provided'}

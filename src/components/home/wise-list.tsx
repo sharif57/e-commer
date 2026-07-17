@@ -363,7 +363,7 @@ export default function ShoppingBag() {
                                                 <Trash2 className="w-3 h-3" />
                                                 Remove
                                             </button>
-                                            <button onClick={() => handleCheckout(item)} className="text-[#000000] cursor-pointer hover:text-black text-xs sm:text-sm font-medium border-2 border-[#000000] bg-accent/90 rounded-lg px-3 py-1 transition-colors flex items-center gap-1">
+                                            <button onClick={() => handleCheckout(item)} className="bg-primary text-white cursor-pointer text-xs sm:text-sm font-medium  rounded-lg px-3 py-1 transition-colors flex items-center gap-1">
                                                 Proceed to checkout
                                                 <ArrowRight className="w-3 h-3" />
                                             </button>

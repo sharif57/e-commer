@@ -8,6 +8,15 @@ import ProductCard from "@/components/home/product-card";
 import ProductCardSkeleton from "@/components/Skeleton/ProductCardSkeleton";
 import { useGetProductsQuery } from "@/redux/feature/buyer/productSlice";
 import { toast } from "sonner";
+import {
+  Pagination,
+  PaginationContent,
+  PaginationEllipsis,
+  PaginationItem,
+  PaginationLink,
+  PaginationNext,
+  PaginationPrevious,
+} from "@/components/ui/pagination";
 
 export default function ProductGrid() {
   const [page, setPage] = useState(1);
@@ -17,10 +26,14 @@ export default function ProductGrid() {
 
   const { data, isLoading, isFetching } = useGetProductsQuery(page);
 
-  /* -------------------- Handle Product Append -------------------- */
+  const totalItems = data?.data?.meta?.total || 0;
+  const itemsPerPage = 10;
+  const totalPages = Math.ceil(totalItems / itemsPerPage);
+
+  /* -------------------- Handle Product Update -------------------- */
   useEffect(() => {
     if (data?.data?.result) {
-      setProducts((prev) => [...prev, ...data.data.result]);
+      setProducts(data.data.result);
     }
   }, [data]);
 
@@ -88,6 +101,13 @@ export default function ProductGrid() {
     }
   };
 
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setPage(newPage);
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+  };
+
   return (
     <div className="container mx-auto px-4 sm:px-6 lg:px-8 py-10">
       {/* Header */}
@@ -102,11 +122,11 @@ export default function ProductGrid() {
 
       {/* Product Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-8">
-        {isLoading && page === 1
+        {isLoading || isFetching
           ? Array.from({ length: 10 }).map((_, i) => (
             <ProductCardSkeleton key={i} />
           ))
-          : products?.slice(0, 10).map((product) => (
+          : products?.map((product) => (
               <ProductCard
                 key={product._id}
                 product={product}
@@ -116,16 +136,71 @@ export default function ProductGrid() {
           ))}
       </div>
 
-      {/* Load More Button */}
-      <div className="flex justify-center mt-10">
-        <button
-          disabled={isFetching}
-          onClick={() => setPage((prev) => prev + 1)}
-          className="px-6 py-2 bg-primary text-white rounded-md hover:bg-primary/80 transition disabled:opacity-60"
-        >
-          {isFetching ? "Loading..." : "Load More"}
-        </button>
-      </div>
+      {/* Pagination */}
+      {totalPages > 1 && (
+        <div className="flex flex-col items-center justify-center gap-4 mt-10">
+          <Pagination>
+            <PaginationContent>
+              <PaginationItem>
+                <PaginationPrevious
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlePageChange(page - 1);
+                  }}
+                  className={
+                    page === 1
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+
+              {Array.from({ length: totalPages }, (_, i) => i + 1)
+                .filter(
+                  (p) =>
+                    p === 1 ||
+                    p === totalPages ||
+                    Math.abs(p - page) <= 1
+                )
+                .map((pageNum, index, arr) => (
+                  <PaginationItem key={pageNum}>
+                    {index > 0 && pageNum - arr[index - 1] > 1 && (
+                      <PaginationEllipsis />
+                    )}
+                    <PaginationLink
+                      isActive={pageNum === page}
+                      onClick={(e) => {
+                        e.preventDefault();
+                        handlePageChange(pageNum);
+                      }}
+                      className="cursor-pointer"
+                    >
+                      {pageNum}
+                    </PaginationLink>
+                  </PaginationItem>
+                ))}
+
+              <PaginationItem>
+                <PaginationNext
+                  onClick={(e) => {
+                    e.preventDefault();
+                    handlePageChange(page + 1);
+                  }}
+                  className={
+                    page === totalPages
+                      ? "pointer-events-none opacity-50"
+                      : "cursor-pointer"
+                  }
+                />
+              </PaginationItem>
+            </PaginationContent>
+          </Pagination>
+          <p className="text-sm text-black/60 font-medium">
+            Page {page} of {totalPages}
+          </p>
+        </div>
+      )}
     </div>
   );
 }
+
