@@ -28,7 +28,7 @@ export default function ListThree({ data, onChange, onNext, onPrevious }: StepTh
         const newErrors: Record<string, string> = {}
 
         if (isEmpty(data.title)) newErrors.title = "Product title is required"
-        if (!selectedSizes.length) newErrors.size = "At least one product size is required"
+        // if (!selectedSizes.length) newErrors.size = "At least one product size is required"
         if (isEmpty(data.brand)) newErrors.brand = "Brand is required"
         if (isEmpty(data.fabric)) newErrors.fabric = "Fabric type is required"
         if (isEmpty(data.care)) newErrors.care = "Care instructions are required"
