@@ -84,7 +84,7 @@ export default function OrderDetailsPage() {
     // Helper function to get timeline steps based on deliveryStatus
     const getTimelineSteps = (status: string) => {
         const steps = [
-            { id: "1", label: "Order placed", completed: false, icon: "placed" as const },
+            { id: "1", label: "Order", completed: false, icon: "placed" as const },
             { id: "2", label: "Preparing", completed: false, icon: "preparing" as const },
             { id: "3", label: "In transit", completed: false, icon: "transit" as const },
             { id: "4", label: "Delivered", completed: false, icon: "delivered" as const },

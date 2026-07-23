@@ -944,14 +944,44 @@ export default function ProductPage() {
                                 </div>
 
                                 <div className="space-y-4 pt-5">
-                                    <div className="rounded-lg border border-gray-200 p-3">
-                                        <div className="flex items-start gap-3">
-                                            <CreditCard className="text-[#FF9F13] w-6 h-6 flex-shrink-0 mt-0.5" />
-                                            <div>
-                                                <p className="font-semibold text-black">Payment Method</p>
-                                                <div className="text-gray-600 text-sm mt-1">
-                                                    <Method />
-                                                </div>
+                                    <div className="rounded-xl border border-gray-200 bg-gray-50/50 p-4 transition-all duration-200 hover:shadow-sm">
+                                        <div className="flex items-center justify-between mb-3.5">
+                                            <div className="flex items-center gap-2">
+                                                <CreditCard className="text-gray-700 w-5 h-5 flex-shrink-0" />
+                                                <span className="font-semibold text-sm text-black">Payment Methods</span>
+                                            </div>
+
+                                        </div>
+                                        <div className="flex flex-wrap items-center gap-2.5">
+                                            <div className="hover:scale-105 transition-transform duration-200 flex-shrink-0 cursor-pointer">
+                                                <Method />
+                                            </div>
+                                            <div className="w-[46px] h-[32px] bg-white border border-[#E5E7EB] rounded-[4px] flex items-center justify-center p-1.5 shadow-sm hover:scale-105 transition-transform duration-200 flex-shrink-0 cursor-pointer">
+                                                <Image
+                                                    src="/images/master.png"
+                                                    alt="Mastercard"
+                                                    width={38}
+                                                    height={24}
+                                                    className="object-contain max-h-full max-w-full"
+                                                />
+                                            </div>
+                                            <div className="w-[46px] h-[32px] bg-white border border-[#E5E7EB] rounded-[4px] flex items-center justify-center p-1.5 shadow-sm hover:scale-105 transition-transform duration-200 flex-shrink-0 cursor-pointer">
+                                                <Image
+                                                    src="/images/discover.png"
+                                                    alt="Discover"
+                                                    width={38}
+                                                    height={24}
+                                                    className="object-contain max-h-full max-w-full"
+                                                />
+                                            </div>
+                                            <div className="w-[46px] h-[32px] bg-white border border-[#E5E7EB] rounded-[4px] flex items-center justify-center p-1.5 shadow-sm hover:scale-105 transition-transform duration-200 flex-shrink-0 cursor-pointer">
+                                                <Image
+                                                    src="/images/image copy.png"
+                                                    alt="Visa"
+                                                    width={38}
+                                                    height={24}
+                                                    className="object-contain max-h-full max-w-full"
+                                                />
                                             </div>
                                         </div>
                                     </div>
