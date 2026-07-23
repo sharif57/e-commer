@@ -139,25 +139,25 @@ export default function ManageInventory() {
         origin: product.origin || "",
         careInsturction: product.careInsturction || "",
         frbricType: product.frbricType || "",
-        color: product?.variants?.map((v:any) => v.color) || product.color || [],
-        stock: typeof product.stock === "number" ? product.stock : (product.inStock ? 1 : 0),
+        color: product?.variants?.map((v: any) => v.color) || product.color || [],
+        instockCount: typeof product.stock === "number" ? product.stock : (product.inStock ? 1 : 0),
         inStock: product.inStock,
         status: product.status
       });
-      
-      const initialVariants = product?.variants?.length 
+
+      const initialVariants = product?.variants?.length
         ? product.variants.map((v: any) => ({
-            color: v.color,
-            existingImages: v.images || [],
-            newFiles: [],
-            newPreviews: []
-          }))
+          color: v.color,
+          existingImages: v.images || [],
+          newFiles: [],
+          newPreviews: []
+        }))
         : (product?.color || []).map((c: string) => ({
-            color: c,
-            existingImages: [],
-            newFiles: [],
-            newPreviews: []
-          }));
+          color: c,
+          existingImages: [],
+          newFiles: [],
+          newPreviews: []
+        }));
 
       if (initialVariants.length === 0 && product?.image?.length) {
         initialVariants.push({
@@ -195,20 +195,20 @@ export default function ManageInventory() {
   const handleVariantImageChange = (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const files = Array.from(e.target.files || []);
     if (files.length === 0) return;
-    
+
     setEditVariants(prev => {
       const newVariants = [...prev];
       const variant = { ...newVariants[index] };
-      
+
       variant.newFiles = [...variant.newFiles, ...files];
-      
+
       // Create previews
       const newPreviews = [...variant.newPreviews];
       files.forEach(file => {
         newPreviews.push(URL.createObjectURL(file));
       });
       variant.newPreviews = newPreviews;
-      
+
       newVariants[index] = variant;
       return newVariants;
     });
@@ -229,11 +229,11 @@ export default function ManageInventory() {
     setEditVariants(prev => {
       const newVariants = [...prev];
       const variant = { ...newVariants[variantIndex] };
-      
+
       variant.newFiles = variant.newFiles.filter((_, i) => i !== fileIndex);
       URL.revokeObjectURL(variant.newPreviews[fileIndex]);
       variant.newPreviews = variant.newPreviews.filter((_, i) => i !== fileIndex);
-      
+
       newVariants[variantIndex] = variant;
       return newVariants;
     });
@@ -325,8 +325,8 @@ export default function ManageInventory() {
         color: editVariants.map(v => v.color),
         colors: editVariants.map(v => v.color),
         variants: editVariants.map(v => ({
-            color: v.color,
-            images: v.existingImages
+          color: v.color,
+          images: v.existingImages
         })),
         image: editVariants.flatMap(v => v.existingImages),
         stock: Number(editFormData.stock),
@@ -800,8 +800,8 @@ export default function ManageInventory() {
                 <div className="flex items-center justify-between">
                   <Label className="text-lg">Color Variants & Images</Label>
                   <div className="flex gap-2">
-                    <Input 
-                      placeholder="Add new color..." 
+                    <Input
+                      placeholder="Add new color..."
                       value={newVariantColor}
                       onChange={(e) => setNewVariantColor(e.target.value)}
                       className="w-40"
@@ -837,7 +837,7 @@ export default function ManageInventory() {
                             </button>
                           </div>
                         ))}
-                        
+
                         {variant.newPreviews.map((preview, previewIndex) => (
                           <div key={`new-${previewIndex}`} className="relative group">
                             <img src={preview} alt="Preview" className="w-full aspect-square object-cover rounded border border-blue-200 bg-blue-50" />

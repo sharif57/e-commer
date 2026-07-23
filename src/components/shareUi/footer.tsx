@@ -95,6 +95,7 @@ export default function Footer() {
             <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wide">Sell</h3>
             <ul className="space-y-3">
               <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Sell on ebakx</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Buy on Ebakx</Link></li>
               <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Trams</Link></li>
               <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Forums</Link></li>
               <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Affiliates & Creators</Link></li>
@@ -116,7 +117,9 @@ export default function Footer() {
             <h3 className="text-sm font-semibold text-white mb-4 uppercase tracking-wide">Resources</h3>
             <ul className="space-y-3">
               <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Privacy Policy</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">About Us</Link></li>
               <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Refund Policy</Link></li>
+              <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Help</Link></li>
               <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Security</Link></li>
               <li><Link href="#" className="text-sm font-medium text-slate-200 hover:text-white transition-colors">Contact Us</Link></li>
             </ul>

@@ -113,7 +113,7 @@ export default function ListFive({ data, onChangeStep, onNext }: any) {
                 : Array.isArray(data.colors) && data.colors.length > 0
                     ? data.colors
                     : []
-            
+
             // Set both color and colors for backend compatibility
             if (colors.length > 0) {
                 payload.color = colors
