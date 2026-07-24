@@ -39,6 +39,10 @@ export default function DashboardOverview() {
     const { data: pendingOrdersData } = useTotalPendingOrdersQuery(undefined);
     const { data: todaySalesData } = useTodaySalesQuery(undefined);
 
+
+
+
+
     console.log(pendingOrdersData, '======pending orders==')
     console.log(todaySalesData, '======today sales==')
 
@@ -53,10 +57,10 @@ export default function DashboardOverview() {
         {
             icon: TruckElectric,
             label: "Open Orders",
-            value: `1`,
+            value: `${pendingOrdersData?.data || 0}`,
             badge: "Total Count",
             badgeColor: "text-gray-400",
-            status: "1 Unshipped",
+            status: `${pendingOrdersData?.data || 0} Unshipped`,
         },
         {
             icon: Package,
@@ -102,40 +106,40 @@ export default function DashboardOverview() {
 
     ]
 
-    const performingProducts = [
-        {
-            id: 1,
-            image: "/images/grill.jpg",
-            name: "Animo Exclusive Toy Set for Kids",
-            category: "Toys, Kids & Baby > Toys & Game",
-            sold: "40.2k sold",
-            rating: 4.5,
-        },
-        {
-            id: 2,
-            image: "/images/grill.jpg",
-            name: "Women Western Modern Party Dress",
-            category: "Fashion & Beauty > Clothing",
-            sold: "19.8k sold",
-            rating: 4.8,
-        },
-        {
-            id: 3,
-            image: "/images/grill.jpg",
-            name: "Ladies Premium Mini Makeup COMBO Pack",
-            category: "Health & Beauty > Skin Care",
-            sold: "8.9k sold",
-            rating: 5.0,
-        },
-        {
-            id: 4,
-            image: "/images/grill.jpg",
-            name: "250 ML. Women Body Lotion for Winter",
-            category: "Health & Beauty > Skin Care",
-            sold: "7.1k sold",
-            rating: 4.8,
-        },
-    ]
+    // const performingProducts = [
+    //     {
+    //         id: 1,
+    //         image: "/images/grill.jpg",
+    //         name: "Animo Exclusive Toy Set for Kids",
+    //         category: "Toys, Kids & Baby > Toys & Game",
+    //         sold: "40.2k sold",
+    //         rating: 4.5,
+    //     },
+    //     {
+    //         id: 2,
+    //         image: "/images/grill.jpg",
+    //         name: "Women Western Modern Party Dress",
+    //         category: "Fashion & Beauty > Clothing",
+    //         sold: "19.8k sold",
+    //         rating: 4.8,
+    //     },
+    //     {
+    //         id: 3,
+    //         image: "/images/grill.jpg",
+    //         name: "Ladies Premium Mini Makeup COMBO Pack",
+    //         category: "Health & Beauty > Skin Care",
+    //         sold: "8.9k sold",
+    //         rating: 5.0,
+    //     },
+    //     {
+    //         id: 4,
+    //         image: "/images/grill.jpg",
+    //         name: "250 ML. Women Body Lotion for Winter",
+    //         category: "Health & Beauty > Skin Care",
+    //         sold: "7.1k sold",
+    //         rating: 4.8,
+    //     },
+    // ]
 
     const inStockParam =
         inventoryFilter === "in-stock"
@@ -216,7 +220,7 @@ export default function DashboardOverview() {
                             <Zap className="w-5 h-5 text-[#171717]" />
                             <h2 className="text-sm font-semibold text-[#171717]">Performing Products</h2>
                         </div>
-                        <Select defaultValue="best-selling" >
+                        {/* <Select defaultValue="best-selling" >
                             <SelectTrigger className="w-40 text-sm " >
                                 <SelectValue />
                             </SelectTrigger>
@@ -225,47 +229,61 @@ export default function DashboardOverview() {
                                 <SelectItem value="most-viewed">Most viewed</SelectItem>
                                 <SelectItem value="newest">Newest</SelectItem>
                             </SelectContent>
-                        </Select>
+                        </Select> */}
                     </div>
 
                     <div className="flex-1 flex flex-col">
                         <div className="space-y-4 flex-1">
-                            {!performingProducts || performingProducts.length === 0 ? (
+                            {sellerProductsLoading ? (
+                                Array.from({ length: 4 }).map((_, i) => (
+                                    <InventorySkeleton key={i} />
+                                ))
+                            ) : !sellerProducts?.data?.result || sellerProducts?.data?.result?.length === 0 ? (
                                 <div className="flex flex-col items-center justify-center h-full text-center text-gray-500 py-10">
                                     <Zap className="w-10 h-10 mb-3 text-gray-300" />
                                     <p className="text-sm font-medium text-gray-900">No products found</p>
                                     <p className="text-xs text-gray-500">There are no performing products to show.</p>
                                 </div>
                             ) : (
-                                performingProducts.map((product) => (
-                                    <div key={product.id} className="flex items-start gap-3">
+                                sellerProducts?.data?.result?.slice(0, 4).map((product: any) => (
+                                    <Link href={`/best_deal/${product?._id}`} key={product._id} className="flex items-start gap-3 w-full">
                                         <div className="relative w-10 h-10 rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
-                                            <Image src={product.image || "/placeholder.svg"} alt={product.name} fill className="object-cover" />
+                                            <Image
+                                                src={product?.variants?.[0]?.images?.[0] || product?.image?.[0] || "/placeholder.svg"}
+                                                alt={product.title}
+                                                fill
+                                                className="object-cover"
+                                            />
                                         </div>
                                         <div className="flex-1 min-w-0">
-                                            <p className="text-sm font-medium text-gray-900 truncate">{product.name}</p>
-                                            <p className="text-xs text-gray-500 truncate">{product.category}</p>
+                                            <p className="text-sm font-medium text-gray-900 truncate">{product.title}</p>
+                                            <p className="text-xs text-gray-500 truncate">
+                                                {product.categoryId?.title}
+                                                {product.subCategoryId?.title && ` > ${product.subCategoryId.title}`}
+                                            </p>
                                         </div>
                                         <div className="text-right flex-shrink-0">
-                                            <p className="text-sm font-medium text-gray-900">{product.sold}</p>
+                                            <p className="text-sm font-medium text-gray-900">${product.price}</p>
                                             <div className="flex items-center justify-end gap-1 mt-0.5">
-                                                <span className="text-xs font-medium text-gray-900">{product.rating}</span>
+                                                <span className="text-xs font-medium text-gray-900">{product.rating || 0}</span>
                                                 <Star className="w-3 h-3 fill-yellow-400 text-yellow-400" />
                                             </div>
                                         </div>
-                                    </div>
+                                    </Link>
                                 ))
                             )}
                         </div>
 
-                        {performingProducts && performingProducts.length > 0 && (
+                        {sellerProducts?.data?.result && sellerProducts?.data?.result?.length > 0 && (
                             <div className="flex flex-col items-start justify-start mt-auto">
-                                <Button
-                                    variant="link"
-                                    className="mt-4 text-sm text-blue-600 hover:text-blue-700 px-0"
-                                >
-                                    View all 21 items →
-                                </Button>
+                                <Link href="/dashboard/inventory">
+                                    <Button
+                                        variant="link"
+                                        className="mt-4 text-sm text-blue-600 hover:text-blue-700 px-0"
+                                    >
+                                        View all {sellerProducts?.data?.meta?.total || sellerProducts?.data?.result?.length} items →
+                                    </Button>
+                                </Link>
                             </div>
                         )}
                     </div>
